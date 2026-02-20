@@ -120,8 +120,6 @@
 
         /* UTILS */
         .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .badge-verde { background: #d4edda; color: #155724; }
-        .loading { opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -154,7 +152,6 @@
     </div>
 
     <script>
-        // CONFIGURAÇÕES GERAIS
         const DB_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
         let editId = null;
         window.itensPedido = [];
@@ -162,99 +159,67 @@
 
         document.getElementById('data-topo').innerText = new Date().toLocaleDateString('pt-br');
 
-        // FUNÇÃO DE LOGIN
         function validaLogin() {
             const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
             if(u.toLowerCase() === 'admin') {
-                document.getElementById('login-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('app').style.display = 'flex';
-                    render('fin');
-                }, 500);
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+                render('fin');
             } else { alert('Credenciais Inválidas!'); }
         }
 
-        // RENDERIZADOR DE TELAS
         async function render(tela) {
             const port = document.getElementById('view-port');
             const menu = document.getElementById('side-menu');
             editId = null;
             window.itensPedido = [];
 
-            // Menu Lateral Ativo
             menu.innerHTML = `
                 <nav class="menu">
                     <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Dashboard Financeiro</button>
                     <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Gestão de Clientes</button>
                     <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido / Orç.</button>
                     <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Controle de Estoque</button>
-                    <button onclick="render('list')" class="${tela==='list'?'active':''}">📝 Histórico de Vendas</button>
                 </nav>
                 <button onclick="location.reload()" class="btn-sair-lateral">SAIR DO SISTEMA</button>
             `;
 
-            // TELA: FINANCEIRO
             if(tela === 'fin') {
                 const res = await fetch(`${DB_URL}/pedidos.json`);
                 const data = await res.json();
                 let totalVendas = 0; let qtd = 0;
-                if(data) {
-                    Object.values(data).forEach(p => { totalVendas += parseFloat(p.total); qtd++; });
-                }
-                port.innerHTML = `
-                    <h1>📊 Visão Geral</h1>
-                    <div class="form-grid">
-                        <div class="card half-width"><small>Faturamento Bruto Acumulado</small><h2 style="color:#27ae60; font-size:35px">R$ ${totalVendas.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div>
-                        <div class="card half-width"><small>Total de Pedidos</small><h2 style="color:var(--vinho-botao); font-size:35px">${qtd}</h2></div>
-                    </div>
-                    <div class="card"><h3>Avisos do Sistema</h3><p>Sistema operando em nuvem. Todos os dados são sincronizados em tempo real com o banco Firebase.</p></div>
-                `;
+                if(data) Object.values(data).forEach(p => { totalVendas += parseFloat(p.total); qtd++; });
+                port.innerHTML = `<h1>📊 Visão Geral</h1><div class="form-grid"><div class="card half-width"><small>Faturamento Bruto</small><h2 style="color:#27ae60; font-size:35px">R$ ${totalVendas.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div><div class="card half-width"><small>Total de Pedidos</small><h2 style="color:var(--vinho-botao); font-size:35px">${qtd}</h2></div></div>`;
             }
 
-            // TELA: CLIENTES (RESTALRADO 100%)
             if(tela === 'cli') {
                 const res = await fetch(`${DB_URL}/clientes.json`);
                 const data = await res.json();
                 let rows = '';
-                if(data) {
-                    Object.entries(data).forEach(([id, c]) => {
-                        rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidadeEstado}</td><td>${c.doc || '---'}</td><td>
-                            <button onclick='prepararEdicao("${id}", ${JSON.stringify(c)})' class="btn-acao btn-primario" style="padding:5px 10px; font-size:11px">EDITAR</button>
-                            <button onclick='deletar("${id}", "clientes")' class="btn-acao" style="padding:5px 10px; font-size:11px; background:#e74c3c; color:white">EXCLUIR</button>
-                        </td></tr>`;
-                    });
-                }
-                port.innerHTML = `
-                    <h1>👥 Clientes</h1>
-                    <div class="card">
-                        <h3 id="form-title">Novo Cadastro</h3>
-                        <form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
-                            <div class="full-width"><label>Razão Social / Nome Completo</label><input type="text" id="c-nome" required></div>
-                            <div class="half-width"><label>Nome do Contato</label><input type="text" id="c-contato"></div>
-                            <div class="half-width"><label>CPF / CNPJ</label><input type="text" id="c-doc"></div>
-                            <div class="half-width"><label>RG / Insc. Estadual</label><input type="text" id="c-rg"></div>
-                            <div class="half-width"><label>Telefone / WhatsApp</label><input type="text" id="c-tel" required></div>
-                            <div class="full-width"><label>Endereço de Entrega / Cobrança</label><input type="text" id="c-end"></div>
-                            <div><label>CEP</label><input type="text" id="c-cep"></div>
-                            <div><label>Bairro</label><input type="text" id="c-bairro"></div>
-                            <div class="half-width"><label>Cidade / UF</label><input type="text" id="c-cid"></div>
-                            <div class="half-width"><label>Forma de Pagto Preferencial</label>
-                                <select id="c-pag">
-                                    <option value="50% Entrada e restante no término">50% Entrada e restante no término</option>
-                                    <option value="Pix">Pix</option><option value="Boleto">Boleto</option><option value="Cartão">Cartão</option>
-                                </select>
-                            </div>
-                            <div class="full-width"><label>Observações Internas</label><textarea id="c-obs" rows="2"></textarea></div>
-                            <button type="submit" class="btn-acao btn-sucesso full-width">SALVAR DADOS NO BANCO</button>
-                        </form>
-                    </div>
-                    <div class="card"><h3>Base de Clientes</h3><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Cidade</th><th>Documento</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>
-                `;
+                if(data) Object.entries(data).forEach(([id, c]) => {
+                    rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidadeEstado}</td><td>${c.doc || '---'}</td><td><button onclick='prepararEdicao("${id}", ${JSON.stringify(c)})' class="btn-acao btn-primario" style="padding:5px 10px; font-size:11px">EDITAR</button></td></tr>`;
+                });
+                port.innerHTML = `<h1>👥 Clientes</h1>
+                <div class="card">
+                    <h3 id="form-title">Novo Cadastro</h3>
+                    <form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
+                        <div class="full-width"><label>Razão Social / Nome Completo</label><input type="text" id="c-nome" required></div>
+                        <div class="half-width"><label>Nome do Contato</label><input type="text" id="c-contato"></div>
+                        <div class="half-width"><label>CPF / CNPJ</label><input type="text" id="c-doc"></div>
+                        <div class="half-width"><label>RG / Insc. Estadual</label><input type="text" id="c-rg"></div>
+                        <div class="half-width"><label>Telefone / WhatsApp</label><input type="text" id="c-tel" required></div>
+                        <div class="full-width"><label>Endereço</label><input type="text" id="c-end"></div>
+                        <div><label>CEP</label><input type="text" id="c-cep"></div>
+                        <div><label>Bairro</label><input type="text" id="c-bairro"></div>
+                        <div class="half-width"><label>Cidade / UF</label><input type="text" id="c-cid"></div>
+                        <div class="half-width"><label>Pagamento</label><select id="c-pag"><option value="50% Entrada / Término">50% Entrada / Término</option><option value="Pix">Pix</option></select></div>
+                        <div class="full-width"><label>Observações</label><textarea id="c-obs"></textarea></div>
+                        <button type="submit" class="btn-acao btn-sucesso full-width">SALVAR CLIENTE</button>
+                    </form>
+                </div>
+                <div class="card"><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Cidade</th><th>Documento</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             }
 
-            // TELA: PEDIDOS (COM GERADOR DE PDF MODELO BB)
             if(tela === 'ped') {
                 const resCli = await fetch(`${DB_URL}/clientes.json`);
                 const dataCli = await resCli.json();
@@ -265,8 +230,9 @@
                     <h1>🛒 Novo Pedido / Orçamento</h1>
                     <div class="card">
                         <div class="form-grid">
-                            <div class="full-width"><label>Cliente</label><select id="p-cliente-select">${options}</select></div>
-                            <div class="full-width"><label>Descrição Técnica do Item (Material ou Serviço)</label><input type="text" id="p-item"></div>
+                            <div class="tri-width"><label>Cliente</label><select id="p-cliente-select">${options}</select></div>
+                            <div><label>Nº do Pedido</label><input type="text" id="p-numero" placeholder="Ex: 10540" style="border: 2px solid var(--vinho-botao); font-weight: bold;"></div>
+                            <div class="full-width"><label>Descrição Técnica do Item</label><input type="text" id="p-item"></div>
                             <div><label>Qtd Peças</label><input type="number" id="p-pecas" oninput="calcSub()"></div>
                             <div><label>Medida m²</label><input type="number" id="p-m2" oninput="calcSub()"></div>
                             <div><label>Preço Unit.</label><input type="number" id="p-val" oninput="calcSub()"></div>
@@ -279,75 +245,24 @@
                         <table><thead><tr><th>Descrição</th><th>Pçs</th><th>m²</th><th>Unit.</th><th>Total</th><th>Remover</th></tr></thead><tbody id="lista-pedido"></tbody></table>
                         <div style="text-align:right; margin-top:25px;">
                             <h1 id="total-txt" style="font-size:32px">R$ 0,00</h1>
-                            <button onclick="finalizar(false)" class="btn-acao btn-cancelar">SALVAR SEM PDF</button>
-                            <button onclick="finalizar(true)" class="btn-acao btn-sucesso">FINALIZAR E GERAR PDF OFICIAL</button>
+                            <button onclick="finalizar(false)" class="btn-acao btn-cancelar">SÓ SALVAR</button>
+                            <button onclick="finalizar(true)" class="btn-acao btn-sucesso">SALVAR E GERAR PDF OFICIAL</button>
                         </div>
-                    </div>
-                `;
-            }
-
-            // TELA: ESTOQUE
-            if(tela === 'est') {
-                const res = await fetch(`${DB_URL}/estoque.json`);
-                const data = await res.json();
-                let rows = '';
-                if(data) Object.entries(data).forEach(([id, i]) => {
-                    rows += `<tr><td>${i.item}</td><td>${i.qtd}</td><td><button onclick="deletar('${id}','estoque')" style="color:red">Excluir</button></td></tr>`;
-                });
-                port.innerHTML = `<h1>📦 Estoque</h1><div class="card"><button onclick="novoEstoque()" class="btn-acao btn-primario">+ Novo Item</button><table><thead><tr><th>Produto</th><th>Quantidade</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+                    </div>`;
             }
         }
-
-        // --- LÓGICA DE NEGÓCIO ---
 
         async function salvarCliente(e) {
             e.preventDefault();
-            const c = {
-                nome: document.getElementById('c-nome').value,
-                contato: document.getElementById('c-contato').value,
-                doc: document.getElementById('c-doc').value,
-                rg: document.getElementById('c-rg').value,
-                tel: document.getElementById('c-tel').value,
-                end: document.getElementById('c-end').value,
-                cep: document.getElementById('c-cep').value,
-                bairro: document.getElementById('c-bairro').value,
-                cidadeEstado: document.getElementById('c-cid').value,
-                pagamento: document.getElementById('c-pag').value,
-                obs: document.getElementById('c-obs').value
-            };
-            const method = editId ? 'PUT' : 'POST';
-            const url = editId ? `${DB_URL}/clientes/${editId}.json` : `${DB_URL}/clientes.json`;
-            await fetch(url, { method, body: JSON.stringify(c) });
+            const c = { nome: document.getElementById('c-nome').value, contato: document.getElementById('c-contato').value, doc: document.getElementById('c-doc').value, rg: document.getElementById('c-rg').value, tel: document.getElementById('c-tel').value, end: document.getElementById('c-end').value, cep: document.getElementById('c-cep').value, bairro: document.getElementById('c-bairro').value, cidadeEstado: document.getElementById('c-cid').value, pagamento: document.getElementById('c-pag').value, obs: document.getElementById('c-obs').value };
+            await fetch(`${DB_URL}/clientes.json`, { method: 'POST', body: JSON.stringify(c) });
             render('cli');
         }
 
-        function prepararEdicao(id, data) {
-            editId = id;
-            render('cli').then(() => {
-                document.getElementById('form-title').innerText = "Editando: " + data.nome;
-                document.getElementById('c-nome').value = data.nome || '';
-                document.getElementById('c-doc').value = data.doc || '';
-                document.getElementById('c-tel').value = data.tel || '';
-                document.getElementById('c-end').value = data.end || '';
-                document.getElementById('c-cid').value = data.cidadeEstado || '';
-                document.getElementById('c-pag').value = data.pagamento || '';
-                window.scrollTo(0,0);
-            });
-        }
-
-        async function deletar(id, path) {
-            if(confirm("Deseja realmente excluir este registro?")) {
-                await fetch(`${DB_URL}/${path}/${id}.json`, { method: 'DELETE' });
-                render(path === 'clientes' ? 'cli' : 'est');
-            }
-        }
-
-        // LÓGICA DE CÁLCULO DE PEDIDO
         function calcSub() {
             const p = parseFloat(document.getElementById('p-pecas').value) || 1;
             const m = parseFloat(document.getElementById('p-m2').value) || 1;
             const v = parseFloat(document.getElementById('p-val').value) || 0;
-            // Se tiver m2, multiplica Pçs * m2 * Valor. Se não, Pçs * Valor.
             const total = (document.getElementById('p-m2').value) ? (p * m * v) : (p * v);
             document.getElementById('p-sub').value = total.toFixed(2);
         }
@@ -356,15 +271,7 @@
             const desc = document.getElementById('p-item').value;
             const sub = parseFloat(document.getElementById('p-sub').value);
             if(!desc || sub <= 0) return alert("Dados insuficientes!");
-            
-            window.itensPedido.push({
-                desc: desc,
-                pecas: document.getElementById('p-pecas').value || '-',
-                m2: document.getElementById('p-m2').value || '-',
-                val: document.getElementById('p-val').value,
-                sub: sub
-            });
-            
+            window.itensPedido.push({ desc, pecas: document.getElementById('p-pecas').value || '-', m2: document.getElementById('p-m2').value || '-', val: document.getElementById('p-val').value, sub });
             atualizarLista();
             ['p-item','p-pecas','p-m2','p-val','p-sub'].forEach(id => document.getElementById(id).value = '');
         }
@@ -381,30 +288,18 @@
 
         async function finalizar(gerarPDF) {
             const clienteData = document.getElementById('p-cliente-select').value;
+            const numPedido = document.getElementById('p-numero').value;
             if(!clienteData || window.itensPedido.length === 0) return alert("Pedido vazio!");
-            
             const cliente = JSON.parse(clienteData);
-            const pedido = {
-                cliente: cliente.nome,
-                data: new Date().toLocaleDateString('pt-br'),
-                total: window.totalGeral,
-                itens: window.itensPedido
-            };
-
+            const pedido = { numPedido, cliente: cliente.nome, data: new Date().toLocaleDateString('pt-br'), total: window.totalGeral, itens: window.itensPedido };
             await fetch(`${DB_URL}/pedidos.json`, { method: 'POST', body: JSON.stringify(pedido) });
-
-            if(gerarPDF) {
-                gerarPDFOficial(cliente, window.itensPedido, window.totalGeral);
-            }
+            if(gerarPDF) gerarPDFOficial(cliente, window.itensPedido, window.totalGeral, numPedido);
             alert("Pedido Processado!"); render('fin');
         }
 
-        // GERADOR DE PDF - MODELO OFICIAL BB FORROS
-        function gerarPDFOficial(cliente, itens, total) {
+        function gerarPDFOficial(cliente, itens, total, num) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            // Logo e Cabeçalho
             const img = new Image(); img.src = 'Logopermatti.png';
             img.onload = () => {
                 doc.addImage(img, 'PNG', 145, 10, 50, 18);
@@ -415,65 +310,4 @@
                 doc.text("CNPJ: 05.510.861/0001-33 | I.E: 558.178.702.116", 10, 23);
                 doc.text("Contatos: (13) 3481-4504 | (13) 97414-2188", 10, 27);
                 doc.setTextColor(255, 0, 0); doc.text("Siga-nos: @bbforros", 10, 31);
-                
-                doc.setDrawColor(128,0,0); doc.line(10, 35, 200, 35);
-                
-                // Dados Orçamento
-                doc.setTextColor(0,0,0); doc.setFontSize(10); doc.setFont(undefined, 'bold');
-                doc.text("ORÇAMENTO / PEDIDO DE VENDA", 10, 42);
-                doc.setFont(undefined, 'normal'); doc.setFontSize(9);
-                doc.text(`DATA: ${new Date().toLocaleDateString('pt-br')}`, 150, 42);
-                
-                doc.text(`CLIENTE: ${cliente.nome}`, 10, 50);
-                doc.text(`ENDEREÇO: ${cliente.end || 'Não informado'}`, 10, 55);
-                doc.text(`DOCUMENTO: ${cliente.doc || '---'}`, 10, 60);
-                doc.text(`CONTATO: ${cliente.tel}`, 150, 60);
-                
-                // Observações em Vermelho
-                doc.setTextColor(255,0,0); doc.setFontSize(8);
-                doc.text("Obs: * Se necessário eletricista e materiais elétricos será cobrado à parte.", 10, 70);
-                doc.text("     * Garantia de 2 anos material e mão de obra.", 10, 74);
-                
-                // Tabela de Itens (Azul conforme modelo)
-                const rows = itens.map(it => [it.desc, it.pecas, it.m2, `R$ ${parseFloat(it.val).toFixed(2)}`, `R$ ${it.sub.toFixed(2)}`]);
-                doc.autoTable({
-                    startY: 80,
-                    head: [['DESCRIÇÃO TÉCNICA', 'PÇS', 'M²', 'UNIT', 'TOTAL']],
-                    body: rows,
-                    styles: { fontSize: 8, textColor: [0, 51, 153] },
-                    headStyles: { fillColor: [0, 51, 153], textColor: [255, 255, 255] }
-                });
-                
-                let fy = doc.lastAutoTable.finalY + 10;
-                doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 255);
-                doc.text(`TOTAL GERAL: R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}`, 130, fy);
-                
-                // Rodapé Financeiro
-                doc.setTextColor(255,0,0); doc.setFontSize(9);
-                doc.text("FORMA DE PAGAMENTO:", 10, fy + 15);
-                doc.text(`${cliente.pagamento || '50% NO FECHAMENTO E RESTANTE A COMBINAR'}`, 10, fy + 20);
-                
-                doc.setTextColor(0,0,153); doc.setFontSize(8);
-                doc.text("DADOS BANCÁRIOS: Banco PagSeguro (290) | Ag: 0001 | CC: 55519128-7", 10, fy + 35);
-                doc.text("Favorecido: BB Comércio de Forros | PIX: bbforros@bbforros.com.br", 10, fy + 39);
-                
-                // Assinaturas
-                doc.setTextColor(0,0,0);
-                doc.line(20, fy + 70, 80, fy + 70); doc.text("BB COMÉRCIO (Vendedor)", 25, fy + 74);
-                doc.line(120, fy + 70, 180, fy + 70); doc.text("CLIENTE (Autorizado)", 135, fy + 74);
-                
-                doc.save(`Pedido_${cliente.nome.replace(/\s/g,'_')}.pdf`);
-            };
-        }
-
-        async function novoEstoque() {
-            const item = prompt("Nome do Produto:");
-            const qtd = prompt("Quantidade:");
-            if(item && qtd) {
-                await fetch(`${DB_URL}/estoque.json`, { method: 'POST', body: JSON.stringify({item, qtd}) });
-                render('est');
-            }
-        }
-    </script>
-</body>
-</html>
+                doc.line
