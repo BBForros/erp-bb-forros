@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP BB Forros | Gestão Completa Administrativa</title>
+    <title>ERP BB Forros | Gestão Administrativa Completa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -11,35 +11,42 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); height: 100vh; overflow: hidden; }
 
+        /* Login */
         .overlay { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-box { background: var(--white); padding: 40px; border-radius: 15px; width: 350px; text-align: center; border-top: 8px solid var(--primary); }
+        .login-box { background: var(--white); padding: 40px; border-radius: 15px; width: 350px; text-align: center; border-top: 8px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
+        /* Layout */
         #app { display: none; flex-direction: column; height: 100vh; }
         .top-bar { height: 65px; background: var(--white); border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
         .top-bar img { height: 45px; }
         
         .main-layout { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 250px; background: var(--dark); display: flex; flex-direction: column; }
+        
+        /* Sidebar */
+        .sidebar { width: 250px; background: var(--dark); display: flex; flex-direction: column; justify-content: space-between; }
         .menu-links { flex: 1; padding: 20px 10px; }
-        .menu-links button { width: 100%; padding: 15px; background: transparent; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 8px; font-weight: bold; }
+        .menu-links button { width: 100%; padding: 15px; background: transparent; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 8px; font-weight: bold; transition: 0.2s; }
         .menu-links button:hover, .menu-links button.active { background: var(--primary); color: white; }
         
-        /* Rodapé do Desenvolvedor */
-        .sidebar-footer { padding: 15px; text-align: center; border-top: 1px solid #333; }
-        .dev-tag { color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar-footer { padding: 15px; text-align: center; border-top: 1px solid #333; background: rgba(0,0,0,0.2); }
+        .dev-tag { color: #888; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; line-height: 1.4; }
+        .dev-tag b { color: #bbb; display: block; font-size: 11px; }
 
-        .btn-sair { background: #000; color: white; padding: 20px; border: none; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-sair { background: #000; color: white; padding: 18px; border: none; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; }
 
+        /* Conteúdo */
         .content-area { flex: 1; padding: 30px; overflow-y: auto; }
-        .card { background: white; padding: 25px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card { background: white; padding: 25px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .full { grid-column: 1 / -1; }
         
         label { display: block; font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 5px; text-transform: uppercase; }
-        input, select, textarea { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; outline: none; font-size: 14px; }
+        input, select, textarea { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; outline: none; font-size: 14px; background: #fff; }
+        input:focus { border-color: var(--primary); }
         textarea { height: 80px; resize: none; }
+        
         .btn-save { background: var(--primary); color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; }
-        .btn-pdf { background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .btn-pdf { background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th { text-align: left; padding: 12px; color: #666; border-bottom: 2px solid #eee; font-size: 12px; }
@@ -50,10 +57,10 @@
 
     <div id="login-screen" class="overlay">
         <div class="login-box">
-            <img src="LogoBB.png" alt="Logo" onerror="this.src='https://via.placeholder.com/150'">
-            <h2 style="color:var(--primary); margin-top: 15px; margin-bottom: 20px;">BB GESTÃO</h2>
-            <input type="text" id="user" placeholder="Usuário" style="margin-bottom: 10px;">
-            <input type="password" id="pass" placeholder="Senha" style="margin-bottom: 20px;">
+            <img src="LogoBB.png" alt="Logo" onerror="this.src='https://via.placeholder.com/150?text=BB+FORROS'">
+            <h2 style="color:var(--primary); margin: 15px 0 20px 0;">SISTEMA GESTÃO</h2>
+            <input type="text" id="user" placeholder="Usuário (admin)" style="margin-bottom: 10px;">
+            <input type="password" id="pass" placeholder="Senha (123)" style="margin-bottom: 20px;">
             <button onclick="entrar()" class="btn-save">ACESSAR SISTEMA</button>
         </div>
     </div>
@@ -62,9 +69,9 @@
         <header class="top-bar">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <img src="LogoBB.png" alt="Logo">
-                <b style="color:var(--primary)">BB COMÉRCIO DE FORROS E DIVISORIAS LTDA.</b>
+                <b style="color:var(--primary); font-size: 18px;">BB COMÉRCIO DE FORROS E DIVISORIAS LTDA.</b>
             </div>
-            <div style="font-size: 12px;">Painel: <b>Admin</b></div>
+            <div style="font-size: 12px; color: #666;">Acesso: <b>Administrador</b></div>
         </header>
 
         <div class="main-layout">
@@ -77,10 +84,10 @@
                 </nav>
                 
                 <div class="sidebar-footer">
-                    <p class="dev-tag">Desenvolvido por<br><b>Carlos Freitas</b></p>
+                    <p class="dev-tag">Desenvolvido por: <b>Carlos Freitas</b></p>
                 </div>
 
-                <button onclick="location.reload()" class="btn-sair">SAIR</button>
+                <button onclick="location.reload()" class="btn-sair">Sair do Sistema</button>
             </aside>
             <main class="content-area" id="view-container"></main>
         </div>
@@ -89,30 +96,37 @@
     <script>
         const DB_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
 
+        // FUNÇÃO LOGIN CORRIGIDA
         function entrar() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
+            
             if(u === 'admin' && p === '123') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 render('fin');
-            } else { alert("Acesso negado."); }
+            } else {
+                alert("Credenciais incorretas!");
+            }
         }
 
         async function render(tela) {
             const area = document.getElementById('view-container');
-            area.innerHTML = "<h2>Sincronizando...</h2>";
+            area.innerHTML = "<h2>Sincronizando dados...</h2>";
+            
+            // Ativar botões
             document.querySelectorAll('.menu-links button').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-'+tela).classList.add('active');
+            const btnAtivo = document.getElementById('btn-'+tela);
+            if(btnAtivo) btnAtivo.classList.add('active');
 
             if (tela === 'fin') {
                 const r = await fetch(`${DB_URL}/pedidos.json`);
                 const d = await r.json();
                 const peds = d ? Object.values(d) : [];
                 const total = peds.reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
-                area.innerHTML = `<h1>📊 Financeiro</h1>
+                area.innerHTML = `<h1>📊 Painel Financeiro</h1>
                     <div class="form-grid">
-                        <div class="card"><label>Faturamento Total</label><h2>R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div>
+                        <div class="card"><label>Faturamento Bruto</label><h2>R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div>
                         <div class="card"><label>Total de Pedidos</label><h2>${peds.length}</h2></div>
                     </div>`;
             }
@@ -129,7 +143,7 @@
                             <div class="full"><label>Endereço</label><input id="cend"></div>
                             <div><label>Bairro</label><input id="cbairro"></div>
                             <div><label>Cidade / Estado</label><input id="ccid"></div>
-                            <div><label>Limite de Crédito</label><input id="climite" placeholder="Ex: R$ 5.000,00"></div>
+                            <div><label>Limite de Crédito</label><input id="climite"></div>
                             <div><label>Forma de Pagamento</label><input id="cpag"></div>
                             <div class="full"><label>Observações</label><textarea id="cobs"></textarea></div>
                         </div>
@@ -169,15 +183,16 @@
                         <div class="full"><label>Material</label><input id="ename"></div>
                         <div><label>Qtd</label><input id="eqtd" type="number"></div>
                         <div><label>Unidade</label><select id="euni"><option>m²</option><option>Metros</option><option>Peças</option></select></div>
-                        <button class="btn-save full" onclick="salvarEst()">ATUALIZAR</button>
+                        <button class="btn-save full" onclick="salvarEst()">ATUALIZAR ESTOQUE</button>
                     </div>
                     <div class="card">
-                        <table><thead><tr><th>Material</th><th>Quantidade</th></tr></thead>
+                        <table><thead><tr><th>Material</th><th>Estoque</th></tr></thead>
                         <tbody>${itens.map(i => `<tr><td>${i.nome}</td><td>${i.qtd} ${i.unid}</td></tr>`).join('')}</tbody></table>
                     </div>`;
             }
         }
 
+        // Funções de Ação
         async function salvarCli() {
             const d = { 
                 nome: document.getElementById('cnome').value, doc: document.getElementById('cdoc').value, 
@@ -187,7 +202,17 @@
                 limite: document.getElementById('climite').value, pag: document.getElementById('cpag').value,
                 obs: document.getElementById('cobs').value
             };
-            if(d.nome) { await fetch(`${DB_URL}/clientes.json`, { method: 'POST', body: JSON.stringify(d) }); alert("Sucesso!"); render('cli'); }
+            if(!d.nome) return alert("Nome obrigatório");
+            await fetch(`${DB_URL}/clientes.json`, { method: 'POST', body: JSON.stringify(d) });
+            alert("Cliente cadastrado com sucesso!");
+            render('cli');
+        }
+
+        async function salvarEst() {
+            const d = { nome: document.getElementById('ename').value, qtd: document.getElementById('eqtd').value, unid: document.getElementById('euni').value };
+            if(!d.nome) return;
+            await fetch(`${DB_URL}/estoque.json`, { method: 'POST', body: JSON.stringify(d) });
+            render('est');
         }
 
         async function salvarVenda() {
@@ -198,12 +223,23 @@
                 cliente: document.getElementById('pcli').value, material: document.getElementById('pmat').value,
                 qtd: q, unit: v, obs: document.getElementById('pobs').value, total: (q * v).toFixed(2)
             };
-            if(p.total > 0) {
-                await fetch(`${DB_URL}/pedidos.json`, { method: 'POST', body: JSON.stringify(p) });
-                gerarPDF(p);
-                render('ped');
-            }
+            if(p.total <= 0 || !p.cliente) return alert("Preencha os dados da venda!");
+            await fetch(`${DB_URL}/pedidos.json`, { method: 'POST', body: JSON.stringify(p) });
+            gerarPDF(p);
+            render('ped');
         }
 
         function gerarPDF(p) {
-
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16); doc.setTextColor(139, 0, 0); doc.text("BB COMÉRCIO DE FORROS", 105, 15, {align:'center'});
+            doc.setFontSize(10); doc.setTextColor(0,0,0); doc.text("R. João Pereira Inacio, 397 - Praia Grande/SP", 105, 22, {align:'center'});
+            doc.line(10, 28, 200, 28);
+            doc.text(`PEDIDO Nº: ${p.numero}`, 10, 40);
+            doc.text(`CLIENTE: ${p.cliente}`, 10, 48);
+            doc.autoTable({ startY: 55, head: [['MATERIAL', 'QTD', 'TOTAL']], body: [[p.material, p.qtd, `R$ ${p.total}`]], headStyles: {fillColor: [139, 0, 0]} });
+            doc.save(`Pedido_${p.numero}.pdf`);
+        }
+    </script>
+</body>
+</html>
