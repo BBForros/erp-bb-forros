@@ -103,7 +103,7 @@ if(!numPedido.value){alert("Pedido sem número!");return;}
 
 const r=await fetch(DB+"/estoque.json");
 const estoque=await r.json();
-let lucro=0,margem=0,total=0;
+let total=0,lucro=0,margem=0;
 
 for(const [id,item] of Object.entries(estoque)){
 if(item.produto===produtoPedido.value){
@@ -154,21 +154,13 @@ async function dashboardFinanceiro(){
 const r=await fetch(DB+"/pedidos.json");
 const d=await r.json();
 
-let inicio=dataInicio?.value;
-let fim=dataFim?.value;
-
 let fat=0,luc=0,labels=[],valores=[];
-
-if(d){
-Object.values(d).forEach(p=>{
-if((!inicio || p.data>=inicio) && (!fim || p.data<=fim)){
+if(d){Object.values(d).forEach(p=>{
 fat+=p.total;
 luc+=p.lucro;
 labels.push(p.data);
 valores.push(p.total);
-}
-});
-}
+});}
 
 conteudo.innerHTML=`
 <div class="card">
@@ -181,9 +173,11 @@ conteudo.innerHTML=`
 </div>
 <div class="card"><canvas id="grafico"></canvas></div>`;
 
-new Chart(grafico,{type:'bar',
+new Chart(grafico,{
+type:'bar',
 data:{labels:labels,
-datasets:[{label:'Faturamento',data:valores,backgroundColor:'#8B0000'}]}});
+datasets:[{label:'Faturamento',data:valores,backgroundColor:'#8B0000'}]}
+});
 }
 
 function renderContas(){
