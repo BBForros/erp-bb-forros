@@ -3,42 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP BB Forros | Gestão Profissional Administrativa</title>
+    <title>ERP BB Forros | Gestão Proficional Administrativa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --vinho: #800000; --preto: #000000; --bg-login: #1a0505; --bg-app: #f4f4f4; }
+        :root { --vinho: #800000; --preto: #000000; --bg-login: #1a0505; --bg-input: #f0f4ff; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg-login); height: 100vh; overflow: hidden; }
 
-        /* LOGIN - FIEL ÀS IMAGENS image_e26cea.png e image_e2ce29.png */
-        .login-overlay { position: fixed; inset: 0; background: var(--bg-login); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        /* 2. CORREÇÃO LOGIN (FIEL À image_e26cea.png) */
+        .login-overlay { position: fixed; inset: 0; background: var(--bg-login); display: flex; align-items: center; justify-content: center; z-index: 10000; }
         .login-card { background: white; padding: 40px; border-radius: 20px; width: 420px; text-align: center; border-top: 10px solid var(--vinho); }
         .login-card img { width: 250px; margin-bottom: 25px; }
         .login-card h2 { color: var(--vinho); margin-bottom: 30px; font-weight: bold; }
-        .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 10px; background: #eef3ff; font-size: 16px; }
-        .btn-acessar { width: 100%; padding: 18px; background: var(--vinho); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 10px; background: var(--bg-input); font-size: 16px; }
+        .btn-acessar { width: 100%; padding: 18px; background: var(--vinho); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-acessar:hover { background: #600000; }
 
-        /* APP - ESTRUTURA image_e2da7f.png */
-        #app { display: none; flex-direction: column; height: 100vh; background: var(--bg-app); }
+        /* ESTRUTURA PRINCIPAL (FIEL À image_e2da7f.png) */
+        #main-app { display: none; flex-direction: column; height: 100vh; background: #fff; }
         .header { height: 75px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .header b { color: var(--vinho); font-size: 20px; }
         
         .layout { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 280px; background: #1a0000; display: flex; flex-direction: column; }
+        .sidebar { width: 280px; background: #0a0000; display: flex; flex-direction: column; }
         .menu { flex: 1; padding: 25px 15px; }
-        .menu button { width: 100%; padding: 18px; background: transparent; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 12px; margin-bottom: 12px; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+        .menu button { width: 100%; padding: 18px; background: transparent; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 12px; margin-bottom: 10px; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
         .menu button.active { background: var(--vinho); color: white; }
-        .btn-sair { background: black; color: white; padding: 25px; border: none; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; }
+        .btn-sair { background: black; color: white; padding: 25px; border: none; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; border-left: 2px solid #333; }
 
-        .content { flex: 1; padding: 40px; overflow-y: auto; }
-        .card { background: white; padding: 30px; border-radius: 15px; border: 1px solid #ddd; margin-bottom: 25px; }
+        .content { flex: 1; padding: 40px; overflow-y: auto; background: #fdfdfd; }
+        .card { background: white; padding: 30px; border-radius: 15px; border: 1px solid #ddd; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .full { grid-column: 1 / -1; }
         
-        label { display: block; font-size: 12px; font-weight: bold; color: var(--vinho); margin-bottom: 8px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; }
-        .btn-save { background: #16a34a; color: white; padding: 18px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
+        label { display: block; font-size: 12px; font-weight: 800; color: var(--vinho); margin-bottom: 8px; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; background: #fafafa; }
+        .btn-venda { background: #16a34a; color: white; padding: 18px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; font-size: 16px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: var(--vinho); font-size: 12px; }
@@ -48,31 +49,31 @@
 </head>
 <body>
 
-    <div id="login-screen" class="login-overlay">
+    <div id="login-scr" class="login-overlay">
         <div class="login-card">
             <img src="LogoBB.png" alt="BB Forros" onerror="this.src='https://via.placeholder.com/250x100?text=BB+FORROS'">
             <h2>BB GESTÃO</h2>
             <input type="text" id="user" placeholder="admin">
             <input type="password" id="pass" placeholder="123">
-            <button onclick="fazerLogin()" class="btn-acessar">ACESSAR SISTEMA</button>
+            <button onclick="validaLogin()" class="btn-acessar">ACESSAR SISTEMA</button>
         </div>
     </div>
 
-    <div id="app">
+    <div id="main-app">
         <header class="header">
             <div style="display:flex; align-items:center; gap:15px;">
                 <img src="LogoBB.png" height="45">
                 <b>BB COMÉRCIO DE FORROS E DIVISORIAS LTDA.</b>
             </div>
-            <span>Painel: <b style="color:var(--vinho)">Administrador</b></span>
+            <span>Painel: <b id="user-tipo">Administrador</b></span>
         </header>
         <div class="layout">
             <aside class="sidebar">
                 <nav class="menu">
-                    <button onclick="render('fin')" id="m-fin">📊 FINANCEIRO</button>
-                    <button onclick="render('cli')" id="m-cli">👥 CLIENTES</button>
-                    <button onclick="render('ped')" id="m-ped">🛒 VENDAS / PEDIDOS</button>
-                    <button onclick="render('est')" id="m-est">📦 ESTOQUE</button>
+                    <button onclick="troca('fin')" id="m-fin">📊 FINANCEIRO</button>
+                    <button onclick="troca('cli')" id="m-cli">👥 CLIENTES</button>
+                    <button onclick="troca('ped')" id="m-ped">🛒 VENDAS / PEDIDOS</button>
+                    <button onclick="troca('est')" id="m-est">📦 ESTOQUE</button>
                 </nav>
                 <button onclick="location.reload()" class="btn-sair">SAIR</button>
             </aside>
@@ -81,48 +82,54 @@
     </div>
 
     <script>
-        const DB_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
+        const DB = "https://erp-bb-forros-default-rtdb.firebaseio.com";
         let editID = null;
 
-        function fazerLogin() {
-            if(document.getElementById('user').value === 'admin' && document.getElementById('pass').value === '123') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                render('ped');
-            } else { alert("Usuário ou senha incorretos."); }
+        // 2. CORREÇÃO: Função de Login agora funciona ao clicar
+        function validaLogin() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if(u === 'admin' && p === '123') {
+                document.getElementById('login-scr').style.display = 'none';
+                document.getElementById('main-app').style.display = 'flex';
+                troca('ped');
+            } else { alert("Usuário ou senha inválidos!"); }
         }
 
-        async function render(tela) {
+        async function troca(tela) {
             const port = document.getElementById('view-port');
             document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
             if(document.getElementById('m-'+tela)) document.getElementById('m-'+tela).classList.add('active');
 
+            // 1. ESTRUTURA DO PEDIDO (IGUAL image_e24f3c.png)
             if (tela === 'ped') {
-                const [rC, rP] = await Promise.all([fetch(`${DB_URL}/clientes.json`), fetch(`${DB_URL}/pedidos.json`)]);
+                const [rC, rP] = await Promise.all([fetch(`${DB}/clientes.json`), fetch(`${DB}/pedidos.json`)]);
                 const dC = await rC.json(); const dP = await rP.json();
                 const clis = dC ? Object.values(dC) : [];
                 const peds = dP ? Object.entries(dP) : [];
 
                 port.innerHTML = `
-                    <h1 style="margin-bottom:25px">🛒 Vendas / Pedidos</h1>
+                    <h1 style="margin-bottom:25px">🛒 Vendas e Orçamentos</h1>
                     <div class="card">
                         <h3 id="form-label" style="color:var(--vinho); margin-bottom:20px">Novo Orçamento</h3>
                         <div class="grid">
-                            <div><label>Nº Orçamento</label><input id="pnum"></div>
+                            <div><label>Nº Orçamento</label><input id="pnum" placeholder="Ex: 11.874"></div>
                             <div><label>Data</label><input id="pdata" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
                             <div class="full"><label>Cliente</label>
                                 <select id="pcli">
-                                    <option value="">Selecione o cliente...</option>
-                                    ${clis.map(c => `<option value="${c.nome}" data-tel="${c.tel}" data-end="${c.end}" data-doc="${c.doc || ''}">${c.nome}</option>`).join('')}
+                                    <option value="">Selecione um cliente cadastrado...</option>
+                                    ${clis.map(c => `<option value="${c.nome}" data-tel="${c.tel}" data-end="${c.end}">${c.nome}</option>`).join('')}
                                 </select>
                             </div>
-                            <div class="full"><label>Descrição Detalhada (Serviços e Materiais)</label><textarea id="pmat" style="height:120px"></textarea></div>
+                            <div><label>Vendedor</label><input id="pvend" value="Diretoria - Freitas"></div>
+                            <div><label>Prazo de Validade</label><input id="pval" value="até 10 dias"></div>
+                            <div class="full"><label>Descrição Detalhada do Serviço</label><textarea id="pmat" style="height:120px" placeholder="Ex: 150,00m² Forro de Isopor..."></textarea></div>
                             <div><label>Valor Total R$</label><input id="ptotal" type="number" step="0.01"></div>
                         </div>
-                        <button class="btn-save" onclick="salvarVenda()">SALVAR E GERAR PDF OFICIAL</button>
+                        <button class="btn-venda" onclick="salvarPed()">SALVAR E GERAR PDF OFICIAL</button>
                     </div>
                     <div class="card">
-                        <label>HISTÓRICO DE PEDIDOS EMITIDOS</label>
+                        <label>Pedidos Gerados</label>
                         <table>
                             <thead><tr><th>Nº</th><th>Cliente</th><th>Total</th><th>Ações</th></tr></thead>
                             <tbody>
@@ -130,7 +137,7 @@
                                     <tr>
                                         <td>#${p.numero}</td><td>${p.cliente}</td><td>R$ ${parseFloat(p.total).toLocaleString('pt-br',{minimumFractionDigits:2})}</td>
                                         <td>
-                                            <button class="act-btn" style="background:#ffc107" onclick='prepararEdicao("${id}", ${JSON.stringify(p)})'>EDITAR</button>
+                                            <button class="act-btn" style="background:#ffc107" onclick='prepEdit("${id}", ${JSON.stringify(p)})'>EDITAR</button>
                                             <button class="act-btn" style="background:var(--vinho); color:white" onclick='gerarPDF(${JSON.stringify(p)})'>PDF</button>
                                         </td>
                                     </tr>`).join('')}
@@ -139,130 +146,94 @@
                     </div>`;
             }
 
+            // 3. FORMULÁRIO CLIENTES (COM TODOS OS CAMPOS RECUPERADOS)
             if (tela === 'cli') {
                 port.innerHTML = `
-                    <h1 style="margin-bottom:25px">👥 Cadastro de Clientes</h1>
+                    <h1 style="margin-bottom:25px">👥 Gestão de Clientes</h1>
                     <div class="card">
                         <div class="grid">
                             <div class="full"><label>Nome / Razão Social</label><input id="cnome"></div>
                             <div><label>WhatsApp</label><input id="ctel"></div>
                             <div><label>CPF / CNPJ</label><input id="cdoc"></div>
-                            <div class="full"><label>Endereço de Obra</label><input id="cend"></div>
+                            <div><label>Inscrição Estadual (se houver)</label><input id="cie"></div>
+                            <div class="full"><label>Endereço Completo (Obra)</label><input id="cend"></div>
+                            <div><label>Cidade</label><input id="ccid" value="Praia Grande"></div>
+                            <div><label>CEP</label><input id="ccep"></div>
                         </div>
-                        <button class="btn-save" style="background:var(--vinho)" onclick="salvarCliente()">SALVAR CLIENTE</button>
+                        <button class="btn-venda" style="background:var(--vinho)" onclick="salvarCli()">CADASTRAR CLIENTE</button>
                     </div>`;
             }
 
             if (tela === 'fin') {
-                const r = await fetch(`${DB_URL}/pedidos.json`);
+                const r = await fetch(`${DB}/pedidos.json`);
                 const d = await r.json();
-                const peds = d ? Object.values(d) : [];
-                const bruto = peds.reduce((a, b) => a + parseFloat(b.total || 0), 0);
-                port.innerHTML = `
-                    <h1>📊 Financeiro</h1>
-                    <div class="grid" style="margin-top:20px">
-                        <div class="card"><h2>Faturamento Bruto: <span style="color:green">R$ ${bruto.toLocaleString('pt-br',{minimumFractionDigits:2})}</span></h2></div>
-                        <div class="card"><h2>Total de Pedidos: ${peds.length}</h2></div>
-                    </div>`;
+                const total = d ? Object.values(d).reduce((a,b) => a + parseFloat(b.total || 0), 0) : 0;
+                port.innerHTML = `<h1>📊 Financeiro</h1><div class="card"><h2>Faturamento Total: <span style="color:green">R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}</span></h2></div>`;
             }
 
             if (tela === 'est') {
-                const r = await fetch(`${DB_URL}/estoque.json`);
+                const r = await fetch(`${DB}/estoque.json`);
                 const d = await r.json();
                 port.innerHTML = `
                     <h1>📦 Estoque</h1>
                     <div class="card">
                         <div class="grid">
                             <div class="full"><label>Material</label><input id="emat"></div>
-                            <div><label>Quantidade</label><input id="eqtd" type="number"></div>
-                            <div><label>Unidade</label><select id="eunid"><option>m²</option><option>Unid</option></select></div>
+                            <div><label>Qtd</label><input id="eqtd" type="number"></div>
+                            <div><label>Unidade</label><select id="eunid"><option>m²</option><option>Un</option></select></div>
                         </div>
-                        <button class="btn-save" style="background:var(--vinho)" onclick="salvarEstoque()">ATUALIZAR</button>
+                        <button class="btn-venda" style="background:var(--vinho)" onclick="salvarEst()">ATUALIZAR</button>
                     </div>
-                    <div class="card">
-                        <table><thead><tr><th>Material</th><th>Qtd</th><th>Unid</th></tr></thead>
-                        <tbody>${d ? Object.values(d).map(e => `<tr><td>${e.mat}</td><td>${e.qtd}</td><td>${e.unid}</td></tr>`).join('') : ''}</tbody></table>
-                    </div>`;
+                    <div class="card"><table><thead><tr><th>Material</th><th>Qtd</th></tr></thead><tbody>${d ? Object.values(d).map(e=>`<tr><td>${e.mat}</td><td>${e.qtd} ${e.unid}</td></tr>`).join('') : ''}</tbody></table></div>`;
             }
         }
 
-        async function salvarVenda() {
+        async function salvarPed() {
             const s = document.getElementById('pcli');
             const p = {
                 numero: document.getElementById('pnum').value, data: document.getElementById('pdata').value,
                 cliente: s.value, tel: s.options[s.selectedIndex].getAttribute('data-tel') || "",
                 end: s.options[s.selectedIndex].getAttribute('data-end') || "",
-                doc: s.options[s.selectedIndex].getAttribute('data-doc') || "",
+                vendedor: document.getElementById('pvend').value, validade: document.getElementById('pval').value,
                 material: document.getElementById('pmat').value, total: document.getElementById('ptotal').value
             };
-            await fetch(editID ? `${DB_URL}/pedidos/${editID}.json` : `${DB_URL}/pedidos.json`, { method: editID ? 'PUT' : 'POST', body: JSON.stringify(p) });
-            editID = null; render('ped'); gerarPDF(p);
+            await fetch(editID ? `${DB}/pedidos/${editID}.json` : `${DB}/pedidos.json`, { method: editID ? 'PUT' : 'POST', body: JSON.stringify(p) });
+            editID = null; troca('ped'); gerarPDF(p);
         }
 
-        function prepararEdicao(id, p) {
-            editID = id; document.getElementById('form-label').innerText = "Editando Pedido #" + p.numero;
-            document.getElementById('pnum').value = p.numero; document.getElementById('pdata').value = p.data;
-            document.getElementById('pcli').value = p.cliente; document.getElementById('pmat').value = p.material;
-            document.getElementById('ptotal').value = p.total;
+        function prepEdit(id, p) {
+            editID = id; document.getElementById('form-label').innerText = "Editando Orçamento #" + p.numero;
+            document.getElementById('pnum').value = p.numero; document.getElementById('pcli').value = p.cliente;
+            document.getElementById('pmat').value = p.material; document.getElementById('ptotal').value = p.total;
+            window.scrollTo(0,0);
         }
 
-        async function salvarCliente() {
-            const c = { nome: document.getElementById('cnome').value, tel: document.getElementById('ctel').value, doc: document.getElementById('cdoc').value, end: document.getElementById('cend').value };
-            await fetch(`${DB_URL}/clientes.json`, { method: 'POST', body: JSON.stringify(c) });
-            render('cli');
+        async function salvarCli() {
+            const c = { nome: document.getElementById('cnome').value, tel: document.getElementById('ctel').value, doc: document.getElementById('cdoc').value, end: document.getElementById('cend').value, ie: document.getElementById('cie').value };
+            await fetch(`${DB}/clientes.json`, { method: 'POST', body: JSON.stringify(c) }); alert("Salvo!"); troca('cli');
         }
 
-        async function salvarEstoque() {
+        async function salvarEst() {
             const e = { mat: document.getElementById('emat').value, qtd: document.getElementById('eqtd').value, unid: document.getElementById('eunid').value };
-            await fetch(`${DB_URL}/estoque.json`, { method: 'POST', body: JSON.stringify(e) });
-            render('est');
+            await fetch(`${DB}/estoque.json`, { method: 'POST', body: JSON.stringify(e) }); troca('est');
         }
 
         function gerarPDF(p) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // CABEÇALHO (image_e24f3c.png)
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
             doc.setFontSize(10); doc.setFont("helvetica", "bold");
             doc.text("BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA", 105, 15, {align:'center'});
             doc.setFontSize(8); doc.setFont("helvetica", "normal");
             doc.text("R. João Pereira Inácio, 397 - Aviação - Praia Grande/SP", 105, 20, {align:'center'});
             doc.text("CNPJ: 05.510.961/0001-33 - INSC. EST.: 558.170.702.116", 105, 24, {align:'center'});
-            doc.text("Telefones: (13) 3481-4504 // (13) 97414-2131", 105, 28, {align:'center'});
-            doc.setTextColor(0,0,255);
-            doc.text("SIGA-NOS NAS REDES SOCIAIS: @bbforros", 105, 33, {align:'center'});
+            doc.setTextColor(0,0,255); doc.text("SIGA-NOS NAS REDES SOCIAIS: @bbforros", 105, 33, {align:'center'});
             doc.setTextColor(0); doc.line(10, 38, 200, 38);
-
-            // DADOS DO CLIENTE
-            doc.setFontSize(9);
-            doc.text(`Orçamento: ${p.numero}`, 15, 48);
-            doc.text(`Data: ${p.data.split('-').reverse().join('/')}`, 15, 53);
-            doc.text(`Cliente: ${p.cliente}`, 15, 58);
-            doc.text(`Endereço: ${p.end}`, 15, 63);
-            doc.text(`Telefone: ${p.tel}`, 15, 68);
-
-            // OBSERVAÇÕES EM VERMELHO (image_e24f3c.png)
-            doc.setTextColor(255, 0, 0); doc.setFont("helvetica", "bold");
-            doc.text("* Garantia de 2 anos material e 2 anos mão de obra.", 15, 78);
-            doc.text("OBS: FORMA DE PAGAMENTO", 15, 130);
-            doc.text("50% NO FECHAMENTO E RESTANTE A COMBINAR", 15, 135);
-            doc.setTextColor(0); doc.setFont("helvetica", "normal");
-
-            // CORPO DO ORÇAMENTO
-            doc.autoTable({
-                startY: 85,
-                head: [['DESCRIÇÃO DOS SERVIÇOS / MATERIAIS', 'VALOR TOTAL']],
-                body: [[p.material, `R$ ${parseFloat(p.total).toLocaleString('pt-br',{minimumFractionDigits:2})}`]],
-                theme: 'grid',
-                headStyles: { fillColor: [128, 0, 0] },
-                styles: { fontSize: 9 }
-            });
-
-            // DADOS BANCÁRIOS EM AZUL (image_e24f3c.png)
-            const finalY = doc.lastAutoTable.finalY + 20;
-            doc.setTextColor(0, 0, 255); doc.setFont("helvetica", "bold");
-            doc.text("Dados para pagamento:", 15, finalY);
-            doc.setFont("helvetica", "normal");
-            doc.text("Banco: 290 - PagSeguro Internet Instituição de Pagamento S.A", 15, finalY + 5);
-            doc.text("Agência: 0001 | Conta: 55519128-7", 15, finalY
-
+            doc.text(`Orçamento: ${p.numero} | Data: ${p.data.split('-').reverse().join('/')}`, 15, 48);
+            doc.text(`Cliente: ${p.cliente} | Endereço: ${p.end}`, 15, 54);
+            doc.setTextColor(255,0,0); doc.text("* Garantia de 2 anos material e mão de obra.", 15, 75);
+            doc.setTextColor(0);
+            doc.autoTable({ startY: 80, head: [['DESCRIÇÃO', 'TOTAL']], body: [[p.material, `R$ ${parseFloat(p.total).toLocaleString('pt-br',{minimumFractionDigits:2})}`]], headStyles: { fillColor: [128, 0, 0] } });
+            doc.save(`Orcamento_${p.numero}.pdf`);
+        }
+    </script>
+</body>
+</html>
