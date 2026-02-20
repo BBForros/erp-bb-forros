@@ -3,64 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP BB Forros | Sistema de Gestão Oficial</title>
+    <title>ERP BB Forros | Gestão Operacional Oficinal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --vinho-fundo: #1a0505; --vinho-botao: #8a0000; --cor-borda: #800000; --cor-sidebar: #000000; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #f4f7f6; color: #333; }
-        
-        /* LOGIN */
-        .login-overlay { position: fixed; inset: 0; background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-card { background: #fff; padding: 45px; border-radius: 15px; width: 440px; text-align: center; border-top: 8px solid var(--cor-borda); }
-        .logo-container img { height: 110px; margin-bottom: 25px; }
-        .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; }
-        .btn-acessar { width: 100%; padding: 18px; background: var(--vinho-botao); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        :root {
+            --vinho-fundo: #1a0505;
+            --vinho-botao: #8a0000;
+            --vinho-hover: #5e0000;
+            --cor-borda: #800000;
+            --cor-texto: #333;
+            --cor-sidebar: #000000;
+            --bg-body: #f4f7f6;
+            --azul-modelo: #003399;
+            --vermelho-obs: #ff0000;
+        }
 
-        /* DASHBOARD */
+        /* RESET E BASE */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--cor-texto); overflow: hidden; }
+
+        /* LOGIN OVERLAY */
+        .login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--vinho-fundo);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; transition: opacity 0.5s;
+        }
+        .login-card {
+            background: #fff; padding: 45px; border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 100%; max-width: 440px;
+            text-align: center; border-top: 8px solid var(--cor-borda);
+        }
+        .logo-container img { height: 110px; width: auto; margin-bottom: 25px; }
+        .login-card h2 { color: var(--vinho-botao); margin-bottom: 25px; font-size: 26px; font-weight: bold; letter-spacing: 1px; }
+        .login-card input {
+            width: 100%; padding: 15px; margin-bottom: 15px;
+            border: 1px solid #ccc; border-radius: 8px; font-size: 16px; outline: none;
+        }
+        .btn-acessar {
+            width: 100%; padding: 18px; background-color: var(--vinho-botao);
+            color: white; border: none; border-radius: 8px; font-size: 16px;
+            font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-acessar:hover { background-color: var(--vinho-hover); transform: translateY(-2px); }
+
+        /* ESTRUTURA DASHBOARD */
         #app { display: none; flex-direction: column; height: 100vh; }
-        .header { height: 75px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+        .header {
+            height: 75px; background: #ffffff; border-bottom: 1px solid #ddd;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); z-index: 10;
+        }
         .header-logo { display: flex; align-items: center; gap: 15px; }
         .header-logo img { height: 50px; }
+        .header-logo b { color: var(--cor-borda); font-size: 18px; }
+
         .layout { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 280px; background: var(--cor-sidebar); display: flex; flex-direction: column; }
-        .menu button { width: 100%; padding: 18px 25px; background: transparent; border: none; color: #bdc3c7; text-align: left; cursor: pointer; border-bottom: 1px solid #1a1a1a; font-weight: 600; text-transform: uppercase; }
-        .menu button.active { background: var(--cor-borda); color: #fff; }
-        .content { flex: 1; padding: 35px; overflow-y: auto; }
-        .card { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px; background: var(--cor-sidebar);
+            display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .menu { flex: 1; padding: 20px 0; }
+        .menu button {
+            width: 100%; padding: 18px 25px; background: transparent; border: none;
+            color: #bdc3c7; text-align: left; font-size: 14px; cursor: pointer;
+            transition: 0.3s; border-bottom: 1px solid #1a1a1a; font-weight: 600;
+            text-transform: uppercase; display: flex; align-items: center; gap: 12px;
+        }
+        .menu button:hover { background: #1a1a1a; color: #fff; padding-left: 35px; }
+        .menu button.active { background: var(--cor-borda); color: #fff; border-left: 5px solid #fff; }
+
+        .btn-sair-lateral {
+            background: #000; color: #ff4d4d; padding: 25px; border: none;
+            cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333;
+        }
+
+        /* CONTEÚDO */
+        .content { flex: 1; padding: 35px; overflow-y: auto; background: #f4f7f6; }
+        .card { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px; position: relative; }
+        h1 { margin-bottom: 25px; color: var(--vinho-botao); font-size: 28px; }
+        h3 { margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; color: #555; }
+
+        /* FORMULÁRIOS */
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; }
         .full-width { grid-column: span 4; }
         .half-width { grid-column: span 2; }
-        
-        .btn-acao { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-sucesso { background: #27ae60; color: white; }
-        .btn-primario { background: var(--vinho-botao); color: white; }
+        .tri-width { grid-column: span 3; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #f8f9fa; color: var(--vinho-botao); padding: 15px; border: 1px solid #eee; }
-        td { padding: 15px; border: 1px solid #eee; }
+        label { display: block; margin-bottom: 5px; font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase; }
+        input, select, textarea {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 14px; transition: border 0.3s;
+        }
+        input:focus { border-color: var(--vinho-botao); outline: none; }
+
+        /* BOTÕES */
+        .btn-acao {
+            padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer;
+            font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-sucesso { background: #27ae60; color: white; }
+        .btn-sucesso:hover { background: #219150; }
+        .btn-primario { background: var(--vinho-botao); color: white; }
+        .btn-primario:hover { background: var(--vinho-hover); }
+        .btn-cancelar { background: #95a5a6; color: white; }
+
+        /* TABELAS */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 8px; overflow: hidden; }
+        th { background: #f8f9fa; color: var(--vinho-botao); font-weight: bold; text-transform: uppercase; font-size: 12px; padding: 15px; border: 1px solid #eee; }
+        td { padding: 15px; border: 1px solid #eee; font-size: 14px; }
+        tr:hover { background: #f9f9f9; }
+
+        /* UTILS */
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge-verde { background: #d4edda; color: #155724; }
+        .loading { opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="login-overlay">
         <div class="login-card">
-            <div class="logo-container"><img src="LogoBB.png"></div>
+            <div class="logo-container"><img src="LogoBB.png" alt="Logo BB"></div>
             <h2>SISTEMA BB GESTÃO</h2>
-            <input type="text" id="user" placeholder="Usuário">
-            <input type="password" id="pass" placeholder="Senha">
-            <button onclick="validaLogin()" class="btn-acessar">ENTRAR</button>
+            <input type="text" id="user" placeholder="Usuário Admin">
+            <input type="password" id="pass" placeholder="Senha de Acesso">
+            <button onclick="validaLogin()" class="btn-acessar">ENTRAR NO SISTEMA</button>
         </div>
     </div>
 
     <div id="app">
         <header class="header">
-            <div class="header-logo"><img src="LogoBB.png"> <b>BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA</b></div>
-            <div id="data-atual"></div>
+            <div class="header-logo">
+                <img src="LogoBB.png" alt="BB Forros">
+                <b>BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA</b>
+            </div>
+            <div class="header-info">
+                <span id="data-topo"></span> | <strong>Administrador</strong>
+            </div>
         </header>
+
         <div class="layout">
             <aside class="sidebar" id="side-menu"></aside>
             <main class="content" id="view-port"></main>
@@ -68,215 +154,325 @@
     </div>
 
     <script>
+        // CONFIGURAÇÕES GERAIS
         const DB_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
         let editId = null;
         window.itensPedido = [];
+        window.totalGeral = 0;
 
+        document.getElementById('data-topo').innerText = new Date().toLocaleDateString('pt-br');
+
+        // FUNÇÃO DE LOGIN
         function validaLogin() {
-            if(document.getElementById('user').value === 'admin') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                render('fin');
-            }
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if(u.toLowerCase() === 'admin') {
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('app').style.display = 'flex';
+                    render('fin');
+                }, 500);
+            } else { alert('Credenciais Inválidas!'); }
         }
 
+        // RENDERIZADOR DE TELAS
         async function render(tela) {
             const port = document.getElementById('view-port');
             const menu = document.getElementById('side-menu');
-            
+            editId = null;
+            window.itensPedido = [];
+
+            // Menu Lateral Ativo
             menu.innerHTML = `
                 <nav class="menu">
-                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Financeiro</button>
-                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Clientes</button>
-                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido</button>
-                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Estoque</button>
+                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Dashboard Financeiro</button>
+                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Gestão de Clientes</button>
+                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido / Orç.</button>
+                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Controle de Estoque</button>
+                    <button onclick="render('list')" class="${tela==='list'?'active':''}">📝 Histórico de Vendas</button>
                 </nav>
+                <button onclick="location.reload()" class="btn-sair-lateral">SAIR DO SISTEMA</button>
             `;
 
+            // TELA: FINANCEIRO
+            if(tela === 'fin') {
+                const res = await fetch(`${DB_URL}/pedidos.json`);
+                const data = await res.json();
+                let totalVendas = 0; let qtd = 0;
+                if(data) {
+                    Object.values(data).forEach(p => { totalVendas += parseFloat(p.total); qtd++; });
+                }
+                port.innerHTML = `
+                    <h1>📊 Visão Geral</h1>
+                    <div class="form-grid">
+                        <div class="card half-width"><small>Faturamento Bruto Acumulado</small><h2 style="color:#27ae60; font-size:35px">R$ ${totalVendas.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div>
+                        <div class="card half-width"><small>Total de Pedidos</small><h2 style="color:var(--vinho-botao); font-size:35px">${qtd}</h2></div>
+                    </div>
+                    <div class="card"><h3>Avisos do Sistema</h3><p>Sistema operando em nuvem. Todos os dados são sincronizados em tempo real com o banco Firebase.</p></div>
+                `;
+            }
+
+            // TELA: CLIENTES (RESTALRADO 100%)
             if(tela === 'cli') {
                 const res = await fetch(`${DB_URL}/clientes.json`);
                 const data = await res.json();
                 let rows = '';
-                if(data) Object.entries(data).forEach(([id, c]) => {
-                    rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidadeEstado}</td><td><button onclick='prepararEdicao("${id}", ${JSON.stringify(c)})'>Editar</button></td></tr>`;
-                });
-                port.innerHTML = `<h1>👥 Gestão de Clientes</h1>
+                if(data) {
+                    Object.entries(data).forEach(([id, c]) => {
+                        rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidadeEstado}</td><td>${c.doc || '---'}</td><td>
+                            <button onclick='prepararEdicao("${id}", ${JSON.stringify(c)})' class="btn-acao btn-primario" style="padding:5px 10px; font-size:11px">EDITAR</button>
+                            <button onclick='deletar("${id}", "clientes")' class="btn-acao" style="padding:5px 10px; font-size:11px; background:#e74c3c; color:white">EXCLUIR</button>
+                        </td></tr>`;
+                    });
+                }
+                port.innerHTML = `
+                    <h1>👥 Clientes</h1>
                     <div class="card">
+                        <h3 id="form-title">Novo Cadastro</h3>
                         <form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
-                            <input type="text" id="c-nome" placeholder="Nome / Razão Social" required class="full-width">
-                            <input type="text" id="c-contato" placeholder="Contato" class="half-width">
-                            <input type="text" id="c-doc" placeholder="CPF / CNPJ" class="half-width">
-                            <input type="text" id="c-rg" placeholder="RG / IE" class="half-width">
-                            <input type="text" id="c-tel" placeholder="Telefone" class="half-width">
-                            <input type="text" id="c-end" placeholder="Endereço" class="full-width">
-                            <input type="text" id="c-cep" placeholder="CEP"><input type="text" id="c-bairro" placeholder="Bairro">
-                            <input type="text" id="c-cid" placeholder="Cidade/UF" class="half-width">
-                            <select id="c-pag" class="half-width"><option value="50% no fechamento e restante a combinar">50% Entrada / Restante a Combinar</option></select>
-                            <textarea id="c-obs" placeholder="Observações" class="full-width"></textarea>
-                            <button type="submit" class="btn-acao btn-sucesso full-width">SALVAR CLIENTE</button>
+                            <div class="full-width"><label>Razão Social / Nome Completo</label><input type="text" id="c-nome" required></div>
+                            <div class="half-width"><label>Nome do Contato</label><input type="text" id="c-contato"></div>
+                            <div class="half-width"><label>CPF / CNPJ</label><input type="text" id="c-doc"></div>
+                            <div class="half-width"><label>RG / Insc. Estadual</label><input type="text" id="c-rg"></div>
+                            <div class="half-width"><label>Telefone / WhatsApp</label><input type="text" id="c-tel" required></div>
+                            <div class="full-width"><label>Endereço de Entrega / Cobrança</label><input type="text" id="c-end"></div>
+                            <div><label>CEP</label><input type="text" id="c-cep"></div>
+                            <div><label>Bairro</label><input type="text" id="c-bairro"></div>
+                            <div class="half-width"><label>Cidade / UF</label><input type="text" id="c-cid"></div>
+                            <div class="half-width"><label>Forma de Pagto Preferencial</label>
+                                <select id="c-pag">
+                                    <option value="50% Entrada e restante no término">50% Entrada e restante no término</option>
+                                    <option value="Pix">Pix</option><option value="Boleto">Boleto</option><option value="Cartão">Cartão</option>
+                                </select>
+                            </div>
+                            <div class="full-width"><label>Observações Internas</label><textarea id="c-obs" rows="2"></textarea></div>
+                            <button type="submit" class="btn-acao btn-sucesso full-width">SALVAR DADOS NO BANCO</button>
                         </form>
                     </div>
-                    <div class="card"><table><thead><tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th>Ação</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+                    <div class="card"><h3>Base de Clientes</h3><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>Cidade</th><th>Documento</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>
+                `;
             }
 
+            // TELA: PEDIDOS (COM GERADOR DE PDF MODELO BB)
             if(tela === 'ped') {
                 const resCli = await fetch(`${DB_URL}/clientes.json`);
                 const dataCli = await resCli.json();
-                let optionsCli = '<option value="">Selecione o Cliente...</option>';
-                if(dataCli) Object.entries(dataCli).forEach(([id, c]) => optionsCli += `<option value='${JSON.stringify(c)}'>${c.nome}</option>`);
+                let options = '<option value="">-- Selecione o Cliente --</option>';
+                if(dataCli) Object.entries(dataCli).forEach(([id, c]) => options += `<option value='${JSON.stringify(c)}'>${c.nome}</option>`);
 
-                port.innerHTML = `<h1>🛒 Gerar Pedido</h1>
+                port.innerHTML = `
+                    <h1>🛒 Novo Pedido / Orçamento</h1>
                     <div class="card">
                         <div class="form-grid">
-                            <select id="p-cliente-data" class="full-width">${optionsCli}</select>
-                            <input type="text" id="p-item" placeholder="Descrição Técnica do Material/Serviço" class="full-width">
-                            <input type="number" id="p-pecas" placeholder="Peças" oninput="calcSub()">
-                            <input type="number" id="p-m2" placeholder="m²" oninput="calcSub()">
-                            <input type="number" id="p-val" placeholder="Valor Unit." oninput="calcSub()">
-                            <input type="text" id="p-sub" placeholder="Subtotal" readonly>
-                            <button onclick="addItem()" class="btn-acao btn-primario full-width">+ ADICIONAR ITEM</button>
+                            <div class="full-width"><label>Cliente</label><select id="p-cliente-select">${options}</select></div>
+                            <div class="full-width"><label>Descrição Técnica do Item (Material ou Serviço)</label><input type="text" id="p-item"></div>
+                            <div><label>Qtd Peças</label><input type="number" id="p-pecas" oninput="calcSub()"></div>
+                            <div><label>Medida m²</label><input type="number" id="p-m2" oninput="calcSub()"></div>
+                            <div><label>Preço Unit.</label><input type="number" id="p-val" oninput="calcSub()"></div>
+                            <div><label>Subtotal</label><input type="text" id="p-sub" readonly style="background:#eee"></div>
+                            <button onclick="addItem()" class="btn-acao btn-primario full-width">+ ADICIONAR ITEM À LISTA</button>
                         </div>
                     </div>
                     <div class="card">
-                        <table><thead><tr><th>Descrição</th><th>Pçs</th><th>m²</th><th>Unit.</th><th>Total</th></tr></thead><tbody id="lista-pedido"></tbody></table>
-                        <div style="text-align:right; margin-top:20px;">
-                            <h2 id="total-pedido">TOTAL: R$ 0,00</h2><br>
-                            <button onclick="gerarPDFModelo()" class="btn-acao btn-sucesso">SALVAR E GERAR PDF (MODELO OFICIAL)</button>
+                        <h3>Itens Selecionados</h3>
+                        <table><thead><tr><th>Descrição</th><th>Pçs</th><th>m²</th><th>Unit.</th><th>Total</th><th>Remover</th></tr></thead><tbody id="lista-pedido"></tbody></table>
+                        <div style="text-align:right; margin-top:25px;">
+                            <h1 id="total-txt" style="font-size:32px">R$ 0,00</h1>
+                            <button onclick="finalizar(false)" class="btn-acao btn-cancelar">SALVAR SEM PDF</button>
+                            <button onclick="finalizar(true)" class="btn-acao btn-sucesso">FINALIZAR E GERAR PDF OFICIAL</button>
                         </div>
-                    </div>`;
+                    </div>
+                `;
+            }
+
+            // TELA: ESTOQUE
+            if(tela === 'est') {
+                const res = await fetch(`${DB_URL}/estoque.json`);
+                const data = await res.json();
+                let rows = '';
+                if(data) Object.entries(data).forEach(([id, i]) => {
+                    rows += `<tr><td>${i.item}</td><td>${i.qtd}</td><td><button onclick="deletar('${id}','estoque')" style="color:red">Excluir</button></td></tr>`;
+                });
+                port.innerHTML = `<h1>📦 Estoque</h1><div class="card"><button onclick="novoEstoque()" class="btn-acao btn-primario">+ Novo Item</button><table><thead><tr><th>Produto</th><th>Quantidade</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             }
         }
 
+        // --- LÓGICA DE NEGÓCIO ---
+
+        async function salvarCliente(e) {
+            e.preventDefault();
+            const c = {
+                nome: document.getElementById('c-nome').value,
+                contato: document.getElementById('c-contato').value,
+                doc: document.getElementById('c-doc').value,
+                rg: document.getElementById('c-rg').value,
+                tel: document.getElementById('c-tel').value,
+                end: document.getElementById('c-end').value,
+                cep: document.getElementById('c-cep').value,
+                bairro: document.getElementById('c-bairro').value,
+                cidadeEstado: document.getElementById('c-cid').value,
+                pagamento: document.getElementById('c-pag').value,
+                obs: document.getElementById('c-obs').value
+            };
+            const method = editId ? 'PUT' : 'POST';
+            const url = editId ? `${DB_URL}/clientes/${editId}.json` : `${DB_URL}/clientes.json`;
+            await fetch(url, { method, body: JSON.stringify(c) });
+            render('cli');
+        }
+
+        function prepararEdicao(id, data) {
+            editId = id;
+            render('cli').then(() => {
+                document.getElementById('form-title').innerText = "Editando: " + data.nome;
+                document.getElementById('c-nome').value = data.nome || '';
+                document.getElementById('c-doc').value = data.doc || '';
+                document.getElementById('c-tel').value = data.tel || '';
+                document.getElementById('c-end').value = data.end || '';
+                document.getElementById('c-cid').value = data.cidadeEstado || '';
+                document.getElementById('c-pag').value = data.pagamento || '';
+                window.scrollTo(0,0);
+            });
+        }
+
+        async function deletar(id, path) {
+            if(confirm("Deseja realmente excluir este registro?")) {
+                await fetch(`${DB_URL}/${path}/${id}.json`, { method: 'DELETE' });
+                render(path === 'clientes' ? 'cli' : 'est');
+            }
+        }
+
+        // LÓGICA DE CÁLCULO DE PEDIDO
         function calcSub() {
             const p = parseFloat(document.getElementById('p-pecas').value) || 1;
             const m = parseFloat(document.getElementById('p-m2').value) || 1;
             const v = parseFloat(document.getElementById('p-val').value) || 0;
+            // Se tiver m2, multiplica Pçs * m2 * Valor. Se não, Pçs * Valor.
             const total = (document.getElementById('p-m2').value) ? (p * m * v) : (p * v);
             document.getElementById('p-sub').value = total.toFixed(2);
         }
 
         function addItem() {
-            const item = {
-                desc: document.getElementById('p-item').value,
+            const desc = document.getElementById('p-item').value;
+            const sub = parseFloat(document.getElementById('p-sub').value);
+            if(!desc || sub <= 0) return alert("Dados insuficientes!");
+            
+            window.itensPedido.push({
+                desc: desc,
                 pecas: document.getElementById('p-pecas').value || '-',
                 m2: document.getElementById('p-m2').value || '-',
-                val: document.getElementById('p-val').value || 0,
-                sub: parseFloat(document.getElementById('p-sub').value)
-            };
-            window.itensPedido.push(item);
-            atualizarTabela();
-        }
-
-        function atualizarTabela() {
-            const corpo = document.getElementById('lista-pedido');
-            corpo.innerHTML = ''; let t = 0;
-            window.itensPedido.forEach(it => {
-                t += it.sub;
-                corpo.innerHTML += `<tr><td>${it.desc}</td><td>${it.pecas}</td><td>${it.m2}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td></tr>`;
+                val: document.getElementById('p-val').value,
+                sub: sub
             });
-            document.getElementById('total-pedido').innerText = `TOTAL: R$ ${t.toLocaleString('pt-br',{minimumFractionDigits:2})}`;
-            window.totalGeral = t;
+            
+            atualizarLista();
+            ['p-item','p-pecas','p-m2','p-val','p-sub'].forEach(id => document.getElementById(id).value = '');
         }
 
-        async function salvarCliente(e) {
-            e.preventDefault();
-            const payload = {
-                nome: document.getElementById('c-nome').value,
-                doc: document.getElementById('c-doc').value,
-                tel: document.getElementById('c-tel').value,
-                end: document.getElementById('c-end').value,
-                cidadeEstado: document.getElementById('c-cid').value,
-                pagamento: document.getElementById('c-pag').value
+        function atualizarLista() {
+            const corpo = document.getElementById('lista-pedido');
+            corpo.innerHTML = ''; window.totalGeral = 0;
+            window.itensPedido.forEach((it, i) => {
+                window.totalGeral += it.sub;
+                corpo.innerHTML += `<tr><td>${it.desc}</td><td>${it.pecas}</td><td>${it.m2}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td><td><button onclick="window.itensPedido.splice(${i},1);atualizarLista()" style="color:red">X</button></td></tr>`;
+            });
+            document.getElementById('total-txt').innerText = `R$ ${window.totalGeral.toLocaleString('pt-br',{minimumFractionDigits:2})}`;
+        }
+
+        async function finalizar(gerarPDF) {
+            const clienteData = document.getElementById('p-cliente-select').value;
+            if(!clienteData || window.itensPedido.length === 0) return alert("Pedido vazio!");
+            
+            const cliente = JSON.parse(clienteData);
+            const pedido = {
+                cliente: cliente.nome,
+                data: new Date().toLocaleDateString('pt-br'),
+                total: window.totalGeral,
+                itens: window.itensPedido
             };
-            await fetch(`${DB_URL}/clientes.json`, { method: 'POST', body: JSON.stringify(payload) });
-            render('cli');
+
+            await fetch(`${DB_URL}/pedidos.json`, { method: 'POST', body: JSON.stringify(pedido) });
+
+            if(gerarPDF) {
+                gerarPDFOficial(cliente, window.itensPedido, window.totalGeral);
+            }
+            alert("Pedido Processado!"); render('fin');
         }
 
-        function gerarPDFModelo() {
-            const clienteRaw = document.getElementById('p-cliente-data').value;
-            if(!clienteRaw) return alert("Selecione o cliente!");
-            const cliente = JSON.parse(clienteRaw);
+        // GERADOR DE PDF - MODELO OFICIAL BB FORROS
+        function gerarPDFOficial(cliente, itens, total) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // CABEÇALHO (Conforme Imagem)
-            doc.setFontSize(10);
-            doc.setFont(undefined, 'bold');
-            doc.text("BB COMERCIO DE FORROS E DIVISÓRIAS LTDA", 70, 10);
-            doc.setFont(undefined, 'normal');
-            doc.setFontSize(8);
-            doc.text("R. João Pereira Inacio, 397 - Aviação - Praia Grande/SP", 75, 14);
-            doc.text("CNPJ: 05.510.861/0001-33 - INSC. EST.: 558.178.702.116", 72, 18);
-            doc.text("Telefones: (13) 3481-4504 // (13) 97414-2188", 80, 22);
-            doc.setTextColor(255, 0, 0);
-            doc.text("SIGA-NOS NAS REDES SOCIAIS: @bbforros / bb forros e divisórias", 65, 26);
-            doc.setTextColor(0,0,0);
+            // Logo e Cabeçalho
+            const img = new Image(); img.src = 'Logopermatti.png';
+            img.onload = () => {
+                doc.addImage(img, 'PNG', 145, 10, 50, 18);
+                doc.setFontSize(10); doc.setFont(undefined, 'bold');
+                doc.text("BB COMERCIO DE FORROS E DIVISÓRIAS LTDA", 10, 15);
+                doc.setFont(undefined, 'normal'); doc.setFontSize(8);
+                doc.text("Rua João Pereira Inácio, 397 - Aviação - Praia Grande/SP", 10, 19);
+                doc.text("CNPJ: 05.510.861/0001-33 | I.E: 558.178.702.116", 10, 23);
+                doc.text("Contatos: (13) 3481-4504 | (13) 97414-2188", 10, 27);
+                doc.setTextColor(255, 0, 0); doc.text("Siga-nos: @bbforros", 10, 31);
+                
+                doc.setDrawColor(128,0,0); doc.line(10, 35, 200, 35);
+                
+                // Dados Orçamento
+                doc.setTextColor(0,0,0); doc.setFontSize(10); doc.setFont(undefined, 'bold');
+                doc.text("ORÇAMENTO / PEDIDO DE VENDA", 10, 42);
+                doc.setFont(undefined, 'normal'); doc.setFontSize(9);
+                doc.text(`DATA: ${new Date().toLocaleDateString('pt-br')}`, 150, 42);
+                
+                doc.text(`CLIENTE: ${cliente.nome}`, 10, 50);
+                doc.text(`ENDEREÇO: ${cliente.end || 'Não informado'}`, 10, 55);
+                doc.text(`DOCUMENTO: ${cliente.doc || '---'}`, 10, 60);
+                doc.text(`CONTATO: ${cliente.tel}`, 150, 60);
+                
+                // Observações em Vermelho
+                doc.setTextColor(255,0,0); doc.setFontSize(8);
+                doc.text("Obs: * Se necessário eletricista e materiais elétricos será cobrado à parte.", 10, 70);
+                doc.text("     * Garantia de 2 anos material e mão de obra.", 10, 74);
+                
+                // Tabela de Itens (Azul conforme modelo)
+                const rows = itens.map(it => [it.desc, it.pecas, it.m2, `R$ ${parseFloat(it.val).toFixed(2)}`, `R$ ${it.sub.toFixed(2)}`]);
+                doc.autoTable({
+                    startY: 80,
+                    head: [['DESCRIÇÃO TÉCNICA', 'PÇS', 'M²', 'UNIT', 'TOTAL']],
+                    body: rows,
+                    styles: { fontSize: 8, textColor: [0, 51, 153] },
+                    headStyles: { fillColor: [0, 51, 153], textColor: [255, 255, 255] }
+                });
+                
+                let fy = doc.lastAutoTable.finalY + 10;
+                doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 255);
+                doc.text(`TOTAL GERAL: R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}`, 130, fy);
+                
+                // Rodapé Financeiro
+                doc.setTextColor(255,0,0); doc.setFontSize(9);
+                doc.text("FORMA DE PAGAMENTO:", 10, fy + 15);
+                doc.text(`${cliente.pagamento || '50% NO FECHAMENTO E RESTANTE A COMBINAR'}`, 10, fy + 20);
+                
+                doc.setTextColor(0,0,153); doc.setFontSize(8);
+                doc.text("DADOS BANCÁRIOS: Banco PagSeguro (290) | Ag: 0001 | CC: 55519128-7", 10, fy + 35);
+                doc.text("Favorecido: BB Comércio de Forros | PIX: bbforros@bbforros.com.br", 10, fy + 39);
+                
+                // Assinaturas
+                doc.setTextColor(0,0,0);
+                doc.line(20, fy + 70, 80, fy + 70); doc.text("BB COMÉRCIO (Vendedor)", 25, fy + 74);
+                doc.line(120, fy + 70, 180, fy + 70); doc.text("CLIENTE (Autorizado)", 135, fy + 74);
+                
+                doc.save(`Pedido_${cliente.nome.replace(/\s/g,'_')}.pdf`);
+            };
+        }
 
-            // LINHA DIVISORA
-            doc.line(10, 30, 200, 30);
-
-            // DADOS DO CLIENTE (Lado Esquerdo e Direito)
-            doc.setFontSize(9);
-            doc.text(`Orçamento - ${Math.floor(Math.random()*20000)}`, 10, 35);
-            doc.text(`Data: ${new Date().toLocaleDateString('pt-br')}`, 10, 40);
-            doc.text(`Cliente: ${cliente.nome}`, 10, 45);
-            doc.text(`Endereço: ${cliente.end || ''}`, 10, 50);
-            doc.text(`Telefone: ${cliente.tel}`, 10, 55);
-
-            doc.text(`Forma de pagamento: À combinar`, 80, 35);
-            doc.text(`Validade do orç: até 10 dias`, 150, 35);
-
-            // OBSERVAÇÕES EM VERMELHO
-            doc.setTextColor(255, 0, 0);
-            doc.setFontSize(8);
-            doc.text("Obs:* Se necessário eletricista e materiais elétricos será orçado e cobrado a parte", 10, 65);
-            doc.text("      * Pontos elétricos puxado pelo cliente.", 10, 70);
-            doc.text("      * Medidas poderão sofrer alteração para maior ou menor.", 10, 75);
-            doc.text("      * Garantia de 2 anos material e 2 anos mão de obra.", 10, 80);
-            doc.setTextColor(0,0,0);
-
-            // TABELA DE ITENS
-            const body = window.itensPedido.map(it => [it.desc, `R$ ${parseFloat(it.sub).toLocaleString('pt-br',{minimumFractionDigits:2})}`]);
-            doc.autoTable({
-                startY: 90,
-                head: [['Descrição do Serviço/Material', 'Total']],
-                body: body,
-                theme: 'plain',
-                styles: { fontSize: 8, textColor: [0, 51, 153] },
-                headStyles: { textColor: [0, 51, 153], fontStyle: 'bold' }
-            });
-
-            const finalY = doc.lastAutoTable.finalY + 10;
-            
-            // TOTAL
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(0, 0, 255);
-            doc.text(`Total do orçamento: R$ ${window.totalGeral.toLocaleString('pt-br',{minimumFractionDigits:2})}`, 110, finalY);
-
-            // FORMA DE PAGAMENTO
-            doc.setTextColor(255, 0, 0);
-            doc.text("OBS: FORMA DE PAGAMENTO", 10, finalY + 20);
-            doc.text("50% NO FECHAMENTO E RESTANTE A COMBINAR", 10, finalY + 25);
-
-            // DADOS BANCÁRIOS
-            doc.setTextColor(0, 0, 255);
-            doc.setFontSize(8);
-            doc.text("Dados para pagamento:", 10, finalY + 50);
-            doc.text("Banco: 290 - PagSeguro Internet Instituição de Pagamento S.A", 10, finalY + 55);
-            doc.text("Agência: 0001 / Conta: 55519128-7", 10, finalY + 60);
-            doc.text("Favorecido: BB Comércio de Forros e Divisórias Ltda.", 10, finalY + 65);
-            doc.text("Chave pix (email): bbforros@bbforros.com.br", 10, finalY + 70);
-
-            // ASSINATURAS
-            doc.setTextColor(0,0,0);
-            doc.line(10, finalY + 110, 80, finalY + 110);
-            doc.text("BB Comércio de Forros e Divisórias", 15, finalY + 115);
-            
-            doc.line(120, finalY + 110, 190, finalY + 110);
-            doc.text(`${cliente.nome}`, 140, finalY + 115);
-            doc.text("Autorizado", 145, finalY + 120);
-
-            doc.save(`Orcamento_${cliente.nome}.pdf`);
+        async function novoEstoque() {
+            const item = prompt("Nome do Produto:");
+            const qtd = prompt("Quantidade:");
+            if(item && qtd) {
+                await fetch(`${DB_URL}/estoque.json`, { method: 'POST', body: JSON.stringify({item, qtd}) });
+                render('est');
+            }
         }
     </script>
 </body>
