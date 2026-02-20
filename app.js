@@ -1,27 +1,29 @@
+// Substitua pelo seu link do Firebase. Se não tiver, deixe as aspas vazias ""
 const FIREBASE_URL = "COLE_AQUI_O_LINK_DO_SEU_FIREBASE"; 
 
 const auth = {
-    login: () => {
+    login: function() {
         const u = document.getElementById('user').value.trim();
         const p = document.getElementById('pass').value.trim();
         
-        // Login padrão: admin / 123
-        if(u === 'admin' && p === '123') {
+        if (u === 'admin' && p === '123') {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
             ui.render('dashboard');
-        } else { 
-            alert("Usuário ou Senha incorretos!"); 
+        } else {
+            alert("Usuário ou Senha incorretos!");
         }
     },
-    logout: () => location.reload()
+    logout: function() {
+        location.reload();
+    }
 };
 
 const db = {
     save: async (folder, data) => {
         try {
             await fetch(`${FIREBASE_URL}/${folder}.json`, { method: 'POST', body: JSON.stringify(data) });
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Erro Firebase:", e); }
     },
     list: async (folder) => {
         try {
@@ -36,11 +38,11 @@ const db = {
 };
 
 const ui = {
-    render: async (section) => {
+    render: async function(section) {
         const area = document.getElementById('view-content');
         area.innerHTML = `<div class="card">Carregando...</div>`;
 
-        if(section === 'dashboard') {
+        if (section === 'dashboard') {
             const peds = await db.list('pedidos');
             const total = peds.reduce((a, b) => a + parseFloat(b.total || 0), 0);
             area.innerHTML = `
@@ -54,7 +56,7 @@ const ui = {
                 </div>`;
         }
 
-        if(section === 'clientes') {
+        if (section === 'clientes') {
             const lista = await db.list('clientes');
             area.innerHTML = `
                 <h1 style="color:#8b0000">👥 Clientes</h1>
@@ -70,7 +72,7 @@ const ui = {
                 </table>`;
         }
 
-        if(section === 'pedidos') {
+        if (section === 'pedidos') {
             const clis = await db.list('clientes');
             const peds = await db.list('pedidos');
             area.innerHTML = `
@@ -93,36 +95,45 @@ const ui = {
 };
 
 const actions = {
-    saveCli: async () => {
+    saveCli: async function() {
         const nome = document.getElementById('c-nome').value;
         const cid = document.getElementById('c-cid').value;
         const doc = document.getElementById('c-doc').value;
-        if(nome) { await db.save('clientes', { nome, cid, doc }); ui.render('clientes'); }
+        if (nome) { 
+            await db.save('clientes', { nome: nome, cid: cid, doc: doc }); 
+            ui.render('clientes'); 
+        }
     },
-    savePed: async () => {
+    savePed: async function() {
         const num = document.getElementById('ped-num').value;
         const cli = document.getElementById('ped-cli').value;
         const q = document.getElementById('ped-qtd').value;
         const v = document.getElementById('ped-vlr').value;
-        if(!num || !cli) return alert("Preencha Nº Pedido e Cliente!");
+        if (!num || !cli) return alert("Preencha Nº Pedido e Cliente!");
         
         const data = {
-            numero: num, cliente: cli, material: document.getElementById('ped-mat').value,
-            qtd: q, unit: v, total: (q * v).toFixed(2),
+            numero: num, 
+            cliente: cli, 
+            material: document.getElementById('ped-mat').value,
+            qtd: q, 
+            unit: v, 
+            total: (q * v).toFixed(2),
             data: document.getElementById('ped-data').value
         };
-        await db.save('pedidos', data); ui.render('pedidos');
+        await db.save('pedidos', data); 
+        ui.render('pedidos');
     },
-    excluir: async (f, id) => { if(confirm("Excluir?")) { await db.del(f, id); ui.render(f); } },
-    pdf: (p) => {
+    excluir: async function(f, id) { 
+        if (confirm("Excluir?")) { await db.del(f, id); ui.render(f); } 
+    },
+    pdf: function(p) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Cabeçalho conforme a imagem enviada
         try {
             doc.addImage("LogoBB.png", 'PNG', 10, 8, 40, 25); 
             doc.addImage("Logopermatti.png", 'PNG', 160, 12, 35, 12);
-        } catch(e) {}
+        } catch(e) { console.log("Logos não carregadas"); }
 
         doc.setFont("helvetica", "bold"); doc.setFontSize(11);
         doc.text("BB COMERCIO DE FORROS E DIVISÓRIAS LTDA", 105, 14, { align: "center" });
@@ -132,4 +143,25 @@ const actions = {
         doc.text("Telefones: (13) 3481-4504 // (13) 97414-2188", 105, 29, { align: "center" });
         doc.text("SIGA-NOS NAS REDES SOCIAIS: @bbforros | bb forros e divisórias", 105, 36, { align: "center" });
 
-        doc.setDrawColor(139, 0
+        doc.setDrawColor(139, 0, 0); doc.line(10, 40, 200, 40);
+        doc.setFontSize(12); doc.setTextColor(139, 0, 0);
+        doc.text("PEDIDO Nº: " + p.numero, 10, 48);
+        doc.setTextColor(0,0,0); doc.setFontSize(10);
+        doc.text("Data: " + p.data, 160, 48);
+        doc.text("Cliente: " + p.cliente, 10, 54);
+
+        doc.autoTable({
+            startY: 62,
+            head: [['Descrição', 'Qtd', 'Unitário', 'Total']],
+            body: [[p.material, p.qtd, "R$ " + p.unit, "R$ " + p.total]],
+            headStyles: { fillGray: [139, 0, 0] }
+        });
+
+        doc.save("Pedido_" + p.numero + ".pdf");
+    }
+};
+
+// Iniciar sistema garantindo que a tela de login apareça
+window.onload = function() {
+    document.getElementById('login-screen').style.display = 'flex';
+};
