@@ -2,7 +2,6 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ERP BB Forros | Gestão Administrativa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -10,14 +9,14 @@
         :root { --vinho: #800000; --preto: #000000; --bg-login: #1a0505; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         
-        /* LOGIN - EXATO image_e26cea.png */
+        /* LOGIN - IDÊNTICO image_e26cea.png */
         .login-overlay { position: fixed; inset: 0; background: var(--bg-login); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-card { background: white; padding: 40px; border-radius: 20px; width: 420px; text-align: center; border-top: 10px solid var(--vinho); }
         .login-card img { width: 250px; margin-bottom: 25px; }
         .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 10px; background: #eef3ff; font-size: 16px; }
         .btn-acessar { width: 100%; padding: 18px; background: var(--vinho); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
-        /* SIDEBAR E HEADER - EXATO image_e2da7f.png */
+        /* APP E SIDEBAR - IDÊNTICO image_e2da7f.png */
         #app { display: none; flex-direction: column; height: 100vh; background: #f4f4f4; }
         .header { height: 75px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .header b { color: var(--vinho); font-size: 20px; }
@@ -30,21 +29,18 @@
 
         .content { flex: 1; padding: 40px; overflow-y: auto; }
         .card { background: white; padding: 30px; border-radius: 15px; border: 1px solid #ddd; margin-bottom: 25px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
         .full { grid-column: 1 / -1; }
         label { display: block; font-size: 11px; font-weight: bold; color: var(--vinho); margin-bottom: 5px; text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
         .btn-save { background: #16a34a; color: white; padding: 18px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: var(--vinho); }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="login-overlay">
         <div class="login-card">
-            <img src="LogoBB.png" alt="BB Forros" onerror="this.src='https://via.placeholder.com/250x100?text=BB+FORROS'">
+            <img src="LogoBB.png" onerror="this.src='https://via.placeholder.com/250x100?text=BB+FORROS'">
             <h2 style="color:var(--vinho); margin-bottom:20px">BB GESTÃO</h2>
             <input type="text" id="user" placeholder="usuário">
             <input type="password" id="pass" placeholder="senha">
@@ -100,13 +96,13 @@
                 port.innerHTML = `
                     <h1>🛒 Vendas e Orçamentos</h1>
                     <div class="card">
-                        <label>DADOS DO ORÇAMENTO (CONFORME MODELO OFICIAL)</label>
+                        <label>FORMULÁRIO DE PEDIDO (IDÊNTICO AO PAPEL)</label>
                         <div class="grid" style="margin-top:15px">
-                            <div><label>Nº Orçamento</label><input id="pnum" placeholder="11.874"></div>
+                            <div><label>Orçamento Nº</label><input id="pnum" placeholder="11.874"></div>
                             <div><label>Data</label><input id="pdata" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
                             <div class="full"><label>Cliente</label>
                                 <select id="pcli">
-                                    <option value="">Selecione...</option>
+                                    <option value="">Selecione o cliente...</option>
                                     ${clis.map(c => `<option value="${c.nome}" data-tel="${c.tel}" data-end="${c.end}">${c.nome}</option>`).join('')}
                                 </select>
                             </div>
@@ -117,14 +113,11 @@
                             <div class="full"><label>Descrição Detalhada do Serviço</label><textarea id="pmat" style="height:120px"></textarea></div>
                             <div><label>Valor Total R$</label><input id="ptotal" type="number" step="0.01"></div>
                         </div>
-                        <button class="btn-save" onclick="salvarVenda()">GERAR ORÇAMENTO PDF</button>
+                        <button class="btn-save" onclick="salvarVenda()">SALVAR E GERAR PDF</button>
                     </div>
                     <div class="card">
-                        <label>ORÇAMENTOS RECENTES</label>
-                        <table>
-                            <thead><tr><th>Nº</th><th>Cliente</th><th>Valor</th><th>Ações</th></tr></thead>
-                            <tbody>${peds.reverse().map(([id, p]) => `<tr><td>#${p.numero}</td><td>${p.cliente}</td><td>R$ ${p.total}</td><td><button onclick='gerarPDF(${JSON.stringify(p)})'>PDF</button></td></tr>`).join('')}</tbody>
-                        </table>
+                        <table><thead><tr><th>Nº</th><th>Cliente</th><th>Valor</th><th>Ações</th></tr></thead>
+                        <tbody>${peds.reverse().map(([id, p]) => `<tr><td>#${p.numero}</td><td>${p.cliente}</td><td>R$ ${p.total}</td><td><button onclick='gerarPDF(${JSON.stringify(p)})'>PDF</button></td></tr>`).join('')}</tbody></table>
                     </div>`;
             }
 
@@ -136,8 +129,10 @@
                             <div class="full"><label>Nome / Razão Social</label><input id="cnome"></div>
                             <div><label>WhatsApp</label><input id="ctel"></div>
                             <div><label>CPF / CNPJ</label><input id="cdoc"></div>
+                            <div><label>Inscrição Estadual</label><input id="cie"></div>
                             <div class="full"><label>Endereço de Obra</label><input id="cend"></div>
                             <div><label>Cidade</label><input id="ccid" value="Praia Grande"></div>
+                            <div><label>CEP</label><input id="ccep"></div>
                         </div>
                         <button class="btn-save" onclick="salvarCliente()">SALVAR CLIENTE</button>
                     </div>`;
@@ -147,7 +142,7 @@
                 const r = await fetch(`${DB}/pedidos.json`);
                 const d = await r.json();
                 const total = d ? Object.values(d).reduce((a,b) => a + parseFloat(b.total || 0), 0) : 0;
-                port.innerHTML = `<h1>📊 Financeiro</h1><div class="card"><h2>Faturamento: R$ ${total.toLocaleString('pt-br')}</h2></div>`;
+                port.innerHTML = `<h1>📊 Financeiro</h1><div class="card"><h2>Faturamento Bruto: <span style="color:green">R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}</span></h2></div>`;
             }
         }
 
@@ -166,9 +161,8 @@
         }
 
         async function salvarCliente() {
-            const c = { nome: document.getElementById('cnome').value, tel: document.getElementById('ctel').value, doc: document.getElementById('cdoc').value, end: document.getElementById('cend').value };
-            await fetch(`${DB}/clientes.json`, { method: 'POST', body: JSON.stringify(c) });
-            alert("Cliente Salvo!"); render('cli');
+            const c = { nome: document.getElementById('cnome').value, tel: document.getElementById('ctel').value, doc: document.getElementById('cdoc').value, end: document.getElementById('cend').value, ie: document.getElementById('cie').value, cep: document.getElementById('ccep').value };
+            await fetch(`${DB}/clientes.json`, { method: 'POST', body: JSON.stringify(c) }); render('cli');
         }
 
         function gerarPDF(p) {
