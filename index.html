@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ERP BB Forros | Sistema de Gestão Oficial</title>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
         :root {
             --vinho-fundo: #1a0505;
@@ -19,170 +17,88 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
         body { background-color: #f4f7f6; color: var(--cor-texto); overflow-x: hidden; }
 
-        /* --- TELA DE LOGIN --- */
+        /* --- LOGIN DESIGN --- */
         .login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 9999;
+            background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 10000;
         }
-
         .login-card {
             background: #fff; padding: 45px; border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 100%; max-width: 440px;
             text-align: center; border-top: 8px solid var(--cor-borda);
         }
-
-        .logo-container { margin-bottom: 25px; }
-        .logo-container img { height: 110px; width: auto; }
-
-        .login-card h2 { color: var(--vinho-botao); margin-bottom: 25px; font-size: 26px; font-weight: bold; letter-spacing: 1px; }
-
-        .login-card input {
-            width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc;
-            border-radius: 8px; font-size: 16px; outline: none; transition: border 0.3s;
-        }
-
-        .login-card input:focus { border-color: var(--vinho-botao); }
-
+        .login-card h2 { color: var(--vinho-botao); margin-bottom: 25px; font-size: 26px; font-weight: bold; }
+        .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; outline: none; }
         .btn-acessar {
             width: 100%; padding: 18px; background-color: var(--vinho-botao);
-            color: white; border: none; border-radius: 8px; font-size: 16px;
-            font-weight: bold; cursor: pointer; text-transform: uppercase;
-            transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase;
         }
 
-        .btn-acessar:hover { background-color: var(--vinho-hover); }
-
-        /* --- ESTRUTURA PRINCIPAL --- */
+        /* --- LAYOUT DO SISTEMA --- */
         #app { display: none; flex-direction: column; height: 100vh; }
-
-        .header {
-            height: 75px; background: #ffffff; border-bottom: 1px solid #ddd;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); z-index: 10;
-        }
-
-        .header-logo { display: flex; align-items: center; gap: 15px; }
-        .header-logo img { height: 50px; }
-
-        .header-info { text-align: right; font-size: 14px; color: #555; }
-
+        .header { height: 75px; background: #ffffff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .layout { display: flex; flex: 1; overflow: hidden; }
 
-        /* --- SIDEBAR --- */
-        .sidebar { width: 280px; background: var(--cor-sidebar); display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
-
+        /* SIDEBAR COMPLETA */
+        .sidebar { width: 280px; background: var(--cor-sidebar); display: flex; flex-direction: column; }
         .menu { flex: 1; padding: 20px 0; }
-
         .menu button {
             width: 100%; padding: 18px 25px; background: transparent; border: none;
-            color: #bdc3c7; text-align: left; font-size: 14px; cursor: pointer;
-            border-bottom: 1px solid #1a1a1a; font-weight: 600; text-transform: uppercase;
-            display: flex; align-items: center; gap: 12px; transition: all 0.3s;
+            color: #bdc3c7; text-align: left; font-size: 14px; cursor: pointer; border-bottom: 1px solid #1a1a1a; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 12px;
         }
-
-        .menu button:hover { background: #1a1a1a; color: #fff; padding-left: 30px; }
-
         .menu button.active { background: var(--cor-borda); color: #fff; border-left: 5px solid #fff; }
+        .btn-sair-lateral { background: #000; color: #ff4d4d; padding: 25px; border: none; cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333; }
 
-        .btn-sair-lateral {
-            background: #000; color: #ff4d4d; padding: 25px; border: none;
-            cursor: pointer; font-weight: bold; text-align: center;
-            border-top: 1px solid #333; text-transform: uppercase; transition: 0.3s;
-        }
-
-        .btn-sair-lateral:hover { background: #1a0000; color: #ff0000; }
-
-        /* --- ÁREA DE CONTEÚDO --- */
+        /* ÁREA DE CONTEÚDO */
         .content { flex: 1; padding: 35px; overflow-y: auto; background: #f4f7f6; }
-
-        h1 { margin-bottom: 30px; color: var(--vinho-botao); font-size: 28px; border-left: 5px solid var(--vinho-botao); padding-left: 15px; }
-
         .card { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        
+        h1 { color: var(--vinho-botao); margin-bottom: 20px; font-size: 24px; border-left: 5px solid var(--vinho-botao); padding-left: 15px; }
 
-        h2 { margin-bottom: 20px; font-size: 18px; color: #444; display: flex; align-items: center; gap: 10px; }
-
-        /* --- FORMULÁRIOS --- */
+        /* FORMULÁRIOS COMPLEXOS */
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-
-        .field-group { display: flex; flex-direction: column; gap: 5px; }
-
-        label { font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase; }
-
-        input, select, textarea {
-            width: 100%; padding: 12px; border: 1px solid #ddd;
-            border-radius: 6px; font-size: 14px; outline: none; transition: border 0.3s;
-        }
-
-        input:focus, select:focus { border-color: var(--vinho-botao); }
-
         .full-width { grid-column: span 4; }
         .half-width { grid-column: span 2; }
         .tri-width { grid-column: span 3; }
-
-        /* --- BOTÕES DE AÇÃO --- */
-        .btn-acao {
-            padding: 15px 25px; border: none; border-radius: 6px; cursor: pointer;
-            font-weight: bold; font-size: 14px; text-transform: uppercase;
-            transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-        }
-
+        
+        label { display: block; margin-bottom: 5px; font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        
+        .btn-acao { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-sucesso { background: #27ae60; color: white; }
         .btn-primario { background: var(--vinho-botao); color: white; }
-        .btn-cancelar { background: #95a5a6; color: white; }
 
-        .btn-sucesso:hover { background: #219150; transform: translateY(-2px); }
-        .btn-primario:hover { background: var(--vinho-hover); transform: translateY(-2px); }
+        /* TABELAS EXTENSAS */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
+        th { background: #f8f9fa; color: var(--vinho-botao); padding: 15px; border: 1px solid #eee; text-align: left; font-size: 12px; text-transform: uppercase; }
+        td { padding: 15px; border: 1px solid #eee; font-size: 14px; }
+        tr:hover { background: #fcfcfc; }
 
-        /* --- TABELAS --- */
-        .table-container { overflow-x: auto; }
+        .btn-pdf-lista { background: #003399; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .btn-del { background: #c0392b; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 8px; }
-
-        th {
-            background: #f8f9fa; color: var(--vinho-botao); font-weight: bold;
-            text-transform: uppercase; font-size: 12px; padding: 15px;
-            border: 1px solid #eee; text-align: left;
-        }
-
-        td { padding: 15px; border: 1px solid #eee; text-align: left; vertical-align: middle; font-size: 14px; }
-
-        tr:hover { background-color: #f9f9f9; }
-
-        .btn-editar-tabela { background-color: #ff9800; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; text-transform: uppercase; }
-        .btn-excluir-tabela { background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; text-transform: uppercase; }
-        .btn-pdf-lista { background-color: #003399; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .badge-pago { background: #e8f5e9; color: #2e7d32; }
-
-        #total-pedido { font-size: 24px; color: var(--vinho-botao); font-weight: bold; }
+        #total-pedido-display { font-size: 28px; color: var(--vinho-botao); font-weight: bold; text-align: right; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" class="login-overlay">
+    <div id="login-screen">
         <div class="login-card">
-            <h2>SISTEMA BB GESTÃO</h2>
-            <input type="text" id="user_login" placeholder="Usuário Admin">
-            <input type="password" id="pass_login" placeholder="Senha">
-            <button onclick="validaLogin()" class="btn-acessar">ENTRAR NO SISTEMA</button>
+            <h2 style="letter-spacing: 2px;">BB GESTÃO OFICIAL</h2>
+            <div style="margin-bottom: 20px; font-size: 14px; color: #888;">Controle de Forros e Divisórias</div>
+            <input type="text" id="sys_user" placeholder="Digite seu usuário">
+            <input type="password" id="sys_pass" placeholder="Digite sua senha">
+            <button type="button" onclick="executarLogin()" class="btn-acessar">ENTRAR NO SISTEMA</button>
         </div>
     </div>
 
     <div id="app">
         <header class="header">
-            <div class="header-logo">
-                <b style="color: var(--cor-borda); font-size: 18px;">BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA</b>
-            </div>
-            <div class="header-info">
-                Usuário: <strong>Administrador</strong><br>
-                <small id="data-atual"></small>
-            </div>
+            <div><b style="color: var(--cor-borda); font-size: 18px;">BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA</b></div>
+            <div id="data-topo" style="font-weight: bold; color: #666;"></div>
         </header>
-
         <div class="layout">
             <aside class="sidebar" id="side-menu"></aside>
             <main class="content" id="view-port"></main>
@@ -196,40 +112,91 @@
         window.totalGeral = 0;
         window.bancoPedidos = {};
 
-        // Login Corrigido
-        function validaLogin() {
-            const u = document.getElementById('user_login').value;
-            if (u.toLowerCase() === 'admin') {
+        // --- FUNÇÃO DE LOGIN DEFINITIVA ---
+        function executarLogin() {
+            const u = document.getElementById('sys_user').value;
+            if(u.toLowerCase() === 'admin') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 render('fin');
             } else {
-                alert('Usuário inválido!');
+                alert('Acesso negado. Usuário incorreto.');
             }
         }
 
+        // --- MOTOR DE RENDERIZAÇÃO ---
         async function render(tela) {
             const port = document.getElementById('view-port');
             const menu = document.getElementById('side-menu');
-            document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-br');
-            
-            // Gerar Sidebar
+            document.getElementById('data-topo').innerText = new Date().toLocaleDateString('pt-br');
+
+            // Sidebar Reconstruída
             menu.innerHTML = `
                 <nav class="menu">
-                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Financeiro</button>
-                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Clientes</button>
-                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido</button>
-                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Estoque</button>
+                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Resumo Financeiro</button>
+                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Gestão de Clientes</button>
+                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido / Venda</button>
+                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Controle de Estoque</button>
                 </nav>
-                <button onclick="location.reload()" class="btn-sair-lateral">SAIR DO SISTEMA</button>
+                <button onclick="location.reload()" class="btn-sair-lateral">SAIR E BLOQUEAR</button>
             `;
 
-            // TELA FINANCEIRO
+            // LÓGICA DE TELAS (SEM CORTES)
             if(tela === 'fin') {
                 const res = await fetch(`${DB_URL}/pedidos.json`);
                 const data = await res.json();
                 let faturamento = 0;
                 let rows = '';
                 if(data) {
-                    Object.entries(data).forEach(([id, p]) => {
-                        const v = parseFloat(p.total) || 0;
+                    Object.values(data).forEach(p => {
+                        faturamento += parseFloat(p.total || 0);
+                        rows += `<tr><td>${p.data}</td><td>${p.numPedido}</td><td>${p.cliente}</td><td>R$ ${parseFloat(p.total).toLocaleString('pt-br',{minimumFractionDigits:2})}</td></tr>`;
+                    });
+                }
+                port.innerHTML = `<h1>📊 Financeiro Geral</h1>
+                <div class="card"><label>Faturamento Bruto</label><h2 style="font-size: 36px; color: #27ae60;">R$ ${faturamento.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div>
+                <div class="card"><h2>Últimos Pedidos Faturados</h2><table><thead><tr><th>Data</th><th>Nº Pedido</th><th>Cliente</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            }
+
+            if(tela === 'cli') {
+                const res = await fetch(`${DB_URL}/clientes.json`);
+                const data = await res.json();
+                let rows = '';
+                if(data) {
+                    Object.entries(data).forEach(([id, c]) => {
+                        rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidade}</td><td>
+                        <button class="btn-del" onclick='deletar("${id}", "clientes")'>Remover</button></td></tr>`;
+                    });
+                }
+                port.innerHTML = `<h1>👥 Clientes</h1>
+                <div class="card">
+                    <form onsubmit="salvarCliente(event)" class="form-grid">
+                        <div class="full-width"><label>Nome / Razão Social</label><input type="text" id="c-nome" required></div>
+                        <div class="half-width"><label>Telefone / WhatsApp</label><input type="text" id="c-tel"></div>
+                        <div class="half-width"><label>Cidade / UF</label><input type="text" id="c-cid"></div>
+                        <button type="submit" class="btn-acao btn-sucesso full-width">CADASTRAR CLIENTE</button>
+                    </form>
+                </div>
+                <div class="card"><table><thead><tr><th>Nome</th><th>Tel</th><th>Cidade</th><th>Ação</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            }
+
+            if(tela === 'ped') {
+                const resCli = await fetch(`${DB_URL}/clientes.json`);
+                const dataCli = await resCli.json();
+                let opts = '<option value="">Selecione um cliente...</option>';
+                if(dataCli) Object.values(dataCli).forEach(c => opts += `<option value='${JSON.stringify(c).replace(/'/g, "&apos;")}'>${c.nome}</option>`);
+
+                const resPed = await fetch(`${DB_URL}/pedidos.json`);
+                window.bancoPedidos = await resPed.json() || {};
+                let rowsPed = '';
+                Object.entries(window.bancoPedidos).reverse().forEach(([id, p]) => {
+                    rowsPed += `<tr><td>${p.data}</td><td>${p.numPedido}</td><td>${p.cliente}</td><td>R$ ${parseFloat(p.total).toFixed(2)}</td>
+                    <td><button class="btn-pdf-lista" onclick="regerarPDF('${id}')">GERAR PDF</button></td></tr>`;
+                });
+
+                port.innerHTML = `<h1>🛒 Novo Pedido de Venda</h1>
+                <div class="card">
+                    <div class="form-grid">
+                        <div class="tri-width"><label>Cliente</label><select id="p-cli">${opts}</select></div>
+                        <div><label>Nº Pedido</label><input type="text" id="p-num"></div>
+                        <div class="full-width"><label>Descrição do Item</label><input type="text" id="
