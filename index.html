@@ -88,8 +88,8 @@
         <div class="login-card">
             <div class="logo-container"><img src="LogoBB.png" alt="Logo BB"></div>
             <h2>SISTEMA BB GESTÃO</h2>
-            <input type="text" id="user" placeholder="Usuário">
-            <input type="password" id="pass" placeholder="Senha">
+            <input type="text" id="user_login" placeholder="Usuário">
+            <input type="password" id="pass_login" placeholder="Senha">
             <button onclick="validaLogin()" class="btn-acessar">ENTRAR NO SISTEMA</button>
         </div>
     </div>
@@ -121,12 +121,14 @@
         document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-br');
 
         function validaLogin() {
-            const u = document.getElementById('user').value;
-            if(u === 'admin') {
+            const u = document.getElementById('user_login').value;
+            if(u.toLowerCase() === 'admin') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 render('fin');
-            } else { alert('Acesso Negado'); }
+            } else { 
+                alert('Usuário incorreto. Digite "admin"'); 
+            }
         }
 
         async function render(tela) {
@@ -146,23 +148,21 @@
             `;
 
             if(tela === 'fin') {
-                port.innerHTML = "<h1>Carregando Financeiro...</h1>";
                 const res = await fetch(`${DB_URL}/pedidos.json`);
                 const data = await res.json();
                 let faturamento = 0;
                 let rows = '';
                 if(data) {
                     Object.entries(data).forEach(([id, p]) => {
-                        const valor = parseFloat(p.total) || 0;
-                        faturamento += valor;
-                        rows += `<tr><td>${p.data || ''}</td><td>${p.numPedido || '---'}</td><td>${p.cliente || ''}</td><td>R$ ${valor.toLocaleString('pt-br',{minimumFractionDigits:2})}</td></tr>`;
+                        const v = parseFloat(p.total) || 0;
+                        faturamento += v;
+                        rows += `<tr><td>${p.data || ''}</td><td>${p.numPedido || ''}</td><td>${p.cliente || ''}</td><td>R$ ${v.toLocaleString('pt-br',{minimumFractionDigits:2})}</td></tr>`;
                     });
                 }
                 port.innerHTML = `<h1>📊 Painel Financeiro</h1><div class="card"><h2>Faturamento: R$ ${faturamento.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div><div class="card"><table><thead><tr><th>Data</th><th>Nº Pedido</th><th>Cliente</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             }
 
             if(tela === 'cli') {
-                port.innerHTML = "<h1>Carregando Clientes...</h1>";
                 const res = await fetch(`${DB_URL}/clientes.json`);
                 const data = await res.json();
                 let rows = '';
@@ -218,8 +218,7 @@
                 <button onclick="finalizar(true)" class="btn-acao btn-sucesso" style="float:right">FINALIZAR E GERAR PDF</button></div>
                 <h2 style="margin-top:40px">📜 Pedidos Emitidos</h2>
                 <div class="card"><table><thead><tr><th>Data</th><th>Nº</th><th>Cliente</th><th>Total</th><th>Ação</th></tr></thead><tbody>${rowsPed}</tbody></table></div>`;
-                window.itensPedido = [];
-                window.totalGeral = 0;
+                window.itensPedido = []; window.totalGeral = 0;
             }
 
             if(tela === 'est') {
@@ -248,28 +247,25 @@
             e.preventDefault();
             const p = { nome: document.getElementById('c-nome').value, tel: document.getElementById('c-tel').value, cidadeEstado: document.getElementById('c-cid').value, end: document.getElementById('c-end').value, doc: document.getElementById('c-doc').value };
             const method = editId ? 'PUT' : 'POST';
-            const url = editId ? `${DB_URL}/clientes/${editId}.json` : `${DB_URL}/clientes.json`;
-            await fetch(url, { method: method, body: JSON.stringify(p) });
-            editId = null;
-            render('cli');
+            await fetch(editId ? `${DB_URL}/clientes/${editId}.json` : `${DB_URL}/clientes.json`, { method, body: JSON.stringify(p) });
+            editId = null; render('cli');
         }
 
         async function deletar(id, path) {
-            if(confirm("Excluir definitivamente?")) { await fetch(`${DB_URL}/${path}/${id}.json`, { method: 'DELETE' }); render('cli'); }
+            if(confirm("Excluir?")) { await fetch(`${DB_URL}/${path}/${id}.json`, { method: 'DELETE' }); render('cli'); }
         }
 
         function calcSub() {
             const p = parseFloat(document.getElementById('p-pecas').value) || 1;
             const m = parseFloat(document.getElementById('p-m2').value) || 1;
             const v = parseFloat(document.getElementById('p-val').value) || 0;
-            const total = (document.getElementById('p-m2').value) ? (p * m * v) : (p * v);
-            document.getElementById('p-sub').value = total.toFixed(2);
+            const hasM2 = document.getElementById('p-m2').value !== "";
+            document.getElementById('p-sub').value = (hasM2 ? (p * m * v) : (p * v)).toFixed(2);
         }
 
         function addItem() {
             const it = { desc: document.getElementById('p-item').value, pecas: document.getElementById('p-pecas').value || '-', m2: document.getElementById('p-m2').value || '-', val: document.getElementById('p-val').value, sub: parseFloat(document.getElementById('p-sub').value) };
-            window.itensPedido.push(it);
-            atualizarTabela();
+            window.itensPedido.push(it); atualizarTabela();
         }
 
         function atualizarTabela() {
@@ -295,40 +291,29 @@
         }
 
         function regerarPDF(p) {
-            const cliObj = { nome: p.cliente, tel: p.tel || '---' };
-            gerarPDF(cliObj, p.numPedido, p.itens, p.total);
+            gerarPDF({ nome: p.cliente, tel: p.tel || '---' }, p.numPedido, p.itens, p.total);
         }
 
         function gerarPDF(cliente, num, itens, total) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
             doc.setFontSize(10); doc.setFont(undefined, 'bold');
             doc.text("BB COMERCIO DE FORROS E DIVISÓRIAS LTDA", 70, 10);
-            doc.setFont(undefined, 'normal'); doc.setFontSize(8);
+            doc.setFontSize(8); doc.setFont(undefined, 'normal');
             doc.text("R. João Pereira Inacio, 397 - Aviação - Praia Grande/SP", 75, 14);
             doc.text("CNPJ: 05.510.861/0001-33 - INSC. EST.: 558.178.702.116", 72, 18);
             doc.text("Telefones: (13) 3481-4504 // (13) 97414-2188", 80, 22);
             doc.setTextColor(255, 0, 0); doc.text("SIGA-NOS NAS REDES SOCIAIS: @bbforros", 85, 26);
             doc.setTextColor(0,0,0); doc.line(10, 30, 200, 30);
-            doc.setFontSize(9);
-            doc.text(`PEDIDO Nº: ${num || 'S/N'}`, 10, 38);
-            doc.text(`DATA: ${new Date().toLocaleDateString('pt-br')}`, 160, 38);
-            doc.text(`CLIENTE: ${cliente.nome}`, 10, 45);
-            doc.text(`CONTATO: ${cliente.tel || '---'}`, 10, 50);
-            doc.setTextColor(255, 0, 0);
-            doc.text("Obs:* Se necessário eletricista e materiais elétricos será orçado e cobrado a parte", 10, 60);
+            doc.text(`PEDIDO Nº: ${num || 'S/N'}`, 10, 38); doc.text(`DATA: ${new Date().toLocaleDateString('pt-br')}`, 160, 38);
+            doc.text(`CLIENTE: ${cliente.nome}`, 10, 45); doc.text(`CONTATO: ${cliente.tel || '---'}`, 10, 50);
+            doc.setTextColor(255, 0, 0); doc.text("Obs:* Se necessário eletricista e materiais elétricos será orçado e cobrado a parte", 10, 60);
             doc.text("      * Garantia de 2 anos material e 2 anos mão de obra.", 10, 65);
-            const rows = itens.map(i => [i.desc, i.pecas, i.m2, i.val, parseFloat(i.sub).toFixed(2)]);
-            doc.autoTable({ head: [['Item', 'Pçs', 'm2', 'Val', 'Sub']], body: rows, startY: 70, headStyles: {fillColor:[0, 51, 153]} });
-            const finalY = doc.lastAutoTable.finalY + 10;
-            doc.setTextColor(0,0,255); doc.setFontSize(12);
-            doc.text(`TOTAL: R$ ${parseFloat(total).toFixed(2)}`, 140, finalY);
-            doc.setTextColor(255, 0, 0); doc.setFontSize(8);
-            doc.text("FORMA DE PAGAMENTO: 50% ENTRADA / RESTANTE TÉRMINO", 10, finalY + 10);
-            doc.setTextColor(0,0,255);
-            doc.text("DADOS BANCÁRIOS: Banco PagSeguro (290) Ag: 0001 CC: 55519128-7", 10, finalY + 20);
-            doc.text("PIX: bbforros@bbforros.com.br", 10, finalY + 25);
-            doc.save(`Pedido_${num}.pdf`);
+            doc.autoTable({ head: [['Item', 'Pçs', 'm2', 'Val', 'Sub']], body: itens.map(i => [i.desc, i.pecas, i.m2, i.val, parseFloat(i.sub).toFixed(2)]), startY: 70, headStyles: {fillColor:[0, 51, 153]} });
+            const fY = doc.lastAutoTable.finalY + 10;
+            doc.setTextColor(0,0,255); doc.setFontSize(12); doc.text(`TOTAL: R$ ${parseFloat(total).toFixed(2)}`, 140, fY);
+            doc.setTextColor(255, 0, 0); doc.setFontSize(8); doc.text("FORMA DE PAGAMENTO: 50% ENTRADA / RESTANTE TÉRMINO", 10, fY + 10);
+            doc.setTextColor(0,0,255); doc.text("DADOS BANCÁRIOS: Banco PagSeguro (290) Ag: 0001 CC: 55519128-7", 10, fY + 20);
+            doc.text("PIX: bbforros@bbforros.com.br", 10, fY + 25); doc.save(`Pedido_${num}.pdf`);
         }
     </script>
 </body>
