@@ -1,9 +1,7 @@
-// ATENÇÃO: Verifique se o link termina com .com/ e NÃO tem espaços
 const FIREBASE_URL = "COLE_AQUI_O_LINK_DO_SEU_FIREBASE"; 
 
 const auth = {
     login: () => {
-        console.log("Tentando logar..."); // Log para teste
         const u = document.getElementById('user').value.trim();
         const p = document.getElementById('pass').value.trim();
         
@@ -23,18 +21,14 @@ const db = {
     save: async (folder, data) => {
         try {
             await fetch(`${FIREBASE_URL}/${folder}.json`, { method: 'POST', body: JSON.stringify(data) });
-        } catch (e) { console.error("Erro ao salvar:", e); alert("Erro ao salvar na nuvem!"); }
+        } catch (e) { console.error(e); }
     },
     list: async (folder) => {
         try {
             const res = await fetch(`${FIREBASE_URL}/${folder}.json`);
-            if (!res.ok) throw new Error();
             const data = await res.json();
             return data ? Object.keys(data).map(id => ({ id, ...data[id] })) : [];
-        } catch (e) { 
-            console.error("Erro ao carregar banco:", e); 
-            return []; // Retorna lista vazia se falhar, mas não trava o sistema
-        }
+        } catch (e) { return []; }
     },
     del: async (folder, id) => {
         await fetch(`${FIREBASE_URL}/${folder}/${id}.json`, { method: 'DELETE' });
@@ -44,7 +38,7 @@ const db = {
 const ui = {
     render: async (section) => {
         const area = document.getElementById('view-content');
-        area.innerHTML = `<div class="card">Carregando ${section}...</div>`;
+        area.innerHTML = `<div class="card">Carregando...</div>`;
 
         if(section === 'dashboard') {
             const peds = await db.list('pedidos');
@@ -80,7 +74,7 @@ const ui = {
             const clis = await db.list('clientes');
             const peds = await db.list('pedidos');
             area.innerHTML = `
-                <h1 style="color:#8b0000">🛒 Pedidos</h1>
+                <h1 style="color:#8b0000">🛒 Novo Pedido</h1>
                 <div class="card grid-form">
                     <div><label>Nº Pedido</label><input id="ped-num"></div>
                     <div><label>Data</label><input id="ped-data" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
@@ -88,11 +82,11 @@ const ui = {
                     <div class="full"><label>Material</label><input id="ped-mat"></div>
                     <div><label>Qtd</label><input id="ped-qtd" type="number"></div>
                     <div><label>Vlr Unit.</label><input id="ped-vlr" type="number" step="0.01"></div>
-                    <button onclick="actions.savePed()" class="full" style="background:#16a34a; color:white; padding:15px; border:none; border-radius:8px; cursor:pointer;">SALVAR PEDIDO</button>
+                    <button onclick="actions.savePed()" class="full" style="background:#16a34a; color:white; padding:15px; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">SALVAR E GERAR PDF</button>
                 </div>
                 <table>
-                    <thead><tr><th>Nº</th><th>Cliente</th><th>Total</th><th>PDF</th></tr></thead>
-                    <tbody>${peds.reverse().map(p => `<tr><td><b>#${p.numero}</b></td><td>${p.cliente}</td><td>R$ ${p.total}</td><td><button onclick='actions.pdf(${JSON.stringify(p)})'>Gerar</button></td></tr>`).join('')}</tbody>
+                    <thead><tr><th>Nº</th><th>Cliente</th><th>Total</th><th>Ações</th></tr></thead>
+                    <tbody>${peds.reverse().map(p => `<tr><td><b>#${p.numero}</b></td><td>${p.cliente}</td><td>R$ ${p.total}</td><td><button onclick='actions.pdf(${JSON.stringify(p)})' style="background:#8b0000; color:white; border:none; padding:5px; border-radius:4px; cursor:pointer;">PDF</button></td></tr>`).join('')}</tbody>
                 </table>`;
         }
     }
@@ -123,9 +117,19 @@ const actions = {
     pdf: (p) => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+        
+        // Cabeçalho conforme a imagem enviada
         try {
-            doc.addImage("LogoBB.png", 'PNG', 10, 8, 45, 28); 
-            doc.addImage("Logopermatti.png", 'PNG', 165, 12, 35, 15);
+            doc.addImage("LogoBB.png", 'PNG', 10, 8, 40, 25); 
+            doc.addImage("Logopermatti.png", 'PNG', 160, 12, 35, 12);
         } catch(e) {}
+
         doc.setFont("helvetica", "bold"); doc.setFontSize(11);
-        doc.text("BB COMERCIO DE FORROS E DIVISÓRIAS LTDA", 105, 1
+        doc.text("BB COMERCIO DE FORROS E DIVISÓRIAS LTDA", 105, 14, { align: "center" });
+        doc.setFontSize(9); doc.setFont("helvetica", "normal");
+        doc.text("R. João Pereira Inacio, 397 - Aviação - Praia Grande/SP", 105, 19, { align: "center" });
+        doc.text("CNPJ: 05.510.861/0001-33 - INSC. EST.: 558.178.702.116", 105, 24, { align: "center" });
+        doc.text("Telefones: (13) 3481-4504 // (13) 97414-2188", 105, 29, { align: "center" });
+        doc.text("SIGA-NOS NAS REDES SOCIAIS: @bbforros | bb forros e divisórias", 105, 36, { align: "center" });
+
+        doc.setDrawColor(139, 0
