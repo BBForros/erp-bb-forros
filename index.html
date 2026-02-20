@@ -117,65 +117,11 @@
         let editId = null;
         window.itensPedido = [];
         window.totalGeral = 0;
-        window.pedidosCache = {}; // Cache para evitar erro no botão PDF
+        window.cachePedidos = {}; // ARMAZENA OS DADOS PARA O PDF NÃO TRAVAR
 
         document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-br');
 
         function validaLogin() {
             const u = document.getElementById('user_login').value;
             if(u.toLowerCase() === 'admin') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                render('fin');
-            } else { alert('Acesso Negado'); }
-        }
-
-        async function render(tela) {
-            const port = document.getElementById('view-port');
-            const menu = document.getElementById('side-menu');
-            
-            if(tela !== 'cli') { editId = null; }
-            
-            menu.innerHTML = `
-                <nav class="menu">
-                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Financeiro</button>
-                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Clientes</button>
-                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido</button>
-                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Estoque</button>
-                </nav>
-                <button onclick="location.reload()" class="btn-sair-lateral">SAIR DO SISTEMA</button>
-            `;
-
-            if(tela === 'fin') {
-                const res = await fetch(`${DB_URL}/pedidos.json`);
-                const data = await res.json();
-                let faturamento = 0;
-                let rows = '';
-                if(data) {
-                    Object.entries(data).forEach(([id, p]) => {
-                        const v = parseFloat(p.total) || 0;
-                        faturamento += v;
-                        rows += `<tr><td>${p.data || ''}</td><td>${p.numPedido || ''}</td><td>${p.cliente || ''}</td><td>R$ ${v.toLocaleString('pt-br',{minimumFractionDigits:2})}</td></tr>`;
-                    });
-                }
-                port.innerHTML = `<h1>📊 Painel Financeiro</h1><div class="card"><h2>Faturamento: R$ ${faturamento.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div><div class="card"><table><thead><tr><th>Data</th><th>Nº Pedido</th><th>Cliente</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-            }
-
-            if(tela === 'cli') {
-                const res = await fetch(`${DB_URL}/clientes.json`);
-                const data = await res.json();
-                let rows = '';
-                if(data) {
-                    Object.entries(data).forEach(([id, c]) => {
-                        rows += `<tr><td>${c.nome}</td><td>${c.tel || ''}</td><td>${c.cidadeEstado || ''}</td><td style="width: 120px">
-                            <button class="btn-editar-tabela" onclick='prepararEdicao("${id}", ${JSON.stringify(c)})'>EDITAR</button>
-                            <button class="btn-excluir-tabela" onclick='deletar("${id}", "clientes")'>EXCLUIR</button>
-                        </td></tr>`;
-                    });
-                }
-                port.innerHTML = `<h1>👥 Clientes</h1><div class="card">
-                    <form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
-                        <input type="text" id="c-nome" placeholder="Nome" required class="full-width">
-                        <input type="text" id="c-tel" placeholder="Telefone" class="half-width">
-                        <input type="text" id="c-doc" placeholder="CPF/CNPJ" class="half-width">
-                        <input type="text" id="c-end" placeholder="Endereço" class="
+                document.getElementById('login-screen
