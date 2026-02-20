@@ -19,6 +19,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f7f6; color: var(--cor-texto); }
 
+        /* Telas de Login */
         .login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--vinho-fundo);
@@ -42,44 +43,70 @@
             font-weight: bold; cursor: pointer; text-transform: uppercase;
         }
 
+        /* Estrutura App */
         #app { display: none; flex-direction: column; height: 100vh; }
-        .header { height: 75px; background: #ffffff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        .header { 
+            height: 75px; background: #ffffff; border-bottom: 1px solid #ddd; 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+        }
+        
         .header-logo { display: flex; align-items: center; gap: 15px; }
         .header-logo img { height: 50px; }
         .header-info { text-align: right; font-size: 14px; }
 
         .layout { display: flex; flex: 1; overflow: hidden; }
+        
+        /* Sidebar */
         .sidebar { width: 280px; background: var(--cor-sidebar); display: flex; flex-direction: column; }
         .menu { flex: 1; padding: 20px 0; }
         .menu button {
             width: 100%; padding: 18px 25px; background: transparent; border: none;
             color: #bdc3c7; text-align: left; font-size: 14px; cursor: pointer;
             border-bottom: 1px solid #1a1a1a; font-weight: 600; text-transform: uppercase;
-            display: flex; align-items: center; gap: 12px;
+            display: flex; align-items: center; gap: 12px; transition: 0.3s;
         }
+        .menu button:hover { background: #1a1a1a; color: #fff; }
         .menu button.active { background: var(--cor-borda); color: #fff; border-left: 5px solid #fff; }
 
-        .btn-sair-lateral { background: #000; color: #ff4d4d; padding: 25px; border: none; cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333; }
+        .btn-sair-lateral { 
+            background: #000; color: #ff4d4d; padding: 25px; border: none; 
+            cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333; 
+        }
+
+        /* Conteúdo */
         .content { flex: 1; padding: 35px; overflow-y: auto; background: #f4f7f6; }
         .card { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
 
+        /* Formulários */
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        label { display: block; margin-bottom: 5px; font-size: 12px; font-weight: bold; color: #666; }
+        
         .full-width { grid-column: span 4; }
         .half-width { grid-column: span 2; }
         .tri-width { grid-column: span 3; }
 
-        .btn-acao { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        /* Botões */
+        .btn-acao { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-sucesso { background: #27ae60; color: white; }
+        .btn-sucesso:hover { background: #219150; }
         .btn-primario { background: var(--vinho-botao); color: white; }
+        .btn-primario:hover { background: var(--vinho-hover); }
 
-        .btn-editar-tabela { background-color: #ff9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 5px; text-transform: uppercase; font-size: 12px; }
-        .btn-excluir-tabela { background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; font-size: 12px; }
-        .btn-pdf-lista { background-color: #003399; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .btn-editar-tabela { background-color: #ff9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 5px; text-transform: uppercase; font-size: 11px; }
+        .btn-excluir-tabela { background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; font-size: 11px; }
+        .btn-pdf-lista { background-color: #003399; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; }
 
+        /* Tabelas */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 8px; overflow: hidden; }
         th { background: #f8f9fa; color: var(--vinho-botao); font-weight: bold; text-transform: uppercase; font-size: 12px; padding: 15px; border: 1px solid #eee; text-align: left; }
-        td { padding: 15px; border: 1px solid #eee; text-align: left; vertical-align: middle; }
+        td { padding: 15px; border: 1px solid #eee; text-align: left; vertical-align: middle; font-size: 14px; }
+        tr:hover { background-color: #fafafa; }
+
+        /* Estilo PDF no Histórico */
+        .status-pago { color: #27ae60; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -117,11 +144,137 @@
         let editId = null;
         window.itensPedido = [];
         window.totalGeral = 0;
-        window.cachePedidos = {}; // ARMAZENA OS DADOS PARA O PDF NÃO TRAVAR
+        window.pedidosGlobais = {}; // Cache para o PDF não falhar
 
         document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-br');
 
         function validaLogin() {
             const u = document.getElementById('user_login').value;
+            const p = document.getElementById('pass_login').value;
             if(u.toLowerCase() === 'admin') {
-                document.getElementById('login-screen
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+                render('fin');
+            } else {
+                alert('Usuário ou senha incorretos.');
+            }
+        }
+
+        async function render(tela) {
+            const port = document.getElementById('view-port');
+            const menu = document.getElementById('side-menu');
+            
+            if(tela !== 'cli') { editId = null; }
+            
+            menu.innerHTML = `
+                <nav class="menu">
+                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Financeiro</button>
+                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Clientes</button>
+                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido</button>
+                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Estoque</button>
+                </nav>
+                <button onclick="location.reload()" class="btn-sair-lateral">SAIR DO SISTEMA</button>
+            `;
+
+            // TELA FINANCEIRO
+            if(tela === 'fin') {
+                port.innerHTML = '<h1>Carregando Financeiro...</h1>';
+                const res = await fetch(`${DB_URL}/pedidos.json`);
+                const data = await res.json();
+                let faturamento = 0;
+                let rows = '';
+                if(data) {
+                    Object.entries(data).forEach(([id, p]) => {
+                        const v = parseFloat(p.total) || 0;
+                        faturamento += v;
+                        rows += `<tr><td>${p.data || ''}</td><td>${p.numPedido || ''}</td><td>${p.cliente || ''}</td><td>R$ ${v.toLocaleString('pt-br',{minimumFractionDigits:2})}</td><td class="status-pago">CONCLUÍDO</td></tr>`;
+                    });
+                }
+                port.innerHTML = `
+                    <h1>📊 Painel Financeiro</h1>
+                    <div class="card">
+                        <h2 style="color:#27ae60">Faturamento Total: R$ ${faturamento.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2>
+                    </div>
+                    <div class="card">
+                        <table>
+                            <thead><tr><th>Data</th><th>Nº Pedido</th><th>Cliente</th><th>Total</th><th>Status</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
+            }
+
+            // TELA CLIENTES
+            if(tela === 'cli') {
+                port.innerHTML = '<h1>Carregando Clientes...</h1>';
+                const res = await fetch(`${DB_URL}/clientes.json`);
+                const data = await res.json();
+                let rows = '';
+                if(data) {
+                    Object.entries(data).forEach(([id, c]) => {
+                        const cliJson = JSON.stringify(c).replace(/'/g, "&apos;");
+                        rows += `<tr>
+                            <td>${c.nome}</td>
+                            <td>${c.tel || ''}</td>
+                            <td>${c.doc || ''}</td>
+                            <td>${c.cidadeEstado || ''}</td>
+                            <td style="width: 130px">
+                                <button class="btn-editar-tabela" onclick='prepararEdicao("${id}", ${cliJson})'>EDITAR</button>
+                                <button class="btn-excluir-tabela" onclick='deletar("${id}", "clientes")'>EXCLUIR</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                port.innerHTML = `
+                    <h1>👥 Gestão de Clientes</h1>
+                    <div class="card">
+                        <form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
+                            <div class="full-width"><label>Nome / Razão Social</label><input type="text" id="c-nome" required></div>
+                            <div class="half-width"><label>Telefone</label><input type="text" id="c-tel"></div>
+                            <div class="half-width"><label>CPF / CNPJ</label><input type="text" id="c-doc"></div>
+                            <div class="full-width"><label>Endereço Completo</label><input type="text" id="c-end"></div>
+                            <div class="half-width"><label>Cidade/UF</label><input type="text" id="c-cid"></div>
+                            <button type="submit" id="btn-cli-salvar" class="btn-acao btn-sucesso full-width">SALVAR CLIENTE</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <table>
+                            <thead><tr><th>Nome</th><th>Telefone</th><th>Documento</th><th>Cidade</th><th>Ações</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
+            }
+
+            // TELA PEDIDOS
+            if(tela === 'ped') {
+                port.innerHTML = '<h1>Preparando Pedido...</h1>';
+                const resCli = await fetch(`${DB_URL}/clientes.json`);
+                const dataCli = await resCli.json();
+                let opts = '<option value="">Selecione o Cliente...</option>';
+                if(dataCli) Object.values(dataCli).forEach(c => opts += `<option value='${JSON.stringify(c).replace(/'/g, "&apos;")}'>${c.nome}</option>`);
+
+                const resPed = await fetch(`${DB_URL}/pedidos.json`);
+                const dataPed = await resPed.json();
+                window.pedidosGlobais = dataPed || {};
+                let rowsPed = '';
+                if(dataPed) {
+                    Object.entries(dataPed).reverse().forEach(([id, p]) => {
+                        rowsPed += `<tr>
+                            <td>${p.data}</td>
+                            <td>${p.numPedido}</td>
+                            <td>${p.cliente}</td>
+                            <td>R$ ${parseFloat(p.total).toFixed(2)}</td>
+                            <td><button class="btn-pdf-lista" onclick="gerarPDFHistorico('${id}')">PDF</button></td>
+                        </tr>`;
+                    });
+                }
+
+                port.innerHTML = `
+                    <h1>🛒 Novo Pedido de Venda</h1>
+                    <div class="card">
+                        <div class="form-grid">
+                            <div class="tri-width"><label>Cliente</label><select id="p-cliente-select">${opts}</select></div>
+                            <div><label>Nº Pedido</label><input type="text" id="p-numero" style="border:2px solid #8a0000; font-weight:bold"></div>
+                            
+                            <div class="full-width"><label>Descrição do Item</label><input type="text" id="p-item"></div>
+                            <div><label>Quantidade (Pçs)</label><input type="number" id="p-pecas" oninput="calcSub()"></div>
+                            <div><label>Medida (m²
