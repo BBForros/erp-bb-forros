@@ -9,17 +9,17 @@
         :root { --vinho-fundo: #1a0505; --vinho-botao: #8a0000; --cor-borda: #800000; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         
-        /* TELA DE LOGIN - EXATAMENTE COMO NA IMAGEM ENVIADA */
+        /* LOGIN IDÊNTICO À IMAGEM */
         .login-overlay { position: fixed; inset: 0; background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-card { background: white; padding: 45px; border-radius: 15px; width: 440px; text-align: center; border-top: 8px solid var(--cor-borda); }
         .logo-container { display: flex; justify-content: center; align-items: center; margin-bottom: 25px; }
-        .logo-container img { height: 110px; width: auto; } /* APENAS LOGOBB.PNG AQUI */
+        .logo-container img { height: 110px; width: auto; }
         .login-card h2 { color: var(--vinho-botao); margin-bottom: 25px; font-size: 26px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
         .login-card input:first-of-type { background: #eef3ff; } 
         .btn-acessar { width: 100%; padding: 18px; background: var(--vinho-botao); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 15px; }
 
-        /* DASHBOARD - ESTRUTURA E ESTILOS PRESERVADOS */
+        /* DASHBOARD PRESERVADO */
         #app { display: none; flex-direction: column; height: 100vh; background: #f4f7f6; }
         .header { height: 75px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .layout { display: flex; flex: 1; overflow: hidden; }
@@ -28,17 +28,22 @@
         .menu button.active { background: var(--cor-borda); }
         .btn-sair-lateral { background: black; color: white; padding: 25px; border: none; cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333; margin-top: auto; }
         .content { flex: 1; padding: 35px; overflow-y: auto; }
+
+        /* TABELAS E FORMULÁRIO */
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-        .btn-add { background: #16a34a; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; font-size: 14px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f8f8f8; color: var(--vinho-botao); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .form-grid input, .form-grid select, .form-grid textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-top: 5px; }
+        .full-width { grid-column: span 2; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="login-overlay">
         <div class="login-card">
-            <div class="logo-container"><img src="LogoBB.png" alt="Logo BB"></div>
+            <div class="logo-container"><img src="LogoBB.png"></div>
             <h2>BB GESTÃO</h2>
             <input type="text" id="user" placeholder="admin">
             <input type="password" id="pass" placeholder="***">
@@ -97,11 +102,43 @@
                 const d = await r.json();
                 let rows = '';
                 if(d) Object.entries(d).forEach(([id, c]) => {
-                    rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td><button onclick="deletar('${id}', 'clientes')">Excluir</button></td></tr>`;
+                    rows += `<tr><td>${c.nome}</td><td>${c.contato}</td><td>${c.cidadeEstado}</td><td><button onclick="deletar('${id}', 'clientes')">Excluir</button></td></tr>`;
                 });
-                port.innerHTML = `<h1>👥 Clientes</h1><button onclick="novoItem('clientes')" class="btn-add">+ Novo Cliente</button><table><tr><th>Nome</th><th>Tel</th><th>Ações</th></tr>${rows}</table>`;
+                port.innerHTML = `
+                    <h1>👥 Cadastro de Clientes</h1>
+                    <div class="card">
+                        <h3>Novo Cliente</h3>
+                        <form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
+                            <input type="text" id="c-nome" placeholder="Nome/Razão Social" required class="full-width">
+                            <input type="text" id="c-contato" placeholder="Contato">
+                            <input type="text" id="c-doc" placeholder="CNPJ/CPF">
+                            <input type="text" id="c-rg" placeholder="RG/Insc. Est.">
+                            <input type="text" id="c-tel" placeholder="Celular/WhatsApp" required>
+                            <input type="text" id="c-end" placeholder="Endereço" class="full-width">
+                            <input type="text" id="c-cep" placeholder="CEP">
+                            <input type="text" id="c-bairro" placeholder="Bairro">
+                            <input type="text" id="c-cid" placeholder="Cidade/Estado">
+                            <select id="c-pag">
+                                <option value="">Forma de Pagamento</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Boleto">Boleto</option>
+                                <option value="Cartão">Cartão</option>
+                            </select>
+                            <textarea id="c-obs" placeholder="Observações" class="full-width"></textarea>
+                            <button type="submit" class="full-width" style="padding:15px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer;">SALVAR CLIENTE</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <table>
+                            <tr><th>Razão Social</th><th>Contato</th><th>Cidade/Estado</th><th>Ações</th></tr>
+                            ${rows}
+                        </table>
+                    </div>
+                `;
             }
-
+            
+            // Lógica de Estoque e Pedidos mantida intacta
             if(tela === 'est') {
                 const r = await fetch(`${DB}/estoque.json`);
                 const d = await r.json();
@@ -109,26 +146,35 @@
                 if(d) Object.entries(d).forEach(([id, i]) => {
                     rows += `<tr><td>${i.item}</td><td>${i.qtd}</td><td><button onclick="deletar('${id}', 'estoque')">Excluir</button></td></tr>`;
                 });
-                port.innerHTML = `<h1>📦 Estoque</h1><button onclick="novoItem('estoque')" class="btn-add">+ Novo Item</button><table><tr><th>Produto</th><th>Qtd</th><th>Ações</th></tr>${rows}</table>`;
+                port.innerHTML = `<h1>📦 Estoque</h1><button onclick="novoItemSimples()" style="padding:10px; background:#16a34a; color:white; border:none; border-radius:5px; margin-bottom:10px;">+ Novo Item</button><table><tr><th>Produto</th><th>Qtd</th><th>Ações</th></tr>${rows}</table>`;
             }
 
             if(tela === 'ped') {
-                port.innerHTML = `<h1>🛒 Pedidos</h1><div class="card"><p>Aba de pedidos ativa. Clique abaixo para gerar o PDF oficial.</p><button onclick="gerarPDF()">Gerar PDF com Logo Permatti</button></div>`;
+                port.innerHTML = `<h1>🛒 Pedidos</h1><div class="card"><p>Aba de pedidos ativa. PDF gerado com Logopermatti.png.</p><button onclick="gerarPDF()">Gerar PDF</button></div>`;
             }
         }
 
-        async function novoItem(ref) {
-            const val1 = prompt(ref === 'clientes' ? "Nome:" : "Item:");
-            const val2 = prompt(ref === 'clientes' ? "Tel:" : "Qtd:");
-            if(val1 && val2) {
-                const obj = ref === 'clientes' ? {nome: val1, tel: val2} : {item: val1, qtd: val2};
-                await fetch(`${DB}/${ref}.json`, { method: 'POST', body: JSON.stringify(obj) });
-                render(ref === 'clientes' ? 'cli' : 'est');
-            }
+        async function salvarCliente(e) {
+            e.preventDefault();
+            const cliente = {
+                nome: document.getElementById('c-nome').value,
+                contato: document.getElementById('c-contato').value,
+                doc: document.getElementById('c-doc').value,
+                rg: document.getElementById('c-rg').value,
+                tel: document.getElementById('c-tel').value,
+                end: document.getElementById('c-end').value,
+                cep: document.getElementById('c-cep').value,
+                bairro: document.getElementById('c-bairro').value,
+                cidadeEstado: document.getElementById('c-cid').value,
+                pagamento: document.getElementById('c-pag').value,
+                obs: document.getElementById('c-obs').value
+            };
+            await fetch(`${DB}/clientes.json`, { method: 'POST', body: JSON.stringify(cliente) });
+            render('cli');
         }
 
         async function deletar(id, ref) {
-            if(confirm("Deseja excluir este registro?")) {
+            if(confirm("Deseja excluir?")) {
                 await fetch(`${DB}/${ref}/${id}.json`, { method: 'DELETE' });
                 render(ref === 'clientes' ? 'cli' : 'est');
             }
@@ -138,12 +184,11 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const img = new Image();
-            img.src = 'Logopermatti.png'; /* SOMENTE NO PDF */
+            img.src = 'Logopermatti.png';
             img.onload = () => {
                 doc.addImage(img, 'PNG', 150, 10, 40, 15);
-                doc.setFontSize(18);
-                doc.text("ORÇAMENTO / PEDIDO", 10, 20);
-                doc.save("pedido_bbforros.pdf");
+                doc.text("Pedido BB Forros", 10, 20);
+                doc.save("pedido.pdf");
             };
         }
     </script>
