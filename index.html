@@ -52,12 +52,6 @@
             max-width: 440px;
             text-align: center;
             border-top: 8px solid var(--cor-borda);
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .logo-container {
@@ -74,7 +68,6 @@
             margin-bottom: 25px;
             font-size: 26px;
             font-weight: bold;
-            letter-spacing: 1px;
         }
 
         .login-card input {
@@ -85,11 +78,6 @@
             border-radius: 8px;
             font-size: 16px;
             outline: none;
-            transition: border 0.3s;
-        }
-
-        .login-card input:focus {
-            border-color: var(--vinho-botao);
         }
 
         .btn-acessar {
@@ -103,12 +91,6 @@
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
-            transition: background 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .btn-acessar:hover {
-            background-color: var(--vinho-hover);
         }
 
         /* --- ESTRUTURA PRINCIPAL --- */
@@ -127,7 +109,6 @@
             justify-content: space-between;
             padding: 0 25px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            z-index: 10;
         }
 
         .header-logo {
@@ -138,12 +119,6 @@
 
         .header-logo img {
             height: 50px;
-        }
-
-        .header-info {
-            text-align: right;
-            font-size: 14px;
-            color: #555;
         }
 
         .layout {
@@ -158,7 +133,6 @@
             background: var(--cor-sidebar);
             display: flex;
             flex-direction: column;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
         }
 
         .menu {
@@ -181,13 +155,12 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: all 0.3s;
+            transition: 0.3s;
         }
 
         .menu button:hover {
             background: #1a1a1a;
             color: #fff;
-            padding-left: 30px;
         }
 
         .menu button.active {
@@ -205,29 +178,14 @@
             font-weight: bold;
             text-align: center;
             border-top: 1px solid #333;
-            text-transform: uppercase;
-            transition: 0.3s;
         }
 
-        .btn-sair-lateral:hover {
-            background: #1a0000;
-            color: #ff0000;
-        }
-
-        /* --- ÁREA DE CONTEÚDO --- */
+        /* --- CONTEÚDO --- */
         .content {
             flex: 1;
             padding: 35px;
             overflow-y: auto;
             background: #f4f7f6;
-        }
-
-        h1 {
-            margin-bottom: 30px;
-            color: var(--vinho-botao);
-            font-size: 28px;
-            border-left: 5px solid var(--vinho-botao);
-            padding-left: 15px;
         }
 
         .card {
@@ -238,33 +196,11 @@
             margin-bottom: 25px;
         }
 
-        h2 {
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #444;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         /* --- FORMULÁRIOS --- */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-        }
-
-        .field-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #666;
-            text-transform: uppercase;
         }
 
         input, select, textarea {
@@ -273,114 +209,211 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
-            outline: none;
-            transition: border 0.3s;
         }
 
-        input:focus, select:focus {
-            border-color: var(--vinho-botao);
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
         }
 
         .full-width { grid-column: span 4; }
         .half-width { grid-column: span 2; }
         .tri-width { grid-column: span 3; }
 
-        /* --- BOTÕES DE AÇÃO --- */
         .btn-acao {
-            padding: 15px 25px;
+            padding: 12px 25px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 14px;
-            text-transform: uppercase;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
         .btn-sucesso { background: #27ae60; color: white; }
         .btn-primario { background: var(--vinho-botao); color: white; }
-        .btn-cancelar { background: #95a5a6; color: white; }
-
-        .btn-sucesso:hover { background: #219150; transform: translateY(-2px); }
-        .btn-primario:hover { background: var(--vinho-hover); transform: translateY(-2px); }
 
         /* --- TABELAS --- */
-        .table-container {
-            overflow-x: auto;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            background: #fff;
-            border-radius: 8px;
         }
 
         th {
             background: #f8f9fa;
             color: var(--vinho-botao);
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 12px;
             padding: 15px;
             border: 1px solid #eee;
             text-align: left;
+            font-size: 12px;
         }
 
         td {
             padding: 15px;
             border: 1px solid #eee;
-            text-align: left;
-            vertical-align: middle;
             font-size: 14px;
         }
 
-        tr:hover {
-            background-color: #f9f9f9;
+        .btn-editar-tabela { background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+        .btn-excluir-tabela { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-pdf-lista { background: #003399; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="login-overlay">
+        <div class="login-card">
+            <div class="logo-container"><img src="LogoBB.png"></div>
+            <h2>SISTEMA BB GESTÃO</h2>
+            <input type="text" id="user_login" placeholder="Usuário">
+            <input type="password" id="pass_login" placeholder="Senha">
+            <button onclick="validaLogin()" class="btn-acessar">ENTRAR</button>
+        </div>
+    </div>
+
+    <div id="app">
+        <header class="header">
+            <div class="header-logo">
+                <img src="LogoBB.png">
+                <b style="color: var(--cor-borda);">BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA</b>
+            </div>
+            <div class="header-info">
+                <span id="data-atual"></span>
+            </div>
+        </header>
+        <div class="layout">
+            <aside class="sidebar" id="side-menu"></aside>
+            <main class="content" id="view-port"></main>
+        </div>
+    </div>
+
+    <script>
+        const DB_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
+        let editId = null;
+        window.itensPedido = [];
+        window.totalGeral = 0;
+        window.pedidosGlobais = {}; 
+
+        document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-br');
+
+        function validaLogin() {
+            const u = document.getElementById('user_login').value;
+            if(u.toLowerCase() === 'admin') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+                render('fin');
+            } else {
+                alert('Erro');
+            }
         }
 
-        .btn-editar-tabela {
-            background-color: #ff9800;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 11px;
-            text-transform: uppercase;
+        async function render(tela) {
+            const port = document.getElementById('view-port');
+            const menu = document.getElementById('side-menu');
+            
+            menu.innerHTML = `
+                <nav class="menu">
+                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Financeiro</button>
+                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Clientes</button>
+                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido</button>
+                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Estoque</button>
+                </nav>
+                <button onclick="location.reload()" class="btn-sair-lateral">SAIR</button>
+            `;
+
+            if(tela === 'fin') {
+                const res = await fetch(`${DB_URL}/pedidos.json`);
+                const data = await res.json();
+                let total = 0;
+                let rows = '';
+                if(data) {
+                    Object.values(data).forEach(p => {
+                        total += parseFloat(p.total || 0);
+                        rows += `<tr><td>${p.data}</td><td>${p.numPedido}</td><td>${p.cliente}</td><td>R$ ${parseFloat(p.total).toFixed(2)}</td></tr>`;
+                    });
+                }
+                port.innerHTML = `<h1>Financeiro</h1><div class="card"><h2>Total Faturado: R$ ${total.toFixed(2)}</h2></div><div class="card"><table><thead><tr><th>Data</th><th>Nº</th><th>Cliente</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            }
+
+            if(tela === 'cli') {
+                const res = await fetch(`${DB_URL}/clientes.json`);
+                const data = await res.json();
+                let rows = '';
+                if(data) {
+                    Object.entries(data).forEach(([id, c]) => {
+                        rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidadeEstado}</td><td>
+                            <button class="btn-editar-tabela" onclick='prepararEdicao("${id}", ${JSON.stringify(c)})'>EDITAR</button>
+                            <button class="btn-excluir-tabela" onclick='deletar("${id}", "clientes")'>EXCLUIR</button>
+                        </td></tr>`;
+                    });
+                }
+                port.innerHTML = `<h1>Clientes</h1><div class="card"><form onsubmit="salvarCliente(event)" class="form-grid">
+                    <div class="full-width"><label>Nome</label><input type="text" id="c-nome" required></div>
+                    <div class="half-width"><label>Telefone</label><input type="text" id="c-tel"></div>
+                    <div class="half-width"><label>CPF/CNPJ</label><input type="text" id="c-doc"></div>
+                    <div class="full-width"><label>Endereço</label><input type="text" id="c-end"></div>
+                    <div class="full-width"><label>Cidade/UF</label><input type="text" id="c-cid"></div>
+                    <button type="submit" id="btn-cli" class="btn-acao btn-sucesso full-width">SALVAR CLIENTE</button>
+                </form></div><div class="card"><table><thead><tr><th>Nome</th><th>Tel</th><th>Cidade</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            }
+
+            if(tela === 'ped') {
+                const resCli = await fetch(`${DB_URL}/clientes.json`);
+                const dataCli = await resCli.json();
+                let opts = '<option value="">Selecione...</option>';
+                if(dataCli) Object.values(dataCli).forEach(c => opts += `<option value='${JSON.stringify(c).replace(/'/g, "&apos;")}'>${c.nome}</option>`);
+
+                const resPed = await fetch(`${DB_URL}/pedidos.json`);
+                window.pedidosGlobais = await resPed.json() || {};
+                let rowsPed = '';
+                Object.entries(window.pedidosGlobais).reverse().forEach(([id, p]) => {
+                    rowsPed += `<tr><td>${p.data}</td><td>${p.numPedido}</td><td>${p.cliente}</td><td>R$ ${parseFloat(p.total).toFixed(2)}</td>
+                    <td><button class="btn-pdf-lista" onclick="gerarPDFHistorico('${id}')">PDF</button></td></tr>`;
+                });
+
+                port.innerHTML = `<h1>Novo Pedido</h1><div class="card"><div class="form-grid">
+                    <div class="tri-width"><label>Cliente</label><select id="p-cliente">${opts}</select></div>
+                    <div><label>Nº Pedido</label><input type="text" id="p-numero"></div>
+                    <div class="full-width"><label>Item</label><input type="text" id="p-item"></div>
+                    <div><label>Pçs</label><input type="number" id="p-pecas" oninput="calcSub()"></div>
+                    <div><label>m²</label><input type="number" id="p-m2" oninput="calcSub()"></div>
+                    <div><label>Unit.</label><input type="number" id="p-val" oninput="calcSub()"></div>
+                    <div><label>Subtotal</label><input type="text" id="p-sub" readonly></div>
+                    <button onclick="addItem()" class="btn-acao btn-primario full-width">+ ADICIONAR ITEM</button>
+                </div></div>
+                <div class="card"><table id="t-itens"><thead><tr><th>Desc</th><th>Pçs</th><th>m²</th><th>Unit</th><th>Sub</th><th>X</th></tr></thead><tbody id="lista-pedido"></tbody></table>
+                <h2 id="total-pedido">TOTAL: R$ 0,00</h2><button onclick="finalizar(true)" class="btn-acao btn-sucesso">FINALIZAR E PDF</button></div>
+                <div class="card"><h2>Histórico</h2><table><thead><tr><th>Data</th><th>Nº</th><th>Cliente</th><th>Total</th><th>Ação</th></tr></thead><tbody>${rowsPed}</tbody></table></div>`;
+                window.itensPedido = [];
+            }
+
+            if(tela === 'est') {
+                const res = await fetch(`${DB_URL}/estoque.json`);
+                const data = await res.json();
+                let rows = '';
+                if(data) Object.values(data).forEach(i => rows += `<tr><td>${i.item}</td><td>${i.qtd}</td></tr>`);
+                port.innerHTML = `<h1>Estoque</h1><div class="card"><table><thead><tr><th>Item</th><th>Qtd</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            }
         }
 
-        .btn-excluir-tabela {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 11px;
-            text-transform: uppercase;
+        function prepararEdicao(id, c) {
+            editId = id;
+            document.getElementById('c-nome').value = c.nome;
+            document.getElementById('c-tel').value = c.tel;
+            document.getElementById('c-doc').value = c.doc;
+            document.getElementById('c-end').value = c.end;
+            document.getElementById('c-cid').value = c.cidadeEstado;
+            document.getElementById('btn-cli').innerText = "ATUALIZAR";
         }
 
-        .btn-pdf-lista {
-            background-color: #003399;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: 0.3s;
-        }
-
-        .btn-pdf-lista:hover { background-color: #002266; }
-
-        /* --- ESTILOS ESPECÍFICOS ---
+        async function salvarCliente(e) {
+            e.preventDefault();
+            const p = {
+                nome: document.getElementById('c-nome').value,
+                tel: document.getElementById('c-tel').value,
+                doc: document.getElementById('c-doc').value,
+                end: document.getElementById('c-end').value,
+                cidadeEstado: document.
