@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP BB Forros | Gestão Oficial</title>
+    <title>ERP BB Forros | Gestão Completa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -25,18 +25,20 @@
         
         .content-area { flex: 1; padding: 30px; overflow-y: auto; }
         .card { background: white; padding: 25px; border-radius: 12px; border: 1px solid #fee2e2; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .full { grid-column: span 2; }
-        label { display: block; font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 5px; text-transform: uppercase; }
-        input, select, textarea { padding: 12px; border: 1px solid #fecaca; border-radius: 8px; width: 100%; margin-bottom: 10px; outline: none; font-size: 14px; }
-        textarea { height: 80px; resize: none; }
-        .btn-main { background: var(--primary); color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
-        .btn-main:hover { background: #600000; }
+        .triple { grid-column: span 3; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        
+        label { display: block; font-size: 10px; font-weight: bold; color: var(--primary); margin-bottom: 4px; text-transform: uppercase; }
+        input, select, textarea { padding: 10px; border: 1px solid #fecaca; border-radius: 6px; width: 100%; margin-bottom: 5px; outline: none; font-size: 13px; }
+        textarea { height: 60px; resize: none; }
+        .btn-main { background: var(--primary); color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
         .btn-pdf { background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { text-align: left; padding: 12px; color: var(--primary); border-bottom: 2px solid #eee; font-size: 12px; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { text-align: left; padding: 10px; color: var(--primary); border-bottom: 2px solid #eee; font-size: 11px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -57,7 +59,7 @@
                 <img src="LogoBB.png" alt="Logo">
                 <span style="font-weight:bold; color:var(--primary); font-size:20px;">BB COMÉRCIO DE FORROS</span>
             </div>
-            <div>Admin</div>
+            <div>Painel: <b>Administrador</b></div>
         </header>
         <div class="main-layout">
             <nav class="sidebar">
@@ -93,10 +95,10 @@
                 const d = await r.json();
                 const peds = d ? Object.values(d) : [];
                 const total = peds.reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
-                area.innerHTML = `<h1>📊 Financeiro Geral</h1>
+                area.innerHTML = `<h1>📊 Financeiro</h1>
                     <div class="grid">
                         <div class="card"><label>Faturamento</label><h2>R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div>
-                        <div class="card"><label>Total de Pedidos</label><h2>${peds.length}</h2></div>
+                        <div class="card"><label>Total de Vendas</label><h2>${peds.length}</h2></div>
                     </div>`;
             }
 
@@ -105,16 +107,24 @@
                 const d = await r.json();
                 const clis = d ? Object.values(d) : [];
                 area.innerHTML = `<h1>👥 Cadastro de Cliente</h1>
-                    <div class="card grid">
-                        <div class="full"><label>Nome Completo / Razão Social</label><input id="cnome"></div>
-                        <div><label>CPF / CNPJ</label><input id="cdoc"></div>
-                        <div><label>Telefone</label><input id="ctel"></div>
-                        <div><label>E-mail</label><input id="cmail"></div>
-                        <div><label>Endereço Completo</label><input id="cend"></div>
-                        <button class="btn-main full" onclick="salvarCli()">SALVAR CLIENTE</button>
+                    <div class="card">
+                        <div class="grid">
+                            <div class="full"><label>Nome / Razão Social</label><input id="cnome"></div>
+                            <div><label>CNPJ / CPF</label><input id="cdoc"></div>
+                            <div><label>RG / Insc. Est.</label><input id="crg"></div>
+                            <div><label>Celular / WhatsApp</label><input id="ctel"></div>
+                            <div><label>Contato</label><input id="ccont"></div>
+                            <div class="full"><label>Endereço</label><input id="cend"></div>
+                            <div><label>Bairro</label><input id="cbairro"></div>
+                            <div><label>Cidade / Estado</label><input id="ccid"></div>
+                            <div><label>Bolso</label><input id="cbolso"></div>
+                            <div><label>Forma de Pagamento</label><input id="cpag"></div>
+                            <div class="full"><label>Observações</label><textarea id="cobs"></textarea></div>
+                        </div>
+                        <button class="btn-main" onclick="salvarCli()">CADASTRAR CLIENTE</button>
                     </div>
                     <div class="card">
-                        <table><thead><tr><th>Nome</th><th>Documento</th><th>Tel</th></tr></thead>
+                        <table><thead><tr><th>Nome</th><th>Documento</th><th>Celular</th></tr></thead>
                         <tbody>${clis.reverse().map(c => `<tr><td>${c.nome}</td><td>${c.doc}</td><td>${c.tel}</td></tr>`).join('')}</tbody></table>
                     </div>`;
             }
@@ -131,11 +141,11 @@
                         <div class="full"><label>Descrição do Material</label><input id="pmat"></div>
                         <div><label>Quantidade</label><input id="pqtd" type="number"></div>
                         <div><label>Valor Unitário</label><input id="pvlr" type="number"></div>
-                        <div class="full"><label>Observações do Pedido</label><textarea id="pobs" placeholder="Ex: Detalhes de entrega, cor do forro, etc."></textarea></div>
+                        <div class="full"><label>Observações do Pedido</label><textarea id="pobs"></textarea></div>
                         <button class="btn-main full" onclick="salvarVenda()" style="background:#16a34a">GERAR PEDIDO E PDF</button>
                     </div>
                     <div class="card">
-                        <table><thead><tr><th>Nº</th><th>Cliente</th><th>Total</th><th>PDF</th></tr></thead>
+                        <table><thead><tr><th>Nº</th><th>Cliente</th><th>Total</th><th>Ação</th></tr></thead>
                         <tbody>${peds.reverse().map(p => `<tr><td>#${p.numero}</td><td>${p.cliente}</td><td>R$ ${p.total}</td><td><button class="btn-pdf" onclick='gerarPDF(${JSON.stringify(p)})'>PDF</button></td></tr>`).join('')}</tbody></table>
                     </div>`;
             }
@@ -144,8 +154,83 @@
                 const r = await fetch(`${DB_URL}/estoque.json`);
                 const d = await r.json();
                 const itens = d ? Object.values(d) : [];
-                area.innerHTML = `<h1>📦 Controle de Estoque</h1>
+                area.innerHTML = `<h1>📦 Estoque</h1>
                     <div class="card grid">
                         <div class="full"><label>Material</label><input id="ename"></div>
-                        <div><label>Qtd em Estoque</label><input id="eqtd" type="number"></div>
-                        <div><label>Unidade</label><select id="euni"><option>m²</option><option>Metros
+                        <div><label>Qtd</label><input id="eqtd" type="number"></div>
+                        <div><label>Unid</label><select id="euni"><option>m²</option><option>Metros</option><option>Peças</option></select></div>
+                        <button class="btn-main full" onclick="salvarEst()">ATUALIZAR</button>
+                    </div>
+                    <div class="card">
+                        <table><thead><tr><th>Material</th><th>Qtd</th><th>Unid</th></tr></thead>
+                        <tbody>${itens.map(i => `<tr><td>${i.nome}</td><td>${i.qtd}</td><td>${i.unid}</td></tr>`).join('')}</tbody></table>
+                    </div>`;
+            }
+        }
+
+        async function salvarCli() {
+            const d = { 
+                nome: document.getElementById('cnome').value, doc: document.getElementById('cdoc').value, 
+                rg: document.getElementById('crg').value, tel: document.getElementById('ctel').value,
+                contato: document.getElementById('ccont').value, end: document.getElementById('cend').value,
+                bairro: document.getElementById('cbairro').value, cid: document.getElementById('ccid').value,
+                bolso: document.getElementById('cbolso').value, pag: document.getElementById('cpag').value,
+                obs: document.getElementById('cobs').value
+            };
+            if(d.nome) { await fetch(`${DB_URL}/clientes.json`, { method: 'POST', body: JSON.stringify(d) }); render('cli'); }
+        }
+
+        async function salvarEst() {
+            const d = { nome: document.getElementById('ename').value, qtd: document.getElementById('eqtd').value, unid: document.getElementById('euni').value };
+            if(d.nome) { await fetch(`${DB_URL}/estoque.json`, { method: 'POST', body: JSON.stringify(d) }); render('est'); }
+        }
+
+        async function salvarVenda() {
+            const p = {
+                numero: document.getElementById('pnum').value,
+                data: document.getElementById('pdata').value,
+                cliente: document.getElementById('pcli').value,
+                material: document.getElementById('pmat').value,
+                qtd: document.getElementById('pqtd').value,
+                unit: document.getElementById('pvlr').value,
+                obs: document.getElementById('pobs').value,
+                total: (document.getElementById('pqtd').value * document.getElementById('pvlr').value).toFixed(2)
+            };
+            if(p.total > 0) {
+                await fetch(`${DB_URL}/pedidos.json`, { method: 'POST', body: JSON.stringify(p) });
+                gerarPDF(p);
+                render('fin');
+            }
+        }
+
+        function gerarPDF(p) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16); doc.setTextColor(139, 0, 0); doc.text("BB COMÉRCIO DE FORROS E DIVISÓRIAS", 105, 15, {align:'center'});
+            doc.setFontSize(10); doc.setTextColor(0,0,0); doc.text("R. João Pereira Inacio, 397 - Praia Grande/SP", 105, 22, {align:'center'});
+            doc.line(10, 28, 200, 28);
+            doc.setFont("helvetica", "bold"); doc.text(`PEDIDO Nº: ${p.numero}`, 10, 40);
+            doc.text(`DATA: ${p.data}`, 160, 40);
+            doc.setFont("helvetica", "normal"); doc.text(`CLIENTE: ${p.cliente}`, 10, 48);
+            
+            doc.autoTable({
+                startY: 55, head: [['MATERIAL/DESCRIÇÃO', 'QTD', 'UNIT.', 'TOTAL']],
+                body: [[p.material, p.qtd, `R$ ${p.unit}`, `R$ ${p.total}`]],
+                headStyles: {fillColor: [139, 0, 0]}
+            });
+
+            let finalY = doc.lastAutoTable.finalY + 10;
+            if(p.obs) {
+                doc.setFont("helvetica", "bold"); doc.text("OBSERVAÇÕES:", 10, finalY);
+                doc.setFont("helvetica", "normal"); doc.text(p.obs, 10, finalY + 7, { maxWidth: 180 });
+                finalY += 25;
+            }
+
+            finalY += 20;
+            doc.line(20, finalY, 90, finalY); doc.text("ASSINATURA EMPRESA", 55, finalY + 5, {align:'center'});
+            doc.line(120, finalY, 190, finalY); doc.text("ASSINATURA CLIENTE", 155, finalY + 5, {align:'center'});
+            doc.save(`Pedido_${p.numero}.pdf`);
+        }
+    </script>
+</body>
+</html>
