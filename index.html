@@ -73,11 +73,8 @@
         .btn-sucesso { background: #27ae60; color: white; }
         .btn-primario { background: var(--vinho-botao); color: white; }
 
-        /* Botões da Tabela de Clientes */
         .btn-editar-tabela { background-color: #ff9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 5px; text-transform: uppercase; font-size: 12px; }
         .btn-excluir-tabela { background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; font-size: 12px; }
-        
-        /* Botão PDF Histórico Pedidos */
         .btn-pdf-lista { background-color: #003399; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 8px; overflow: hidden; }
@@ -124,7 +121,8 @@
         document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-br');
 
         function validaLogin() {
-            if(document.getElementById('user').value === 'admin') {
+            const u = document.getElementById('user').value;
+            if(u === 'admin') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 render('fin');
@@ -148,4 +146,190 @@
             `;
 
             if(tela === 'fin') {
-                const res
+                port.innerHTML = "<h1>Carregando Financeiro...</h1>";
+                const res = await fetch(`${DB_URL}/pedidos.json`);
+                const data = await res.json();
+                let faturamento = 0;
+                let rows = '';
+                if(data) {
+                    Object.entries(data).forEach(([id, p]) => {
+                        const valor = parseFloat(p.total) || 0;
+                        faturamento += valor;
+                        rows += `<tr><td>${p.data || ''}</td><td>${p.numPedido || '---'}</td><td>${p.cliente || ''}</td><td>R$ ${valor.toLocaleString('pt-br',{minimumFractionDigits:2})}</td></tr>`;
+                    });
+                }
+                port.innerHTML = `<h1>📊 Painel Financeiro</h1><div class="card"><h2>Faturamento: R$ ${faturamento.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div><div class="card"><table><thead><tr><th>Data</th><th>Nº Pedido</th><th>Cliente</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            }
+
+            if(tela === 'cli') {
+                port.innerHTML = "<h1>Carregando Clientes...</h1>";
+                const res = await fetch(`${DB_URL}/clientes.json`);
+                const data = await res.json();
+                let rows = '';
+                if(data) {
+                    Object.entries(data).forEach(([id, c]) => {
+                        rows += `<tr><td>${c.nome}</td><td>${c.tel || ''}</td><td>${c.cidadeEstado || ''}</td><td style="width: 120px">
+                            <button class="btn-editar-tabela" onclick='prepararEdicao("${id}", ${JSON.stringify(c)})'>EDITAR</button>
+                            <button class="btn-excluir-tabela" onclick='deletar("${id}", "clientes")'>EXCLUIR</button>
+                        </td></tr>`;
+                    });
+                }
+                port.innerHTML = `<h1>👥 Clientes</h1><div class="card">
+                    <form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
+                        <input type="text" id="c-nome" placeholder="Nome" required class="full-width">
+                        <input type="text" id="c-tel" placeholder="Telefone" class="half-width">
+                        <input type="text" id="c-doc" placeholder="CPF/CNPJ" class="half-width">
+                        <input type="text" id="c-end" placeholder="Endereço" class="full-width">
+                        <input type="text" id="c-cid" placeholder="Cidade/UF" class="half-width">
+                        <button type="submit" id="btn-cli-salvar" class="btn-acao btn-sucesso full-width">SALVAR CLIENTE</button>
+                    </form></div>
+                    <div class="card"><table><thead><tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            }
+
+            if(tela === 'ped') {
+                const resCli = await fetch(`${DB_URL}/clientes.json`);
+                const dataCli = await resCli.json();
+                let opts = '<option value="">Selecione o Cliente...</option>';
+                if(dataCli) Object.values(dataCli).forEach(c => opts += `<option value='${JSON.stringify(c)}'>${c.nome}</option>`);
+
+                const resPed = await fetch(`${DB_URL}/pedidos.json`);
+                const dataPed = await resPed.json();
+                let rowsPed = '';
+                if(dataPed) {
+                    Object.entries(dataPed).reverse().forEach(([id, p]) => {
+                        rowsPed += `<tr><td>${p.data}</td><td>${p.numPedido}</td><td>${p.cliente}</td><td>R$ ${parseFloat(p.total).toFixed(2)}</td>
+                        <td><button class="btn-pdf-lista" onclick='regerarPDF(${JSON.stringify(p)})'>PDF</button></td></tr>`;
+                    });
+                }
+
+                port.innerHTML = `<h1>🛒 Novo Pedido</h1>
+                <div class="card"><div class="form-grid">
+                    <div class="tri-width"><label>Cliente</label><select id="p-cliente-select">${opts}</select></div>
+                    <div><label>Nº Pedido</label><input type="text" id="p-numero" style="border:2px solid #8a0000;font-weight:bold"></div>
+                    <input type="text" id="p-item" placeholder="Descrição" class="full-width">
+                    <input type="number" id="p-pecas" placeholder="Pçs" oninput="calcSub()">
+                    <input type="number" id="p-m2" placeholder="m2" oninput="calcSub()">
+                    <input type="number" id="p-val" placeholder="Preço" oninput="calcSub()">
+                    <input type="text" id="p-sub" placeholder="Subtotal" readonly>
+                    <button onclick="addItem()" class="btn-acao btn-primario full-width">+ ADICIONAR ITEM</button>
+                </div></div>
+                <div class="card"><table id="tabela-itens"><thead><tr><th>Descrição</th><th>Pçs</th><th>m2</th><th>Unit</th><th>Subtotal</th><th>X</th></tr></thead><tbody id="lista-pedido"></tbody></table>
+                <h2 id="total-pedido" style="text-align:right;margin-top:20px">TOTAL: R$ 0,00</h2>
+                <button onclick="finalizar(true)" class="btn-acao btn-sucesso" style="float:right">FINALIZAR E GERAR PDF</button></div>
+                <h2 style="margin-top:40px">📜 Pedidos Emitidos</h2>
+                <div class="card"><table><thead><tr><th>Data</th><th>Nº</th><th>Cliente</th><th>Total</th><th>Ação</th></tr></thead><tbody>${rowsPed}</tbody></table></div>`;
+                window.itensPedido = [];
+                window.totalGeral = 0;
+            }
+
+            if(tela === 'est') {
+                const res = await fetch(`${DB_URL}/estoque.json`);
+                const data = await res.json();
+                let rows = '';
+                if(data) Object.entries(data).forEach(([id, i]) => { rows += `<tr><td>${i.item}</td><td>${i.qtd}</td></tr>`; });
+                port.innerHTML = `<h1>📦 Estoque</h1><div class="card"><table><thead><tr><th>Item</th><th>Qtd</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            }
+        }
+
+        function prepararEdicao(id, c) {
+            editId = id;
+            document.getElementById('c-nome').value = c.nome;
+            document.getElementById('c-tel').value = c.tel || '';
+            document.getElementById('c-doc').value = c.doc || '';
+            document.getElementById('c-end').value = c.end || '';
+            document.getElementById('c-cid').value = c.cidadeEstado || '';
+            const b = document.getElementById('btn-cli-salvar');
+            b.innerText = "ATUALIZAR CLIENTE";
+            b.className = "btn-acao btn-primario full-width";
+            window.scrollTo(0,0);
+        }
+
+        async function salvarCliente(e) {
+            e.preventDefault();
+            const p = { nome: document.getElementById('c-nome').value, tel: document.getElementById('c-tel').value, cidadeEstado: document.getElementById('c-cid').value, end: document.getElementById('c-end').value, doc: document.getElementById('c-doc').value };
+            const method = editId ? 'PUT' : 'POST';
+            const url = editId ? `${DB_URL}/clientes/${editId}.json` : `${DB_URL}/clientes.json`;
+            await fetch(url, { method: method, body: JSON.stringify(p) });
+            editId = null;
+            render('cli');
+        }
+
+        async function deletar(id, path) {
+            if(confirm("Excluir definitivamente?")) { await fetch(`${DB_URL}/${path}/${id}.json`, { method: 'DELETE' }); render('cli'); }
+        }
+
+        function calcSub() {
+            const p = parseFloat(document.getElementById('p-pecas').value) || 1;
+            const m = parseFloat(document.getElementById('p-m2').value) || 1;
+            const v = parseFloat(document.getElementById('p-val').value) || 0;
+            const total = (document.getElementById('p-m2').value) ? (p * m * v) : (p * v);
+            document.getElementById('p-sub').value = total.toFixed(2);
+        }
+
+        function addItem() {
+            const it = { desc: document.getElementById('p-item').value, pecas: document.getElementById('p-pecas').value || '-', m2: document.getElementById('p-m2').value || '-', val: document.getElementById('p-val').value, sub: parseFloat(document.getElementById('p-sub').value) };
+            window.itensPedido.push(it);
+            atualizarTabela();
+        }
+
+        function atualizarTabela() {
+            const corpo = document.getElementById('lista-pedido');
+            corpo.innerHTML = ''; let t = 0;
+            window.itensPedido.forEach((it, i) => {
+                t += it.sub;
+                corpo.innerHTML += `<tr><td>${it.desc}</td><td>${it.pecas}</td><td>${it.m2}</td><td>${it.val}</td><td>${it.sub.toFixed(2)}</td><td><button onclick="window.itensPedido.splice(${i},1);atualizarTabela()">X</button></td></tr>`;
+            });
+            document.getElementById('total-pedido').innerText = `TOTAL: R$ ${t.toLocaleString('pt-br')}`;
+            window.totalGeral = t;
+        }
+
+        async function finalizar(pdf) {
+            const num = document.getElementById('p-numero').value;
+            const cliSel = document.getElementById('p-cliente-select').value;
+            if(!cliSel) return alert("Selecione o cliente");
+            const cliData = JSON.parse(cliSel);
+            const ped = { numPedido: num, cliente: cliData.nome, tel: cliData.tel, total: window.totalGeral, data: new Date().toLocaleDateString('pt-br'), itens: window.itensPedido };
+            await fetch(`${DB_URL}/pedidos.json`, { method: 'POST', body: JSON.stringify(ped) });
+            if(pdf) gerarPDF(cliData, num, window.itensPedido, window.totalGeral);
+            render('ped');
+        }
+
+        function regerarPDF(p) {
+            const cliObj = { nome: p.cliente, tel: p.tel || '---' };
+            gerarPDF(cliObj, p.numPedido, p.itens, p.total);
+        }
+
+        function gerarPDF(cliente, num, itens, total) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(10); doc.setFont(undefined, 'bold');
+            doc.text("BB COMERCIO DE FORROS E DIVISÓRIAS LTDA", 70, 10);
+            doc.setFont(undefined, 'normal'); doc.setFontSize(8);
+            doc.text("R. João Pereira Inacio, 397 - Aviação - Praia Grande/SP", 75, 14);
+            doc.text("CNPJ: 05.510.861/0001-33 - INSC. EST.: 558.178.702.116", 72, 18);
+            doc.text("Telefones: (13) 3481-4504 // (13) 97414-2188", 80, 22);
+            doc.setTextColor(255, 0, 0); doc.text("SIGA-NOS NAS REDES SOCIAIS: @bbforros", 85, 26);
+            doc.setTextColor(0,0,0); doc.line(10, 30, 200, 30);
+            doc.setFontSize(9);
+            doc.text(`PEDIDO Nº: ${num || 'S/N'}`, 10, 38);
+            doc.text(`DATA: ${new Date().toLocaleDateString('pt-br')}`, 160, 38);
+            doc.text(`CLIENTE: ${cliente.nome}`, 10, 45);
+            doc.text(`CONTATO: ${cliente.tel || '---'}`, 10, 50);
+            doc.setTextColor(255, 0, 0);
+            doc.text("Obs:* Se necessário eletricista e materiais elétricos será orçado e cobrado a parte", 10, 60);
+            doc.text("      * Garantia de 2 anos material e 2 anos mão de obra.", 10, 65);
+            const rows = itens.map(i => [i.desc, i.pecas, i.m2, i.val, parseFloat(i.sub).toFixed(2)]);
+            doc.autoTable({ head: [['Item', 'Pçs', 'm2', 'Val', 'Sub']], body: rows, startY: 70, headStyles: {fillColor:[0, 51, 153]} });
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setTextColor(0,0,255); doc.setFontSize(12);
+            doc.text(`TOTAL: R$ ${parseFloat(total).toFixed(2)}`, 140, finalY);
+            doc.setTextColor(255, 0, 0); doc.setFontSize(8);
+            doc.text("FORMA DE PAGAMENTO: 50% ENTRADA / RESTANTE TÉRMINO", 10, finalY + 10);
+            doc.setTextColor(0,0,255);
+            doc.text("DADOS BANCÁRIOS: Banco PagSeguro (290) Ag: 0001 CC: 55519128-7", 10, finalY + 20);
+            doc.text("PIX: bbforros@bbforros.com.br", 10, finalY + 25);
+            doc.save(`Pedido_${num}.pdf`);
+        }
+    </script>
+</body>
+</html>
