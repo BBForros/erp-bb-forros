@@ -1,0 +1,44 @@
+:root {
+    --primary: #8b0000; /* Vermelho Escuro */
+    --primary-hover: #5a0000;
+    --dark: #1a0000;
+    --sidebar-w: 250px;
+    --header-h: 65px;
+    --bg: #fdfaf9;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); height: 100vh; overflow: hidden; }
+
+/* Login */
+.overlay { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.login-box { background: white; padding: 40px; border-radius: 16px; width: 350px; text-align: center; border-top: 5px solid var(--primary); }
+.input-group input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 8px; }
+.login-box button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.login-box button:hover { background: var(--primary-hover); }
+
+/* Layout Grid */
+#app-container { display: flex; flex-direction: column; height: 100vh; }
+.top-bar { height: var(--header-h); background: white; border-bottom: 2px solid #f1f1f1; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; flex-shrink: 0; }
+.brand { display: flex; align-items: center; gap: 15px; font-weight: bold; color: var(--primary); }
+
+.main-layout { display: flex; flex: 1; overflow: hidden; }
+.sidebar { width: var(--sidebar-w); background: #2d0000; color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+.menu-links { flex: 1; padding: 10px; }
+.menu-links button { width: 100%; padding: 16px 20px; background: none; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 4px; font-size: 14px; }
+.menu-links button:hover { background: #5a0000; color: white; }
+.btn-exit { padding: 15px; background: #333; color: white; border: none; cursor: pointer; font-weight: bold; }
+
+.content-area { flex: 1; padding: 30px; overflow-y: auto; }
+
+/* Formulários e Tabelas */
+.card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #fee2e2; }
+.grid-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.full { grid-column: span 2; }
+label { display: block; font-size: 11px; font-weight: bold; color: #991b1b; margin-bottom: 4px; text-transform: uppercase; }
+input, select, textarea { padding: 12px; border: 1px solid #fecaca; border-radius: 8px; width: 100%; font-size: 14px; }
+input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
+th { background: #fff1f2; padding: 15px; text-align: left; color: #991b1b; font-size: 12px; }
+td { padding: 15px; border-bottom: 1px solid #fff1f2; font-size: 14px; }
