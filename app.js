@@ -1,93 +1,57 @@
-const FIREBASE_URL = "COLE_AQUI_O_LINK_DO_SEU_FIREBASE"; 
+pdf: (p) => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // --- CABEÇALHO ---
+        doc.setFont("helvetica", "bold"); 
+        doc.setFontSize(12);
+        doc.text("BB COMERCIO DE FORROS E DIVISÓRIAS LTDA", 105, 15, { align: "center" });
+        
+        doc.setFontSize(9); 
+        doc.setFont("helvetica", "normal");
+        doc.text("R. João Pereira Inacio, 397 - Aviação - Praia Grande/SP", 105, 20, { align: "center" });
+        doc.text("CNPJ: 05.510.861/0001-33", 105, 25, { align: "center" });
+        
+        doc.setDrawColor(139, 0, 0); 
+        doc.setLineWidth(0.5);
+        doc.line(10, 32, 200, 32); 
 
-const auth = {
-    login: () => {
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-        if(u === 'admin' && p === '123') {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-container').style.display = 'flex';
-            ui.render('dashboard');
-        } else { alert("Acesso negado!"); }
-    },
-    logout: () => location.reload()
-};
+        // --- DADOS DO PEDIDO ---
+        doc.setFontSize(11); 
+        doc.setTextColor(139, 0, 0);
+        doc.text(`PEDIDO Nº: ${p.numero}`, 10, 40);
+        doc.setTextColor(0,0,0);
+        doc.text(`Data do Pedido: ${p.data}`, 160, 40);
+        doc.text(`Cliente: ${p.cliente}`, 10, 47);
 
-const db = {
-    list: async (folder) => {
-        try {
-            const res = await fetch(`${FIREBASE_URL}/${folder}.json`);
-            const data = await res.json();
-            return data ? Object.keys(data).map(id => ({ id, ...data[id] })) : [];
-        } catch (e) { return []; }
+        // --- TABELA DE PRODUTOS ---
+        doc.autoTable({
+            startY: 55,
+            head: [['Descrição', 'Qtd', 'Unitário', 'Total']],
+            body: [[p.material, p.qtd, `R$ ${p.unit}`, `R$ ${p.total}`]],
+            headStyles: { fillColor: [139, 0, 0] },
+            theme: 'striped'
+        });
+
+        // --- RODAPÉ COM ASSINATURAS (DATA E LOCAL) ---
+        const finalY = doc.lastAutoTable.finalY + 30; // Define espaço após a tabela
+        
+        // Local e Data
+        doc.setFontSize(10);
+        const dataAtual = new Date().toLocaleDateString('pt-BR');
+        doc.text(`Praia Grande, SP - ${dataAtual}`, 105, finalY, { align: "center" });
+
+        // Linhas de Assinatura
+        const linhaY = finalY + 25;
+        
+        // Empresa (Esquerda)
+        doc.line(20, linhaY, 90, linhaY); 
+        doc.text("ASSINATURA EMPRESA", 55, linhaY + 5, { align: "center" });
+
+        // Cliente (Direita)
+        doc.line(120, linhaY, 190, linhaY);
+        doc.text("ASSINATURA CLIENTE", 155, linhaY + 5, { align: "center" });
+
+        // Salvar o arquivo
+        doc.save(`Pedido_${p.numero}_${p.cliente}.pdf`);
     }
-};
-
-const ui = {
-    render: async (section) => {
-        const area = document.getElementById('view-content');
-        area.innerHTML = "<h2>Carregando...</h2>";
-
-        // SEÇÃO DO FINANCEIRO (DASHBOARD)
-        if(section === 'dashboard') {
-            const peds = await db.list('pedidos');
-            const faturamento = peds.reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
-            
-            area.innerHTML = `
-                <h1 style="color:var(--primary); margin-bottom:20px;">📊 Resumo Financeiro</h1>
-                <div class="grid-form">
-                    <div class="card" style="border-left: 8px solid var(--primary);">
-                        <h3>FATURAMENTO BRUTO</h3>
-                        <h2 style="color:var(--primary); font-size:32px;">R$ ${faturamento.toFixed(2)}</h2>
-                    </div>
-                    <div class="card">
-                        <h3>TOTAL DE PEDIDOS</h3>
-                        <h2 style="font-size:32px;">${peds.length}</h2>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Últimas Vendas</h3>
-                    <table style="width:100%; border-collapse:collapse; margin-top:10px;">
-                        <thead><tr style="text-align:left; color:var(--primary); border-bottom:1px solid #eee;"><th>Pedido</th><th>Cliente</th><th>Valor</th></tr></thead>
-                        <tbody>${peds.slice(-5).reverse().map(p => `<tr><td>#${p.numero}</td><td>${p.cliente}</td><td>R$ ${p.total}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>`;
-        }
-
-        // SEÇÃO DE CLIENTES
-        if(section === 'clientes') {
-            const clis = await db.list('clientes');
-            area.innerHTML = `<h1>👥 Clientes</h1>
-                <div class="card grid-form">
-                    <div class="full"><label>Nome / Razão Social</label><input id="c-nome"></div>
-                    <button onclick="actions.saveCli()" class="full" style="background:var(--primary); color:white; padding:12px; border:none; border-radius:8px; cursor:pointer;">CADASTRAR CLIENTE</button>
-                </div>
-                <div class="card">
-                    <table style="width:100%; border-collapse:collapse;">
-                        <thead><tr style="text-align:left; border-bottom:1px solid #ccc;"><th>Nome</th></tr></thead>
-                        <tbody>${clis.map(c => `<tr><td>${c.nome}</td></tr>`).join('')}</tbody>
-                    </table>
-                </div>`;
-        }
-
-        // SEÇÃO DE PEDIDOS
-        if(section === 'pedidos') {
-            const clis = await db.list('clientes');
-            const peds = await db.list('pedidos');
-            area.innerHTML = `<h1>🛒 Novo Pedido</h1>
-                <div class="card grid-form">
-                    <div><label>Nº Pedido</label><input id="p-num"></div>
-                    <div><label>Data</label><input id="p-data" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
-                    <div class="full"><label>Cliente</label>
-                        <select id="p-cli"><option value="">Escolha...</option>${clis.map(c => `<option>${c.nome}</option>`).join('')}</select>
-                    </div>
-                    <div class="full"><label>Material</label><input id="p-mat"></div>
-                    <div><label>Qtd</label><input id="p-qtd" type="number"></div>
-                    <div><label>Vlr Unit.</label><input id="p-vlr" type="number" step="0.01"></div>
-                    <button onclick="actions.savePed()" class="full" style="background:#16a34a; color:white; padding:15px; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">GERAR PEDIDO E PDF</button>
-                </div>`;
-        }
-    }
-};
-
-// (Funções de salvar permanecem iguais ao código anterior)
