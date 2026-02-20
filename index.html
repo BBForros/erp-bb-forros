@@ -11,30 +11,24 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); height: 100vh; overflow: hidden; }
 
-        /* Login */
         .overlay { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-box { background: var(--white); padding: 40px; border-radius: 15px; width: 350px; text-align: center; border-top: 8px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        /* Layout */
         #app { display: none; flex-direction: column; height: 100vh; }
         .top-bar { height: 65px; background: var(--white); border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
         .top-bar img { height: 45px; }
         
         .main-layout { display: flex; flex: 1; overflow: hidden; }
-        
-        /* Sidebar */
         .sidebar { width: 250px; background: var(--dark); display: flex; flex-direction: column; justify-content: space-between; }
         .menu-links { flex: 1; padding: 20px 10px; }
-        .menu-links button { width: 100%; padding: 15px; background: transparent; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 8px; font-weight: bold; transition: 0.2s; }
+        .menu-links button { width: 100%; padding: 15px; background: transparent; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 8px; font-weight: bold; }
         .menu-links button:hover, .menu-links button.active { background: var(--primary); color: white; }
         
         .sidebar-footer { padding: 15px; text-align: center; border-top: 1px solid #333; background: rgba(0,0,0,0.2); }
-        .dev-tag { color: #888; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; line-height: 1.4; }
+        .dev-tag { color: #888; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .dev-tag b { color: #bbb; display: block; font-size: 11px; }
-
         .btn-sair { background: #000; color: white; padding: 18px; border: none; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; }
 
-        /* Conteúdo */
         .content-area { flex: 1; padding: 30px; overflow-y: auto; }
         .card { background: white; padding: 25px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
@@ -42,11 +36,10 @@
         
         label { display: block; font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 5px; text-transform: uppercase; }
         input, select, textarea { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; outline: none; font-size: 14px; background: #fff; }
-        input:focus { border-color: var(--primary); }
         textarea { height: 80px; resize: none; }
         
         .btn-save { background: var(--primary); color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; }
-        .btn-pdf { background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-pdf { background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th { text-align: left; padding: 12px; color: #666; border-bottom: 2px solid #eee; font-size: 12px; }
@@ -57,10 +50,10 @@
 
     <div id="login-screen" class="overlay">
         <div class="login-box">
-            <img src="LogoBB.png" alt="Logo" onerror="this.src='https://via.placeholder.com/150?text=BB+FORROS'">
-            <h2 style="color:var(--primary); margin: 15px 0 20px 0;">SISTEMA GESTÃO</h2>
-            <input type="text" id="user" placeholder="Usuário (admin)" style="margin-bottom: 10px;">
-            <input type="password" id="pass" placeholder="Senha (123)" style="margin-bottom: 20px;">
+            <img src="LogoBB.png" alt="Logo" onerror="this.src='https://via.placeholder.com/150'">
+            <h2 style="color:var(--primary); margin: 15px 0 20px 0;">BB GESTÃO</h2>
+            <input type="text" id="user" placeholder="Usuário">
+            <input type="password" id="pass" placeholder="Senha">
             <button onclick="entrar()" class="btn-save">ACESSAR SISTEMA</button>
         </div>
     </div>
@@ -69,9 +62,9 @@
         <header class="top-bar">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <img src="LogoBB.png" alt="Logo">
-                <b style="color:var(--primary); font-size: 18px;">BB COMÉRCIO DE FORROS E DIVISORIAS LTDA.</b>
+                <b style="color:var(--primary); font-size: 18px;">BB COMÉRCIO DE FORROS E DIVISORIAS LTDA</b>
             </div>
-            <div style="font-size: 12px; color: #666;">Acesso: <b>Administrador</b></div>
+            <div style="font-size: 12px; color: #666;">Painel: <b>Admin</b></div>
         </header>
 
         <div class="main-layout">
@@ -82,12 +75,10 @@
                     <button onclick="render('ped')" id="btn-ped">🛒 VENDAS</button>
                     <button onclick="render('est')" id="btn-est">📦 ESTOQUE</button>
                 </nav>
-                
                 <div class="sidebar-footer">
                     <p class="dev-tag">Desenvolvido por: <b>Carlos Freitas</b></p>
                 </div>
-
-                <button onclick="location.reload()" class="btn-sair">Sair do Sistema</button>
+                <button onclick="location.reload()" class="btn-sair">Sair</button>
             </aside>
             <main class="content-area" id="view-container"></main>
         </div>
@@ -96,38 +87,31 @@
     <script>
         const DB_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
 
-        // FUNÇÃO LOGIN CORRIGIDA
         function entrar() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
-            
             if(u === 'admin' && p === '123') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 render('fin');
-            } else {
-                alert("Credenciais incorretas!");
-            }
+            } else { alert("Dados incorretos."); }
         }
 
         async function render(tela) {
             const area = document.getElementById('view-container');
-            area.innerHTML = "<h2>Sincronizando dados...</h2>";
-            
-            // Ativar botões
+            area.innerHTML = "<h2>Sincronizando...</h2>";
             document.querySelectorAll('.menu-links button').forEach(b => b.classList.remove('active'));
-            const btnAtivo = document.getElementById('btn-'+tela);
-            if(btnAtivo) btnAtivo.classList.add('active');
+            document.getElementById('btn-'+tela).classList.add('active');
 
             if (tela === 'fin') {
                 const r = await fetch(`${DB_URL}/pedidos.json`);
                 const d = await r.json();
                 const peds = d ? Object.values(d) : [];
                 const total = peds.reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
-                area.innerHTML = `<h1>📊 Painel Financeiro</h1>
+                area.innerHTML = `<h1>📊 Financeiro</h1>
                     <div class="form-grid">
                         <div class="card"><label>Faturamento Bruto</label><h2>R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2></div>
-                        <div class="card"><label>Total de Pedidos</label><h2>${peds.length}</h2></div>
+                        <div class="card"><label>Total de Vendas</label><h2>${peds.length}</h2></div>
                     </div>`;
             }
 
@@ -152,15 +136,27 @@
             }
 
             if (tela === 'ped') {
+                // BUSCA CLIENTES PARA O SELECT
+                const resCli = await fetch(`${DB_URL}/clientes.json`);
+                const dataCli = await resCli.json();
+                const clis = dataCli ? Object.values(dataCli).map(c => c.nome).sort() : [];
+
                 const r = await fetch(`${DB_URL}/pedidos.json`);
                 const d = await r.json();
                 const peds = d ? Object.values(d) : [];
+
                 area.innerHTML = `<h1>🛒 Novo Pedido</h1>
                     <div class="card">
                         <div class="form-grid">
                             <div><label>Nº Pedido</label><input id="pnum"></div>
                             <div><label>Data</label><input id="pdata" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
-                            <div class="full"><label>Cliente</label><input id="pcli"></div>
+                            <div class="full">
+                                <label>Cliente</label>
+                                <select id="pcli">
+                                    <option value="">Selecione um cliente...</option>
+                                    ${clis.map(nome => `<option value="${nome}">${nome}</option>`).join('')}
+                                </select>
+                            </div>
                             <div class="full"><label>Material</label><input id="pmat"></div>
                             <div><label>Qtd</label><input id="pqtd" type="number"></div>
                             <div><label>Unitário</label><input id="pvlr" type="number"></div>
@@ -169,7 +165,7 @@
                         <button class="btn-save" onclick="salvarVenda()" style="background:#16a34a">SALVAR E GERAR PDF</button>
                     </div>
                     <div class="card">
-                        <table><thead><tr><th>Nº</th><th>Cliente</th><th>Total</th><th>Ações</th></tr></thead>
+                        <table><thead><tr><th>Nº</th><th>Cliente</th><th>Total</th><th>Ação</th></tr></thead>
                         <tbody>${peds.reverse().map(p => `<tr><td>#${p.numero}</td><td>${p.cliente}</td><td>R$ ${p.total}</td><td><button class="btn-pdf" onclick='gerarPDF(${JSON.stringify(p)})'>PDF</button></td></tr>`).join('')}</tbody></table>
                     </div>`;
             }
@@ -183,16 +179,11 @@
                         <div class="full"><label>Material</label><input id="ename"></div>
                         <div><label>Qtd</label><input id="eqtd" type="number"></div>
                         <div><label>Unidade</label><select id="euni"><option>m²</option><option>Metros</option><option>Peças</option></select></div>
-                        <button class="btn-save full" onclick="salvarEst()">ATUALIZAR ESTOQUE</button>
-                    </div>
-                    <div class="card">
-                        <table><thead><tr><th>Material</th><th>Estoque</th></tr></thead>
-                        <tbody>${itens.map(i => `<tr><td>${i.nome}</td><td>${i.qtd} ${i.unid}</td></tr>`).join('')}</tbody></table>
+                        <button class="btn-save full" onclick="salvarEst()">ATUALIZAR</button>
                     </div>`;
             }
         }
 
-        // Funções de Ação
         async function salvarCli() {
             const d = { 
                 nome: document.getElementById('cnome').value, doc: document.getElementById('cdoc').value, 
@@ -202,17 +193,10 @@
                 limite: document.getElementById('climite').value, pag: document.getElementById('cpag').value,
                 obs: document.getElementById('cobs').value
             };
-            if(!d.nome) return alert("Nome obrigatório");
+            if(!d.nome) return alert("Nome é obrigatório!");
             await fetch(`${DB_URL}/clientes.json`, { method: 'POST', body: JSON.stringify(d) });
-            alert("Cliente cadastrado com sucesso!");
+            alert("Cliente cadastrado!");
             render('cli');
-        }
-
-        async function salvarEst() {
-            const d = { nome: document.getElementById('ename').value, qtd: document.getElementById('eqtd').value, unid: document.getElementById('euni').value };
-            if(!d.nome) return;
-            await fetch(`${DB_URL}/estoque.json`, { method: 'POST', body: JSON.stringify(d) });
-            render('est');
         }
 
         async function salvarVenda() {
@@ -223,7 +207,7 @@
                 cliente: document.getElementById('pcli').value, material: document.getElementById('pmat').value,
                 qtd: q, unit: v, obs: document.getElementById('pobs').value, total: (q * v).toFixed(2)
             };
-            if(p.total <= 0 || !p.cliente) return alert("Preencha os dados da venda!");
+            if(!p.cliente || p.total <= 0) return alert("Selecione o cliente e preencha os valores!");
             await fetch(`${DB_URL}/pedidos.json`, { method: 'POST', body: JSON.stringify(p) });
             gerarPDF(p);
             render('ped');
