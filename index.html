@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ERP BB Forros</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root{
@@ -28,7 +27,7 @@ justify-content:center;
 background:#fff;
 padding:40px;
 border-radius:10px;
-width:350px;
+width:360px;
 text-align:center;
 }
 .login-box img{height:90px;margin-bottom:20px;}
@@ -43,6 +42,7 @@ background:var(--vinho);
 color:#fff;
 border:none;
 cursor:pointer;
+border-radius:4px;
 }
 #app{display:none;}
 header{
@@ -55,7 +55,7 @@ border-bottom:1px solid #ddd;
 }
 .layout{display:flex;height:90vh;}
 aside{
-width:220px;
+width:230px;
 background:var(--preto);
 color:#fff;
 padding:15px;
@@ -90,14 +90,24 @@ padding:8px;
 width:100%;
 margin-bottom:8px;
 }
+.form-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+}
+.full{grid-column:span 4;}
+
 @media(max-width:768px){
 .layout{flex-direction:column;}
 aside{width:100%;}
+.form-grid{grid-template-columns:1fr;}
+.full{grid-column:span 1;}
 }
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div class="login" id="login">
 <div class="login-box">
 <img src="LogoBB.png">
@@ -108,25 +118,28 @@ aside{width:100%;}
 </div>
 </div>
 
+<!-- APP -->
 <div id="app">
 <header>
-<div><b>BB COMÉRCIO DE FORROS</b></div>
+<div><b>BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA</b></div>
 <div id="data"></div>
 </header>
 
 <div class="layout">
 <aside>
-<button onclick="render('fin')">Financeiro</button>
-<button onclick="render('cli')">Clientes</button>
-<button onclick="render('ped')">Novo Pedido</button>
+<button onclick="render('fin')">📊 Dashboard</button>
+<button onclick="render('cli')">👥 Clientes</button>
+<button onclick="render('ped')">🛒 Novo Pedido</button>
+<button onclick="render('est')">📦 Estoque</button>
+<button onclick="location.reload()">🚪 Sair</button>
 </aside>
+
 <main id="conteudo"></main>
 </div>
 </div>
 
 <script>
 const DB="https://erp-bb-forros-default-rtdb.firebaseio.com";
-
 document.getElementById("data").innerText=new Date().toLocaleDateString('pt-br');
 
 function login(){
@@ -143,131 +156,188 @@ const c=document.getElementById("conteudo");
 if(tela==="fin"){
 const r=await fetch(DB+"/pedidos.json");
 const d=await r.json();
-let total=0,rows="";
+
+let faturamento=0;
+let lucroTotal=0;
+let rows="";
+let labels=[];
+let valores=[];
+
 if(d){
 Object.values(d).forEach(p=>{
-total+=parseFloat(p.total||0);
-rows+=`<tr><td>${p.data}</td><td>${p.num}</td><td>${p.cliente}</td><td>R$ ${p.total}</td></tr>`;
+faturamento+=parseFloat(p.total||0);
+lucroTotal+=parseFloat(p.lucro||0);
+labels.push(p.data);
+valores.push(p.total);
+
+rows+=`
+<tr>
+<td>${p.data}</td>
+<td>${p.numPedido}</td>
+<td>${p.cliente}</td>
+<td>R$ ${parseFloat(p.total).toFixed(2)}</td>
+<td style="color:green;">R$ ${parseFloat(p.lucro||0).toFixed(2)}</td>
+</tr>`;
 });
 }
+
 c.innerHTML=`
-<h2>Financeiro</h2>
-<div class="card"><h3>Faturamento: R$ ${total.toFixed(2)}</h3></div>
+<h2>📊 Dashboard Financeiro</h2>
+
+<div class="card">
+<h3>Faturamento Total: R$ ${faturamento.toFixed(2)}</h3>
+<h3 style="color:green;">Lucro Total: R$ ${lucroTotal.toFixed(2)}</h3>
+</div>
+
+<div class="card">
+<canvas id="grafico"></canvas>
+</div>
+
 <div class="card">
 <table>
-<tr><th>Data</th><th>Pedido</th><th>Cliente</th><th>Total</th></tr>
+<tr>
+<th>Data</th>
+<th>Pedido</th>
+<th>Cliente</th>
+<th>Venda</th>
+<th>Lucro</th>
+</tr>
 ${rows}
 </table>
-</div>`;
+</div>
+`;
+
+new Chart(document.getElementById('grafico'),{
+type:'bar',
+data:{
+labels:labels,
+datasets:[{
+label:'Faturamento',
+data:valores,
+backgroundColor:'#8a0000'
+}]
+}
+});
 }
 
 if(tela==="cli"){
-const r=await fetch(DB+"/clientes.json");
+c.innerHTML=`<h2>Clientes</h2><div class="card">Módulo simplificado</div>`;
+}
+
+if(tela==="ped"){
+const r=await fetch(DB+"/estoque.json");
+const estoque=await r.json();
+let op="<option value=''>Selecione Produto</option>";
+if(estoque){
+Object.values(estoque).forEach(p=>{
+op+=`<option value="${p.produto}">${p.produto}</option>`;
+});
+}
+
+c.innerHTML=`
+<h2>Novo Pedido</h2>
+<div class="card">
+<input id="pnum" placeholder="Número do Pedido">
+<select id="pprod">${op}</select>
+<input id="pval" type="number" placeholder="Valor de Venda">
+<button onclick="salvarPedido()">Salvar Pedido</button>
+</div>`;
+}
+
+if(tela==="est"){
+const r=await fetch(DB+"/estoque.json");
 const d=await r.json();
 let rows="";
 if(d){
-Object.entries(d).forEach(([id,p])=>{
-rows+=`<tr>
-<td>${p.nome}</td>
-<td>${p.tel}</td>
-<td>
-<button onclick="editarCliente('${id}','${p.nome}','${p.tel}')">Editar</button>
-<button onclick="excluir('${id}','clientes')">Excluir</button>
-</td>
+Object.entries(d).forEach(([id,i])=>{
+rows+=`
+<tr>
+<td>${i.produto}</td>
+<td>${i.quantidade}</td>
+<td>R$ ${parseFloat(i.precoCusto).toFixed(2)}</td>
+<td>R$ ${parseFloat(i.precoVenda).toFixed(2)}</td>
 </tr>`;
 });
 }
 c.innerHTML=`
-<h2>Clientes</h2>
+<h2>Estoque</h2>
 <div class="card">
-<input id="cnome" placeholder="Nome">
-<input id="ctel" placeholder="Telefone">
-<button onclick="salvarCliente()">Salvar</button>
+<form class="form-grid" onsubmit="salvarEstoque(event)">
+<input class="full" id="eprod" placeholder="Produto" required>
+<input id="eqtd" type="number" placeholder="Quantidade" required>
+<input id="ecusto" type="number" step="0.01" placeholder="Preço de Custo" required>
+<input id="evenda" type="number" step="0.01" placeholder="Preço de Venda" required>
+<button class="full" type="submit">Salvar Produto</button>
+</form>
 </div>
 <div class="card">
 <table>
-<tr><th>Nome</th><th>Telefone</th><th>Ações</th></tr>
+<tr><th>Produto</th><th>Qtd</th><th>Custo</th><th>Venda</th></tr>
 ${rows}
 </table>
 </div>`;
 }
+}
 
-if(tela==="ped"){
-const r=await fetch(DB+"/clientes.json");
-const d=await r.json();
-let op="";
-if(d) Object.values(d).forEach(p=>{
-op+=`<option value="${p.nome}">${p.nome}</option>`;
+async function salvarEstoque(e){
+e.preventDefault();
+await fetch(DB+"/estoque.json",{
+method:"POST",
+body:JSON.stringify({
+produto:eprod.value,
+quantidade:eqtd.value,
+precoCusto:ecusto.value,
+precoVenda:evenda.value
+})
 });
-c.innerHTML=`
-<h2>Novo Pedido</h2>
-<div class="card">
-<input id="pnum" placeholder="Número Pedido">
-<select id="pcli">${op}</select>
-<input id="pdesc" placeholder="Produto">
-<input id="pval" placeholder="Valor">
-<button onclick="salvarPedido()">Salvar e Gerar PDF</button>
-</div>`;
-}
-}
-
-async function salvarCliente(){
-const nome=document.getElementById("cnome").value;
-const tel=document.getElementById("ctel").value;
-await fetch(DB+"/clientes.json",{method:"POST",body:JSON.stringify({nome,tel})});
-render('cli');
-}
-
-async function excluir(id,tabela){
-if(confirm("Deseja excluir?")){
-await fetch(DB+"/"+tabela+"/"+id+".json",{method:"DELETE"});
-render('cli');
-}
+render('est');
 }
 
 async function salvarPedido(){
-const num=document.getElementById("pnum").value;
-if(!num){alert("Informe o número do pedido!");return;}
-const cliente=document.getElementById("pcli").value;
-const desc=document.getElementById("pdesc").value;
-const val=document.getElementById("pval").value;
-const pedido={
-num,
-cliente,
-total:val,
-data:new Date().toLocaleDateString('pt-br')
-};
-await fetch(DB+"/pedidos.json",{method:"POST",body:JSON.stringify(pedido)});
-gerarPDF(cliente,num,desc,val);
-render('fin');
-}
+const num=pnum.value;
+if(!num){alert("Informe o número do pedido");return;}
 
-async function gerarPDF(cliente,num,desc,val){
-const {jsPDF}=window.jspdf;
-const doc=new jsPDF();
+const produto=pprod.value;
+const venda=parseFloat(pval.value);
 
-const img=new Image();
-img.src="LogoBB.png";
-await new Promise(res=>img.onload=res);
+const r=await fetch(DB+"/estoque.json");
+const estoque=await r.json();
 
-const canvas=document.createElement("canvas");
-canvas.width=img.width;
-canvas.height=img.height;
-canvas.getContext("2d").drawImage(img,0,0);
-const imgData=canvas.toDataURL("image/png");
+for(const [id,item] of Object.entries(estoque)){
+if(item.produto===produto){
 
-doc.addImage(imgData,"PNG",10,10,40,20);
-doc.text("BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA",60,20);
-doc.text("Pedido Nº: "+num,10,40);
-doc.text("Cliente: "+cliente,10,50);
+let novaQtd=parseInt(item.quantidade)-1;
+if(novaQtd<0){alert("Estoque insuficiente");return;}
 
-doc.autoTable({
-startY:60,
-head:[["Produto","Valor"]],
-body:[[desc,"R$ "+val]]
+let lucro=venda-parseFloat(item.precoCusto);
+
+await fetch(DB+"/estoque/"+id+".json",{
+method:"PUT",
+body:JSON.stringify({
+produto:item.produto,
+quantidade:novaQtd,
+precoCusto:item.precoCusto,
+precoVenda:item.precoVenda
+})
 });
 
-doc.save("Pedido_"+num+".pdf");
+await fetch(DB+"/pedidos.json",{
+method:"POST",
+body:JSON.stringify({
+numPedido:num,
+cliente:"Venda direta",
+produto,
+total:venda,
+lucro,
+data:new Date().toLocaleDateString('pt-br')
+})
+});
+
+break;
+}
+}
+
+render('fin');
 }
 </script>
 
