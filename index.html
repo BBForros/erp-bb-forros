@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP BB Forros | Gestão Profissional</title>
+    <title>ERP BB Forros | Gestão</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -11,8 +11,8 @@
 <body>
     <div id="login-screen" class="overlay">
         <div class="login-box">
-            <img src="LogoBB.png" alt="Logo BB" style="width: 120px; margin-bottom: 15px;">
-            <h2 style="color: var(--primary)">ACESSO AO SISTEMA</h2>
+            <img src="LogoBB.png" alt="Logo BB" style="width: 150px; margin-bottom: 20px;">
+            <h2>SISTEMA DE GESTÃO</h2>
             <div class="input-group">
                 <input type="text" id="user" placeholder="Usuário">
                 <input type="password" id="pass" placeholder="Senha">
@@ -24,20 +24,18 @@
     <div id="app-container" style="display: none;">
         <header class="top-bar">
             <div class="brand">
-                <img src="LogoBB.png" width="40">
-                <span>BB COMERCIO DE FORROS E DIVISÓRIAS</span>
+                <img src="LogoBB.png" width="45">
+                <span>BB COMERCIO DE FORROS</span>
             </div>
-            <div class="user-info">Praia Grande - SP | <strong>Admin</strong></div>
+            <div class="user-info">Acesso: <strong id="user-display">Admin</strong></div>
         </header>
 
         <div class="main-layout">
             <nav class="sidebar">
                 <div class="menu-links">
                     <button onclick="ui.render('dashboard')">📊 Painel Geral</button>
-                    <button onclick="ui.render('clientes')">👥 Cadastro de Clientes</button>
-                    <button onclick="ui.render('produtos')">📦 Controle de Estoque</button>
+                    <button onclick="ui.render('clientes')">👥 Clientes</button>
                     <button onclick="ui.render('pedidos')">🛒 Pedidos / Vendas</button>
-                    <button onclick="ui.render('financeiro')">💰 Financeiro</button>
                 </div>
                 <button onclick="auth.logout()" class="btn-exit">Sair do Sistema</button>
             </nav>
@@ -46,7 +44,7 @@
             </main>
         </div>
     </div>
-    <script src="database.js"></script>
+
     <script src="app.js"></script>
 </body>
 </html>
