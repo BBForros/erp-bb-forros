@@ -4,36 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ERP BB Forros | Gestão</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        :root { --primary: #8b0000; --dark: #2d0000; --bg: #fdfaf9; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        .top-bar { 
+            height: 70px; background: white; border-bottom: 2px solid #eee; 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 20px; z-index: 1000; position: relative;
+        }
+
+        .main-layout { display: flex; flex: 1; overflow: hidden; }
+
+        .sidebar { 
+            width: 250px; background: var(--dark); height: 100%;
+            display: flex; flex-direction: column; flex-shrink: 0;
+        }
+        .menu-links { flex: 1; padding: 20px 10px; }
+        .menu-links button { 
+            width: 100%; padding: 15px; background: none; border: none; 
+            color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 5px;
+        }
+        .menu-links button:hover { background: #5a0000; color: white; }
+        .btn-exit { padding: 15px; background: #111; color: white; border: none; cursor: pointer; }
+
+        .content-area { flex: 1; padding: 30px; overflow-y: auto; }
+        .card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #fee2e2; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full { grid-column: span 2; }
+
+        label { display: block; font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 5px; text-transform: uppercase; }
+        input, select { padding: 12px; border: 1px solid #fecaca; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+
+        .overlay { position: fixed; inset: 0; background: #1a0000; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .login-box { background: white; padding: 40px; border-radius: 16px; width: 340px; text-align: center; border-top: 8px solid var(--primary); }
+    </style>
 </head>
 <body>
     <div id="login-screen" class="overlay">
         <div class="login-box">
-            <img src="LogoBB.png" alt="Logo" style="width: 120px; margin-bottom: 20px;">
-            <h2>ACESSO AO SISTEMA</h2>
+            <h2 style="color:var(--primary); margin-bottom:20px;">ACESSO BB FORROS</h2>
             <input type="text" id="user" placeholder="Usuário">
             <input type="password" id="pass" placeholder="Senha">
-            <button onclick="auth.login()">ENTRAR</button>
+            <button onclick="auth.login()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">ENTRAR</button>
         </div>
     </div>
 
     <div id="app-container" style="display: none;">
         <header class="top-bar">
-            <div class="brand">
-                <img src="LogoBB.png" width="40">
-                <span>BB COMERCIO DE FORROS</span>
-            </div>
-            <div class="user-tag">Acesso: <strong>Admin</strong></div>
+            <div style="color:var(--primary); font-weight:bold;">BB COMERCIO DE FORROS</div>
+            <div style="font-size:12px;">Acesso: <strong>Admin</strong></div>
         </header>
 
         <div class="main-layout">
             <nav class="sidebar">
                 <div class="menu-links">
-                    <button onclick="ui.render('dashboard')">📊 Painel Geral</button>
+                    <button onclick="ui.render('dashboard')">📊 Painel Geral (Financeiro)</button>
                     <button onclick="ui.render('clientes')">👥 Clientes</button>
-                    <button onclick="ui.render('pedidos')">🛒 Pedidos / Vendas</button>
+                    <button onclick="ui.render('pedidos')">🛒 Pedidos</button>
                 </div>
                 <button onclick="auth.logout()" class="btn-exit">Sair do Sistema</button>
             </nav>
