@@ -3,74 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP BB Forros | Gestão</title>
+    <title>ERP BB Forros | Gestão Completa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
-        :root { --primary: #8b0000; --dark: #1a0000; --white: #ffffff; }
+        :root { --primary: #8b0000; --dark: #1a0000; --bg: #fdfaf9; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        
-        body { background: #f4f4f4; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { background: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* TELA DE LOGIN FIXA */
+        /* Login */
         .overlay { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-box { background: var(--white); padding: 40px; border-radius: 20px; width: 380px; text-align: center; border-top: 10px solid var(--primary); box-shadow: 0 20px 25px rgba(0,0,0,0.5); }
-        
-        /* Ajuste da Logo no Login */
-        .login-box img { width: 160px; height: auto; margin-bottom: 15px; display: inline-block; }
-        
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; display: block; }
-        .btn-login { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; width: 380px; text-align: center; border-top: 10px solid var(--primary); }
+        .login-box img { width: 180px; margin-bottom: 20px; }
 
-        /* TOP BAR */
-        .top-bar { height: 70px; background: white; border-bottom: 2px solid #eee; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
-        .logo-top { display: flex; align-items: center; gap: 10px; height: 100%; }
-        .logo-top img { height: 50px; width: auto; }
-
+        /* Estrutura */
+        .top-bar { height: 70px; background: white; border-bottom: 2px solid #eee; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; flex-shrink: 0; }
+        .top-bar img { height: 50px; }
+        
         .main-layout { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 260px; background: var(--dark); display: flex; flex-direction: column; }
-        .menu-links { flex: 1; padding: 20px 10px; }
-        .menu-links button { width: 100%; padding: 15px; background: none; border: none; color: #fca5a5; text-align: left; cursor: pointer; font-weight: bold; margin-bottom: 5px; border-radius: 5px; }
-        .menu-links button:hover { background: var(--primary); color: white; }
+        .sidebar { width: 260px; background: var(--dark); display: flex; flex-direction: column; flex-shrink: 0; }
         
-        .content-area { flex: 1; padding: 30px; overflow-y: auto; background: #fdfaf9; }
+        .menu-links { flex: 1; padding: 20px 10px; }
+        .menu-links button { 
+            width: 100%; padding: 15px; background: none; border: none; 
+            color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 8px; font-weight: bold;
+        }
+        .menu-links button:hover { background: var(--primary); color: white; }
+        .btn-exit { padding: 20px; background: #000; color: white; border: none; cursor: pointer; font-weight: bold; }
+
+        .content-area { flex: 1; padding: 30px; overflow-y: auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; border: 1px solid #fee2e2; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        /* Formulários */
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full { grid-column: span 2; }
+        label { display: block; font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 5px; text-transform: uppercase; }
+        input, select, textarea { padding: 12px; border: 1px solid #fecaca; border-radius: 8px; width: 100%; margin-bottom: 10px; outline: none; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; color: var(--primary); border-bottom: 2px solid #eee; font-size: 12px; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        
+        .btn-main { background: var(--primary); color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-pdf { background: #16a34a; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="overlay">
         <div class="login-box">
-            <img src="./logo.png" alt="BB Forros">
-            <h2 style="color: var(--primary); margin-bottom: 20px;">BB COMÉRCIO DE FORROS</h2>
-            
-            <input type="text" id="user" placeholder="Utilizador">
-            <input type="password" id="pass" placeholder="Palavra-passe">
-            
-            <button onclick="auth.login()" class="btn-login">ENTRAR</button>
+            <img src="logo.png" alt="BB Forros" onerror="this.src='https://via.placeholder.com/150?text=BB+FORROS'">
+            <h2 style="color:var(--primary); margin-bottom: 20px;">SISTEMA DE GESTÃO</h2>
+            <input type="text" id="user" placeholder="Usuário">
+            <input type="password" id="pass" placeholder="Senha">
+            <button onclick="auth.login()" class="btn-main" style="width:100%">ENTRAR</button>
         </div>
     </div>
 
     <div id="app-container" style="display: none;">
         <header class="top-bar">
-            <div class="logo-top">
-                <img src="./logo.png" alt="Logo">
-                <span style="font-weight:bold; color:var(--primary); font-size:20px;">BB FORROS</span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+                <span style="font-weight:bold; color:var(--primary); font-size:20px;">BB COMÉRCIO DE FORROS</span>
             </div>
-            <div style="font-size:12px;">Admin</div>
+            <div>Admin</div>
         </header>
+
         <div class="main-layout">
             <nav class="sidebar">
                 <div class="menu-links">
-                    <button onclick="ui.render('dashboard')">📊 Painel Geral</button>
-                    <button onclick="ui.render('clientes')">👥 Clientes</button>
-                    <button onclick="ui.render('pedidos')">🛒 Vendas</button>
+                    <button onclick="ui.render('dashboard')">📊 FINANCEIRO</button>
+                    <button onclick="ui.render('clientes')">👥 CLIENTES</button>
+                    <button onclick="ui.render('pedidos')">🛒 VENDAS / PEDIDOS</button>
+                    <button onclick="ui.render('estoque')">📦 ESTOQUE</button>
                 </div>
-                <button onclick="auth.logout()" style="background:#000; color:white; padding:20px; border:none; cursor:pointer; font-weight:bold;">SAIR</button>
+                <button onclick="auth.logout()" class="btn-exit">SAIR</button>
             </nav>
-            <main class="content-area"><div id="view-content"></div></main>
+            <main class="content-area">
+                <div id="view-content"></div>
+            </main>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
