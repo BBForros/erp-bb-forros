@@ -23,6 +23,11 @@
         .menu-links { flex: 1; padding: 20px 10px; }
         .menu-links button { width: 100%; padding: 15px; background: transparent; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 8px; font-weight: bold; }
         .menu-links button:hover, .menu-links button.active { background: var(--primary); color: white; }
+        
+        /* Rodapé do Desenvolvedor */
+        .sidebar-footer { padding: 15px; text-align: center; border-top: 1px solid #333; }
+        .dev-tag { color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
         .btn-sair { background: #000; color: white; padding: 20px; border: none; cursor: pointer; font-weight: bold; width: 100%; }
 
         .content-area { flex: 1; padding: 30px; overflow-y: auto; }
@@ -70,6 +75,11 @@
                     <button onclick="render('ped')" id="btn-ped">🛒 VENDAS</button>
                     <button onclick="render('est')" id="btn-est">📦 ESTOQUE</button>
                 </nav>
+                
+                <div class="sidebar-footer">
+                    <p class="dev-tag">Desenvolvido por<br><b>Carlos Freitas</b></p>
+                </div>
+
                 <button onclick="location.reload()" class="btn-sair">SAIR</button>
             </aside>
             <main class="content-area" id="view-container"></main>
@@ -196,16 +206,3 @@
         }
 
         function gerarPDF(p) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(16); doc.setTextColor(139, 0, 0); doc.text("BB COMÉRCIO DE FORROS", 105, 15, {align:'center'});
-            doc.setFontSize(10); doc.setTextColor(0,0,0); doc.text("R. João Pereira Inacio, 397 - Praia Grande/SP", 105, 22, {align:'center'});
-            doc.line(10, 28, 200, 28);
-            doc.text(`PEDIDO Nº: ${p.numero}`, 10, 40);
-            doc.text(`CLIENTE: ${p.cliente}`, 10, 48);
-            doc.autoTable({ startY: 55, head: [['MATERIAL', 'QTD', 'TOTAL']], body: [[p.material, p.qtd, `R$ ${p.total}`]], headStyles: {fillColor: [139, 0, 0]} });
-            doc.save(`Pedido_${p.numero}.pdf`);
-        }
-    </script>
-</body>
-</html>
