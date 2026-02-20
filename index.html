@@ -72,6 +72,8 @@
         .btn-acao { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-sucesso { background: #27ae60; color: white; }
         .btn-primario { background: var(--vinho-botao); color: white; }
+        .btn-editar { background: #f39c12; color: white; margin-right: 5px; }
+        .btn-excluir { background: #e74c3c; color: white; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 8px; overflow: hidden; }
         th { background: #f8f9fa; color: var(--vinho-botao); font-weight: bold; text-transform: uppercase; font-size: 12px; padding: 15px; border: 1px solid #eee; text-align: left; }
@@ -127,9 +129,10 @@
         async function render(tela) {
             const port = document.getElementById('view-port');
             const menu = document.getElementById('side-menu');
-            editId = null;
-            window.itensPedido = [];
-
+            
+            // Resetar estados apenas se não for a tela de clientes (para não limpar edição)
+            if(tela !== 'cli') { editId = null; }
+            
             menu.innerHTML = `
                 <nav class="menu">
                     <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Financeiro</button>
@@ -161,7 +164,8 @@
                 if(data) {
                     Object.entries(data).forEach(([id, c]) => {
                         rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidadeEstado}</td><td>
-                            <button onclick='deletar("${id}", "clientes")'>Excluir</button>
+                            <button class="btn-acao btn-editar" onclick='prepararEdicao("${id}", ${JSON.stringify(c)})'>EDITAR</button>
+                            <button class="btn-acao btn-excluir" onclick='deletar("${id}", "clientes")'>EXCLUIR</button>
                         </td></tr>`;
                     });
                 }
@@ -172,7 +176,7 @@
                         <input type="text" id="c-doc" placeholder="CPF/CNPJ" class="half-width">
                         <input type="text" id="c-end" placeholder="Endereço" class="full-width">
                         <input type="text" id="c-cid" placeholder="Cidade/UF" class="half-width">
-                        <button type="submit" class="btn-acao btn-sucesso full-width">SALVAR CLIENTE</button>
+                        <button type="submit" id="btn-cli-salvar" class="btn-acao btn-sucesso full-width">SALVAR CLIENTE</button>
                     </form></div>
                     <div class="card"><table><thead><tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             }
@@ -207,15 +211,41 @@
             }
         }
 
+        function prepararEdicao(id, c) {
+            editId = id;
+            document.getElementById('c-nome').value = c.nome;
+            document.getElementById('c-tel').value = c.tel || '';
+            document.getElementById('c-doc').value = c.doc || '';
+            document.getElementById('c-end').value = c.end || '';
+            document.getElementById('c-cid').value = c.cidadeEstado || '';
+            document.getElementById('btn-cli-salvar').innerText = "ATUALIZAR CLIENTE";
+            document.getElementById('btn-cli-salvar').className = "btn-acao btn-primario full-width";
+            window.scrollTo(0,0);
+        }
+
         async function salvarCliente(e) {
             e.preventDefault();
-            const p = { nome: document.getElementById('c-nome').value, tel: document.getElementById('c-tel').value, cidadeEstado: document.getElementById('c-cid').value, end: document.getElementById('c-end').value, doc: document.getElementById('c-doc').value };
-            await fetch(`${DB_URL}/clientes.json`, { method: 'POST', body: JSON.stringify(p) });
+            const p = { 
+                nome: document.getElementById('c-nome').value, 
+                tel: document.getElementById('c-tel').value, 
+                cidadeEstado: document.getElementById('c-cid').value, 
+                end: document.getElementById('c-end').value, 
+                doc: document.getElementById('c-doc').value 
+            };
+            
+            const method = editId ? 'PUT' : 'POST';
+            const url = editId ? `${DB_URL}/clientes/${editId}.json` : `${DB_URL}/clientes.json`;
+
+            await fetch(url, { method: method, body: JSON.stringify(p) });
+            editId = null;
             render('cli');
         }
 
         async function deletar(id, path) {
-            if(confirm("Excluir?")) { await fetch(`${DB_URL}/${path}/${id}.json`, { method: 'DELETE' }); render('cli'); }
+            if(confirm("Excluir definitivamente?")) { 
+                await fetch(`${DB_URL}/${path}/${id}.json`, { method: 'DELETE' }); 
+                render('cli'); 
+            }
         }
 
         function calcSub() {
