@@ -72,9 +72,13 @@
         .btn-acao { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-sucesso { background: #27ae60; color: white; }
         .btn-primario { background: var(--vinho-botao); color: white; }
+
+        /* Botões da Tabela de Clientes */
         .btn-editar-tabela { background-color: #ff9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 5px; text-transform: uppercase; font-size: 12px; }
         .btn-excluir-tabela { background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; font-size: 12px; }
-        .btn-pdf { background-color: #003399; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        
+        /* Botão PDF Histórico Pedidos */
+        .btn-pdf-lista { background-color: #003399; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 8px; overflow: hidden; }
         th { background: #f8f9fa; color: var(--vinho-botao); font-weight: bold; text-transform: uppercase; font-size: 12px; padding: 15px; border: 1px solid #eee; text-align: left; }
@@ -130,6 +134,7 @@
         async function render(tela) {
             const port = document.getElementById('view-port');
             const menu = document.getElementById('side-menu');
+            
             if(tela !== 'cli') { editId = null; }
             
             menu.innerHTML = `
@@ -143,13 +148,4 @@
             `;
 
             if(tela === 'fin') {
-                const res = await fetch(`${DB_URL}/pedidos.json`);
-                const data = await res.json();
-                let faturamento = 0;
-                let rows = '';
-                if(data) {
-                    Object.entries(data).forEach(([id, p]) => {
-                        faturamento += parseFloat(p.total || 0);
-                        rows += `<tr><td>${p.data}</td><td>${p.numPedido || '---'}</td><td>${p.cliente}</td><td>R$ ${parseFloat(p.total).toLocaleString('pt-br',{minimumFractionDigits:2})}</td></tr>`;
-                    });
-                }
+                const res
