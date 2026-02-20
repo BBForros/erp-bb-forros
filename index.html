@@ -69,6 +69,18 @@
         let editId = null;
         window.itensPedido = [];
 
+        // Lista de Itens Padrão para Forros e Divisórias
+        const ITENS_SUGESTORES = [
+            "Forro PVC Branco Gelo (m²)", "Forro PVC Amadeirado (m²)", 
+            "Perfil Arremate U (m)", "Perfil Moldura (m)",
+            "Placa de Gesso Acartonado ST (Chapa)", "Placa de Gesso RU - Resistente Umidade",
+            "Perfil Montante 48/70/90 (m)", "Perfil Guia 48/70/90 (m)",
+            "Painel Eucatex Divisória (un)", "Perfil Montante Divisória (un)",
+            "Porta Eucatex Completa (un)", "Vidro para Divisória (m²)",
+            "Arame Galvanizado nº 18 (kg)", "Parafuso Drywall GN 25 (cx)",
+            "Massa para Drywall (balde)", "Fita de Papel Microperfurada (rolo)"
+        ];
+
         function validaLogin() {
             if(document.getElementById('user').value === 'admin') {
                 document.getElementById('login-screen').style.display = 'none';
@@ -126,6 +138,44 @@
                 </form></div><div class="card"><table><tr><th>Nome</th><th>Contato</th><th>Cidade</th><th>Ações</th></tr>${rows}</table></div>`;
             }
 
+            if(tela === 'ped') {
+                const resCli = await fetch(`${DB}/clientes.json`);
+                const dataCli = await resCli.json();
+                let optionsCli = '<option value="">Selecione o Cliente</option>';
+                if(dataCli) Object.values(dataCli).forEach(c => optionsCli += `<option value="${c.nome}">${c.nome}</option>`);
+
+                let optionsItens = '<option value="">Sugestões de Materiais</option>';
+                ITENS_SUGESTORES.forEach(item => optionsItens += `<option value="${item}">${item}</option>`);
+                
+                window.itensPedido = [];
+                port.innerHTML = `<h1>🛒 Novo Pedido de Forros e Divisórias</h1>
+                    <div class="card">
+                        <div class="form-grid">
+                            <select id="p-cliente" class="full-width">${optionsCli}</select>
+                            
+                            <div class="full-width" style="display:flex; gap:10px;">
+                                <select id="p-sugestao" style="flex:1" onchange="document.getElementById('p-item').value = this.value">
+                                    ${optionsItens}
+                                </select>
+                                <input type="text" id="p-item" placeholder="Ou digite o produto manualmente" style="flex:2">
+                            </div>
+
+                            <input type="number" id="p-qtd" placeholder="Quantidade" oninput="calcSub()">
+                            <input type="number" id="p-val" placeholder="Preço R$" oninput="calcSub()">
+                            <input type="text" id="p-sub" placeholder="Subtotal" readonly style="background:#eee">
+                            <button onclick="addItemLista()" style="background:var(--vinho-botao); color:white; border:none; border-radius:5px; cursor:pointer; padding:10px;">+ ADICIONAR ITEM</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Detalhamento do Orçamento</h3>
+                        <table><thead><tr><th>Item</th><th>Qtd</th><th>Unit.</th><th>Subtotal</th><th>Ação</th></tr></thead><tbody id="lista-pedido"></tbody></table>
+                        <div style="text-align:right; margin-top:15px;">
+                            <h2 id="total-pedido">Total: R$ 0,00</h2>
+                            <button onclick="finalizarPedido()" style="padding:15px 30px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; margin-top:10px;">SALVAR E FINALIZAR</button>
+                        </div>
+                    </div>`;
+            }
+
             if(tela === 'est') {
                 const r = await fetch(`${DB}/estoque.json`);
                 const d = await r.json();
@@ -134,34 +184,6 @@
                     rows += `<tr><td>${i.item}</td><td>${i.qtd}</td><td><button style="background:#ef4444; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;" onclick="deletar('${id}', 'estoque')">Excluir</button></td></tr>`;
                 });
                 port.innerHTML = `<h1>📦 Estoque</h1><button onclick="novoEstoque()" style="padding:10px; background:#16a34a; color:white; border:none; border-radius:5px; margin-bottom:10px;">+ Novo Item</button><table><tr><th>Produto</th><th>Qtd</th><th>Ações</th></tr>${rows}</table>`;
-            }
-
-            if(tela === 'ped') {
-                const resCli = await fetch(`${DB}/clientes.json`);
-                const dataCli = await resCli.json();
-                let options = '<option value="">Selecione o Cliente</option>';
-                if(dataCli) Object.values(dataCli).forEach(c => options += `<option value="${c.nome}">${c.nome}</option>`);
-                
-                window.itensPedido = [];
-                port.innerHTML = `<h1>🛒 Lançar Pedido</h1>
-                    <div class="card">
-                        <div class="form-grid">
-                            <select id="p-cliente" class="full-width">${options}</select>
-                            <input type="text" id="p-item" placeholder="Produto/Serviço">
-                            <input type="number" id="p-qtd" placeholder="Qtd" oninput="calcSub()">
-                            <input type="number" id="p-val" placeholder="Valor Unit." oninput="calcSub()">
-                            <input type="text" id="p-sub" placeholder="Subtotal" readonly style="background:#eee">
-                            <button onclick="addItemLista()" style="background:var(--vinho-botao); color:white; border:none; border-radius:5px; cursor:pointer; padding:10px;">+ Adicionar Item</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3>Itens do Pedido</h3>
-                        <table><thead><tr><th>Item</th><th>Qtd</th><th>Unit.</th><th>Subtotal</th><th>Ação</th></tr></thead><tbody id="lista-pedido"></tbody></table>
-                        <div style="text-align:right; margin-top:15px;">
-                            <h2 id="total-pedido">Total: R$ 0,00</h2>
-                            <button onclick="finalizarPedido()" style="padding:15px 30px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; margin-top:10px;">SALVAR PEDIDO</button>
-                        </div>
-                    </div>`;
             }
         }
 
@@ -193,7 +215,7 @@
         
         function addItemLista() { 
             const item = document.getElementById('p-item').value; const qtd = document.getElementById('p-qtd').value; const val = document.getElementById('p-val').value;
-            if(!item || !qtd || !val) return alert("Preencha o item!");
+            if(!item || !qtd || !val) return alert("Preencha as informações do material!");
             window.itensPedido.push({item, qtd, val, sub: (qtd*val)});
             const corpo = document.getElementById('lista-pedido'); corpo.innerHTML = ''; let total = 0;
             window.itensPedido.forEach((it, i) => { total += it.sub; corpo.innerHTML += `<tr><td>${it.item}</td><td>${it.qtd}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td><td><button onclick="window.itensPedido.splice(${i},1);addItemLista()">X</button></td></tr>`; });
@@ -204,14 +226,14 @@
 
         async function finalizarPedido() {
             const cliente = document.getElementById('p-cliente').value;
-            if(!cliente || window.itensPedido.length === 0) return alert("Erro: Selecione o cliente e adicione itens.");
+            if(!cliente || window.itensPedido.length === 0) return alert("Erro: Selecione o cliente e os materiais.");
             const ped = { cliente, data: new Date().toLocaleDateString('pt-br'), total: window.totalAtual, itens: window.itensPedido };
             await fetch(`${DB}/pedidos.json`, { method: 'POST', body: JSON.stringify(ped) });
-            alert("Pedido salvo com sucesso!");
+            alert("Pedido e Orçamento salvos no Financeiro!");
             render('fin');
         }
 
-        async function novoEstoque() { const item = prompt("Produto:"); const qtd = prompt("Qtd:"); if(item&&qtd) { await fetch(`${DB}/estoque.json`,{method:'POST',body:JSON.stringify({item,qtd})}); render('est'); } }
+        async function novoEstoque() { const item = prompt("Material:"); const qtd = prompt("Qtd:"); if(item&&qtd) { await fetch(`${DB}/estoque.json`,{method:'POST',body:JSON.stringify({item,qtd})}); render('est'); } }
     </script>
 </body>
 </html>
