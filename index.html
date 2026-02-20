@@ -69,16 +69,10 @@
         let editId = null;
         window.itensPedido = [];
 
-        // Lista de Itens Padrão para Forros e Divisórias
         const ITENS_SUGESTORES = [
-            "Forro PVC Branco Gelo (m²)", "Forro PVC Amadeirado (m²)", 
-            "Perfil Arremate U (m)", "Perfil Moldura (m)",
-            "Placa de Gesso Acartonado ST (Chapa)", "Placa de Gesso RU - Resistente Umidade",
-            "Perfil Montante 48/70/90 (m)", "Perfil Guia 48/70/90 (m)",
-            "Painel Eucatex Divisória (un)", "Perfil Montante Divisória (un)",
-            "Porta Eucatex Completa (un)", "Vidro para Divisória (m²)",
-            "Arame Galvanizado nº 18 (kg)", "Parafuso Drywall GN 25 (cx)",
-            "Massa para Drywall (balde)", "Fita de Papel Microperfurada (rolo)"
+            "Forro PVC Branco Gelo", "Forro PVC Amadeirado", "Perfil Arremate U", "Perfil Moldura",
+            "Placa Gesso Acartonado ST", "Placa Gesso RU", "Perfil Montante", "Perfil Guia",
+            "Painel Eucatex", "Porta Eucatex Completa", "Vidro Divisória", "Parafuso GN 25"
         ];
 
         function validaLogin() {
@@ -125,16 +119,11 @@
                         <button style="background:#ef4444; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;" onclick="deletar('${id}', 'clientes')">Excluir</button>
                     </td></tr>`;
                 });
-                port.innerHTML = `<h1>👥 Clientes</h1><div class="card"><h3 id="form-title">Novo Cliente</h3><form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
+                port.innerHTML = `<h1>👥 Clientes</h1><div class="card"><h3>Novo Cliente</h3><form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
                     <input type="text" id="c-nome" placeholder="Nome/Razão Social" required class="full-width">
-                    <input type="text" id="c-contato" placeholder="Contato">
-                    <input type="text" id="c-doc" placeholder="CNPJ/CPF">
-                    <input type="text" id="c-rg" placeholder="RG/Insc. Est.">
                     <input type="text" id="c-tel" placeholder="Celular/WhatsApp" required>
-                    <input type="text" id="c-end" placeholder="Endereço" class="full-width"><input type="text" id="c-cep" placeholder="CEP"><input type="text" id="c-bairro" placeholder="Bairro"><input type="text" id="c-cid" placeholder="Cidade/Estado">
-                    <select id="c-pag"><option value="">Forma de Pagamento</option><option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Boleto">Boleto</option><option value="Cartão">Cartão</option></select>
-                    <textarea id="c-obs" placeholder="Observações" class="full-width"></textarea>
-                    <button type="submit" id="btn-salvar" class="full-width" style="padding:15px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer;">SALVAR CLIENTE</button>
+                    <input type="text" id="c-cid" placeholder="Cidade/Estado">
+                    <button type="submit" class="full-width" style="padding:15px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer;">SALVAR CLIENTE</button>
                 </form></div><div class="card"><table><tr><th>Nome</th><th>Contato</th><th>Cidade</th><th>Ações</th></tr>${rows}</table></div>`;
             }
 
@@ -148,7 +137,7 @@
                 ITENS_SUGESTORES.forEach(item => optionsItens += `<option value="${item}">${item}</option>`);
                 
                 window.itensPedido = [];
-                port.innerHTML = `<h1>🛒 Novo Pedido de Forros e Divisórias</h1>
+                port.innerHTML = `<h1>🛒 Novo Pedido</h1>
                     <div class="card">
                         <div class="form-grid">
                             <select id="p-cliente" class="full-width">${optionsCli}</select>
@@ -157,18 +146,20 @@
                                 <select id="p-sugestao" style="flex:1" onchange="document.getElementById('p-item').value = this.value">
                                     ${optionsItens}
                                 </select>
-                                <input type="text" id="p-item" placeholder="Ou digite o produto manualmente" style="flex:2">
+                                <input type="text" id="p-item" placeholder="Nome do Produto" style="flex:2">
                             </div>
 
-                            <input type="number" id="p-qtd" placeholder="Quantidade" oninput="calcSub()">
-                            <input type="number" id="p-val" placeholder="Preço R$" oninput="calcSub()">
+                            <input type="number" id="p-pecas" placeholder="Peças (Un)" oninput="calcSub()">
+                            <input type="number" id="p-m2" placeholder="Medida (m²)" oninput="calcSub()">
+                            <input type="number" id="p-val" placeholder="Preço Unit. R$" oninput="calcSub()">
                             <input type="text" id="p-sub" placeholder="Subtotal" readonly style="background:#eee">
-                            <button onclick="addItemLista()" style="background:var(--vinho-botao); color:white; border:none; border-radius:5px; cursor:pointer; padding:10px;">+ ADICIONAR ITEM</button>
+                            
+                            <button onclick="addItemLista()" class="full-width" style="background:var(--vinho-botao); color:white; border:none; border-radius:5px; cursor:pointer; padding:15px; font-weight:bold;">+ ADICIONAR AO PEDIDO</button>
                         </div>
                     </div>
                     <div class="card">
-                        <h3>Detalhamento do Orçamento</h3>
-                        <table><thead><tr><th>Item</th><th>Qtd</th><th>Unit.</th><th>Subtotal</th><th>Ação</th></tr></thead><tbody id="lista-pedido"></tbody></table>
+                        <h3>Resumo do Pedido</h3>
+                        <table><thead><tr><th>Item</th><th>Peças</th><th>m²</th><th>Unit.</th><th>Subtotal</th><th>Ação</th></tr></thead><tbody id="lista-pedido"></tbody></table>
                         <div style="text-align:right; margin-top:15px;">
                             <h2 id="total-pedido">Total: R$ 0,00</h2>
                             <button onclick="finalizarPedido()" style="padding:15px 30px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; margin-top:10px;">SALVAR E FINALIZAR</button>
@@ -187,49 +178,53 @@
             }
         }
 
-        /* FUNÇÕES GERAIS */
         async function salvarCliente(e) {
             e.preventDefault();
-            const cliente = { nome: document.getElementById('c-nome').value, contato: document.getElementById('c-contato').value, doc: document.getElementById('c-doc').value, rg: document.getElementById('c-rg').value, tel: document.getElementById('c-tel').value, end: document.getElementById('c-end').value, cep: document.getElementById('c-cep').value, bairro: document.getElementById('c-bairro').value, cidadeEstado: document.getElementById('c-cid').value, pagamento: document.getElementById('c-pag').value, obs: document.getElementById('c-obs').value };
-            const url = editId ? `${DB}/clientes/${editId}.json` : `${DB}/clientes.json`;
-            await fetch(url, { method: editId ? 'PUT' : 'POST', body: JSON.stringify(cliente) });
+            const cliente = { nome: document.getElementById('c-nome').value, tel: document.getElementById('c-tel').value, cidadeEstado: document.getElementById('c-cid').value };
+            await fetch(`${DB}/clientes.json`, { method: 'POST', body: JSON.stringify(cliente) });
             render('cli');
-        }
-
-        function prepararEdicao(id, data) {
-            editId = id;
-            document.getElementById('form-title').innerText = "Editando: " + data.nome;
-            document.getElementById('c-nome').value = data.nome; document.getElementById('c-tel').value = data.tel;
-            document.getElementById('c-contato').value = data.contato || ''; document.getElementById('c-doc').value = data.doc || '';
-            document.getElementById('c-rg').value = data.rg || ''; document.getElementById('c-end').value = data.end || '';
-            document.getElementById('c-cep').value = data.cep || ''; document.getElementById('c-bairro').value = data.bairro || '';
-            document.getElementById('c-cid').value = data.cidadeEstado || ''; document.getElementById('c-pag').value = data.pagamento || '';
-            document.getElementById('c-obs').value = data.obs || '';
-            window.scrollTo(0,0);
         }
 
         async function deletar(id, ref) { if(confirm("Excluir?")) { await fetch(`${DB}/${ref}/${id}.json`, { method: 'DELETE' }); render(ref==='clientes'?'cli':'est'); } }
 
-        /* LÓGICA DE PEDIDOS */
-        function calcSub() { const q = document.getElementById('p-qtd').value || 0; const v = document.getElementById('p-val').value || 0; document.getElementById('p-sub').value = (q * v).toFixed(2); }
+        /* LÓGICA DE PEDIDOS COM M² E PEÇAS */
+        function calcSub() { 
+            const p = document.getElementById('p-pecas').value || 1; 
+            const m = document.getElementById('p-m2').value || 1; 
+            const v = document.getElementById('p-val').value || 0; 
+            // Se m² for preenchido, calcula P x M x V, senão apenas P x V
+            const total = (document.getElementById('p-m2').value) ? (p * m * v) : (p * v);
+            document.getElementById('p-sub').value = total.toFixed(2); 
+        }
         
         function addItemLista() { 
-            const item = document.getElementById('p-item').value; const qtd = document.getElementById('p-qtd').value; const val = document.getElementById('p-val').value;
-            if(!item || !qtd || !val) return alert("Preencha as informações do material!");
-            window.itensPedido.push({item, qtd, val, sub: (qtd*val)});
+            const item = document.getElementById('p-item').value; 
+            const pecas = document.getElementById('p-pecas').value || 0;
+            const m2 = document.getElementById('p-m2').value || '';
+            const val = document.getElementById('p-val').value || 0;
+            const sub = parseFloat(document.getElementById('p-sub').value);
+
+            if(!item || sub <= 0) return alert("Preencha o item e valores!");
+            
+            window.itensPedido.push({item, pecas, m2, val, sub});
             const corpo = document.getElementById('lista-pedido'); corpo.innerHTML = ''; let total = 0;
-            window.itensPedido.forEach((it, i) => { total += it.sub; corpo.innerHTML += `<tr><td>${it.item}</td><td>${it.qtd}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td><td><button onclick="window.itensPedido.splice(${i},1);addItemLista()">X</button></td></tr>`; });
+            window.itensPedido.forEach((it, i) => { 
+                total += it.sub; 
+                corpo.innerHTML += `<tr><td>${it.item}</td><td>${it.pecas}</td><td>${it.m2}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td><td><button onclick="window.itensPedido.splice(${i},1);addItemLista()">X</button></td></tr>`; 
+            });
             document.getElementById('total-pedido').innerText = `Total: R$ ${total.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
             window.totalAtual = total;
-            document.getElementById('p-item').value = ''; document.getElementById('p-qtd').value = ''; document.getElementById('p-val').value = ''; document.getElementById('p-sub').value = '';
+            
+            document.getElementById('p-item').value = ''; document.getElementById('p-pecas').value = ''; 
+            document.getElementById('p-m2').value = ''; document.getElementById('p-val').value = ''; document.getElementById('p-sub').value = '';
         }
 
         async function finalizarPedido() {
             const cliente = document.getElementById('p-cliente').value;
-            if(!cliente || window.itensPedido.length === 0) return alert("Erro: Selecione o cliente e os materiais.");
+            if(!cliente || window.itensPedido.length === 0) return alert("Erro: Selecione o cliente e os itens.");
             const ped = { cliente, data: new Date().toLocaleDateString('pt-br'), total: window.totalAtual, itens: window.itensPedido };
             await fetch(`${DB}/pedidos.json`, { method: 'POST', body: JSON.stringify(ped) });
-            alert("Pedido e Orçamento salvos no Financeiro!");
+            alert("Pedido Salvo!");
             render('fin');
         }
 
