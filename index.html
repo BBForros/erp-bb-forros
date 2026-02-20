@@ -8,17 +8,12 @@
     <style>
         :root { --vinho-fundo: #1a0505; --vinho-botao: #8a0000; --cor-borda: #800000; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        
-        /* LOGIN */
         .login-overlay { position: fixed; inset: 0; background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-card { background: white; padding: 45px; border-radius: 15px; width: 440px; text-align: center; border-top: 8px solid var(--cor-borda); }
         .logo-container img { height: 110px; width: auto; margin-bottom: 25px; }
         .login-card h2 { color: var(--vinho-botao); margin-bottom: 25px; font-size: 26px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        .login-card input:first-of-type { background: #eef3ff; } 
         .btn-acessar { width: 100%; padding: 18px; background: var(--vinho-botao); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-
-        /* DASHBOARD */
         #app { display: none; flex-direction: column; height: 100vh; background: #f4f7f6; }
         .header { height: 75px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .layout { display: flex; flex: 1; overflow: hidden; }
@@ -27,12 +22,10 @@
         .menu button.active { background: var(--cor-borda); }
         .btn-sair-lateral { background: black; color: white; padding: 25px; border: none; cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333; margin-top: auto; }
         .content { flex: 1; padding: 35px; overflow-y: auto; }
-
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; font-size: 13px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
         th { background: #f8f8f8; color: var(--vinho-botao); }
-        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .form-grid input, .form-grid select, .form-grid textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
         .full-width { grid-column: span 2; }
@@ -69,12 +62,6 @@
         let editId = null;
         window.itensPedido = [];
 
-        const ITENS_SUGESTORES = [
-            "Forro PVC Branco Gelo", "Forro PVC Amadeirado", "Perfil Arremate U", "Perfil Moldura",
-            "Placa Gesso Acartonado ST", "Placa Gesso RU", "Perfil Montante", "Perfil Guia",
-            "Painel Eucatex", "Porta Eucatex Completa", "Vidro Divisória", "Parafuso GN 25"
-        ];
-
         function validaLogin() {
             if(document.getElementById('user').value === 'admin') {
                 document.getElementById('login-screen').style.display = 'none';
@@ -86,8 +73,7 @@
         async function render(tela) {
             const port = document.getElementById('view-port');
             const menu = document.getElementById('side-menu');
-            editId = null;
-
+            
             menu.innerHTML = `
                 <nav class="menu">
                     <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 FINANCEIRO</button>
@@ -115,7 +101,6 @@
                 let rows = '';
                 if(d) Object.entries(d).forEach(([id, c]) => {
                     rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidadeEstado}</td><td>
-                        <button style="background:#f59e0b; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;" onclick="prepararEdicao('${id}', ${JSON.stringify(c).replace(/"/g, '&quot;')})">Editar</button>
                         <button style="background:#ef4444; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;" onclick="deletar('${id}', 'clientes')">Excluir</button>
                     </td></tr>`;
                 });
@@ -132,37 +117,29 @@
                 const dataCli = await resCli.json();
                 let optionsCli = '<option value="">Selecione o Cliente</option>';
                 if(dataCli) Object.values(dataCli).forEach(c => optionsCli += `<option value="${c.nome}">${c.nome}</option>`);
-
-                let optionsItens = '<option value="">Sugestões de Materiais</option>';
-                ITENS_SUGESTORES.forEach(item => optionsItens += `<option value="${item}">${item}</option>`);
                 
                 window.itensPedido = [];
                 port.innerHTML = `<h1>🛒 Novo Pedido</h1>
                     <div class="card">
                         <div class="form-grid">
                             <select id="p-cliente" class="full-width">${optionsCli}</select>
-                            
-                            <div class="full-width" style="display:flex; gap:10px;">
-                                <select id="p-sugestao" style="flex:1" onchange="document.getElementById('p-item').value = this.value">
-                                    ${optionsItens}
-                                </select>
-                                <input type="text" id="p-item" placeholder="Nome do Produto" style="flex:2">
-                            </div>
-
-                            <input type="number" id="p-pecas" placeholder="Peças (Un)" oninput="calcSub()">
-                            <input type="number" id="p-m2" placeholder="Medida (m²)" oninput="calcSub()">
+                            <input type="text" id="p-item" placeholder="Produto/Material" class="full-width">
+                            <input type="number" id="p-pecas" placeholder="Peças" oninput="calcSub()">
+                            <input type="number" id="p-m2" placeholder="m²" oninput="calcSub()">
                             <input type="number" id="p-val" placeholder="Preço Unit. R$" oninput="calcSub()">
                             <input type="text" id="p-sub" placeholder="Subtotal" readonly style="background:#eee">
-                            
-                            <button onclick="addItemLista()" class="full-width" style="background:var(--vinho-botao); color:white; border:none; border-radius:5px; cursor:pointer; padding:15px; font-weight:bold;">+ ADICIONAR AO PEDIDO</button>
+                            <button onclick="addItemLista()" class="full-width" style="background:var(--vinho-botao); color:white; border:none; border-radius:5px; cursor:pointer; padding:15px;">+ ADICIONAR ITEM</button>
                         </div>
                     </div>
                     <div class="card">
-                        <h3>Resumo do Pedido</h3>
-                        <table><thead><tr><th>Item</th><th>Peças</th><th>m²</th><th>Unit.</th><th>Subtotal</th><th>Ação</th></tr></thead><tbody id="lista-pedido"></tbody></table>
+                        <h3>Itens Adicionados</h3>
+                        <table id="tabela-itens"><thead><tr><th>Item</th><th>Peças</th><th>m²</th><th>Unit.</th><th>Subtotal</th><th>Ação</th></tr></thead><tbody id="lista-pedido"></tbody></table>
                         <div style="text-align:right; margin-top:15px;">
                             <h2 id="total-pedido">Total: R$ 0,00</h2>
-                            <button onclick="finalizarPedido()" style="padding:15px 30px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; margin-top:10px;">SALVAR E FINALIZAR</button>
+                            <div style="display:flex; gap:10px; justify-content: flex-end; margin-top:10px;">
+                                <button onclick="finalizarPedido(false)" style="padding:15px; background:#666; color:white; border:none; border-radius:5px; cursor:pointer;">APENAS SALVAR</button>
+                                <button onclick="finalizarPedido(true)" style="padding:15px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">SALVAR E GERAR PDF</button>
+                            </div>
                         </div>
                     </div>`;
             }
@@ -187,12 +164,10 @@
 
         async function deletar(id, ref) { if(confirm("Excluir?")) { await fetch(`${DB}/${ref}/${id}.json`, { method: 'DELETE' }); render(ref==='clientes'?'cli':'est'); } }
 
-        /* LÓGICA DE PEDIDOS COM M² E PEÇAS */
         function calcSub() { 
             const p = document.getElementById('p-pecas').value || 1; 
             const m = document.getElementById('p-m2').value || 1; 
             const v = document.getElementById('p-val').value || 0; 
-            // Se m² for preenchido, calcula P x M x V, senão apenas P x V
             const total = (document.getElementById('p-m2').value) ? (p * m * v) : (p * v);
             document.getElementById('p-sub').value = total.toFixed(2); 
         }
@@ -203,29 +178,50 @@
             const m2 = document.getElementById('p-m2').value || '';
             const val = document.getElementById('p-val').value || 0;
             const sub = parseFloat(document.getElementById('p-sub').value);
-
-            if(!item || sub <= 0) return alert("Preencha o item e valores!");
-            
+            if(!item || sub <= 0) return alert("Verifique os dados!");
             window.itensPedido.push({item, pecas, m2, val, sub});
-            const corpo = document.getElementById('lista-pedido'); corpo.innerHTML = ''; let total = 0;
-            window.itensPedido.forEach((it, i) => { 
-                total += it.sub; 
-                corpo.innerHTML += `<tr><td>${it.item}</td><td>${it.pecas}</td><td>${it.m2}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td><td><button onclick="window.itensPedido.splice(${i},1);addItemLista()">X</button></td></tr>`; 
-            });
-            document.getElementById('total-pedido').innerText = `Total: R$ ${total.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
-            window.totalAtual = total;
-            
+            atualizarTabela();
             document.getElementById('p-item').value = ''; document.getElementById('p-pecas').value = ''; 
             document.getElementById('p-m2').value = ''; document.getElementById('p-val').value = ''; document.getElementById('p-sub').value = '';
         }
 
-        async function finalizarPedido() {
+        function atualizarTabela() {
+            const corpo = document.getElementById('lista-pedido'); corpo.innerHTML = ''; let total = 0;
+            window.itensPedido.forEach((it, i) => { 
+                total += it.sub; 
+                corpo.innerHTML += `<tr><td>${it.item}</td><td>${it.pecas}</td><td>${it.m2}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td><td><button onclick="window.itensPedido.splice(${i},1);atualizarTabela()">X</button></td></tr>`; 
+            });
+            document.getElementById('total-pedido').innerText = `Total: R$ ${total.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
+            window.totalAtual = total;
+        }
+
+        async function finalizarPedido(gerarPDF) {
             const cliente = document.getElementById('p-cliente').value;
-            if(!cliente || window.itensPedido.length === 0) return alert("Erro: Selecione o cliente e os itens.");
-            const ped = { cliente, data: new Date().toLocaleDateString('pt-br'), total: window.totalAtual, itens: window.itensPedido };
+            if(!cliente || window.itensPedido.length === 0) return alert("Erro nos dados!");
+            const dataPed = new Date().toLocaleDateString('pt-br');
+            const ped = { cliente, data: dataPed, total: window.totalAtual, itens: window.itensPedido };
+            
             await fetch(`${DB}/pedidos.json`, { method: 'POST', body: JSON.stringify(ped) });
-            alert("Pedido Salvo!");
-            render('fin');
+            
+            if(gerarPDF) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const img = new Image();
+                img.src = 'Logopermatti.png';
+                img.onload = () => {
+                    doc.addImage(img, 'PNG', 140, 10, 50, 20);
+                    doc.setFontSize(16); doc.text("ORÇAMENTO / PEDIDO", 10, 20);
+                    doc.setFontSize(10); doc.text(`CLIENTE: ${cliente}`, 10, 35); doc.text(`DATA: ${dataPed}`, 10, 40);
+                    
+                    const rows = window.itensPedido.map(it => [it.item, it.pecas, it.m2, `R$ ${it.val}`, `R$ ${it.sub.toFixed(2)}`]);
+                    doc.autoTable({ head: [['Item', 'Peças', 'm²', 'Unit.', 'Subtotal']], body: rows, startY: 45 });
+                    
+                    doc.setFontSize(12);
+                    doc.text(`TOTAL GERAL: R$ ${window.totalAtual.toLocaleString('pt-br', {minimumFractionDigits:2})}`, 10, doc.lastAutoTable.finalY + 10);
+                    doc.save(`Pedido_${cliente}.pdf`);
+                };
+            }
+            alert("Pedido Processado!"); render('fin');
         }
 
         async function novoEstoque() { const item = prompt("Material:"); const qtd = prompt("Qtd:"); if(item&&qtd) { await fetch(`${DB}/estoque.json`,{method:'POST',body:JSON.stringify({item,qtd})}); render('est'); } }
