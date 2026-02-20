@@ -19,28 +19,28 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f7f6; color: var(--cor-texto); overflow-x: hidden; }
 
+        /* LOGIN */
         .login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 9999;
         }
-
         .login-card {
             background: #fff; padding: 45px; border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 100%; max-width: 440px;
             text-align: center; border-top: 8px solid var(--cor-borda);
         }
-
-        .login-card h2 { color: var(--vinho-botao); margin-bottom: 25px; font-size: 26px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; outline: none; }
-        
         .btn-acessar {
             width: 100%; padding: 18px; background-color: var(--vinho-botao);
             color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase;
         }
 
+        /* ESTRUTURA APP */
         #app { display: none; flex-direction: column; height: 100vh; }
         .header { height: 75px; background: #ffffff; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .layout { display: flex; flex: 1; overflow: hidden; }
+        
+        /* SIDEBAR */
         .sidebar { width: 280px; background: var(--cor-sidebar); display: flex; flex-direction: column; }
         .menu { flex: 1; padding: 20px 0; }
         .menu button {
@@ -50,91 +50,19 @@
         .menu button.active { background: var(--cor-borda); color: #fff; border-left: 5px solid #fff; }
         .btn-sair-lateral { background: #000; color: #ff4d4d; padding: 25px; border: none; cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333; }
 
+        /* CONTEUDO */
         .content { flex: 1; padding: 35px; overflow-y: auto; background: #f4f7f6; }
         .card { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
         .full-width { grid-column: span 4; }
         .half-width { grid-column: span 2; }
         .tri-width { grid-column: span 3; }
-        
         input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; }
         label { display: block; margin-bottom: 5px; font-size: 12px; font-weight: bold; color: #666; }
 
+        /* BOTOES E TABELAS */
         .btn-acao { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-sucesso { background: #27ae60; color: white; }
         .btn-primario { background: var(--vinho-botao); color: white; }
-
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #f8f9fa; color: var(--vinho-botao); padding: 15px; border: 1px solid #eee; text-align: left; font-size: 12px; }
-        td { padding: 15px; border: 1px solid #eee; font-size: 14px; }
-        .btn-pdf-lista { background: #003399; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-    <div id="login-screen" class="login-overlay">
-        <div class="login-card">
-            <h2>SISTEMA BB GESTÃO</h2>
-            <input type="text" id="usuario" placeholder="Usuário">
-            <input type="password" id="senha" placeholder="Senha">
-            <button type="button" onclick="validaLogin()" class="btn-acessar">ENTRAR</button>
-        </div>
-    </div>
-
-    <div id="app">
-        <header class="header">
-            <div><b style="color: var(--cor-borda);">BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA</b></div>
-            <div id="data-topo"></div>
-        </header>
-        <div class="layout">
-            <aside class="sidebar" id="side-menu"></aside>
-            <main class="content" id="view-port"></main>
-        </div>
-    </div>
-
-    <script>
-        const DB_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
-        let editId = null;
-        window.itensPedido = [];
-        window.totalGeral = 0;
-        window.bancoPedidos = {};
-
-        function validaLogin() {
-            const u = document.getElementById('usuario').value;
-            const s = document.getElementById('senha').value;
-            
-            // Aceita 'admin' (maiúsculo ou minúsculo)
-            if (u.toLowerCase() === 'admin') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-                render('fin');
-            } else {
-                alert('Usuário ou senha incorretos.');
-            }
-        }
-
-        async function render(tela) {
-            const port = document.getElementById('view-port');
-            const menu = document.getElementById('side-menu');
-            document.getElementById('data-topo').innerText = new Date().toLocaleDateString('pt-br');
-
-            menu.innerHTML = `
-                <nav class="menu">
-                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Financeiro</button>
-                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Clientes</button>
-                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido</button>
-                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Estoque</button>
-                </nav>
-                <button onclick="location.reload()" class="btn-sair-lateral">SAIR</button>
-            `;
-
-            if(tela === 'fin') {
-                const res = await fetch(`${DB_URL}/pedidos.json`);
-                const data = await res.json();
-                let total = 0;
-                let rows = '';
-                if(data) {
-                    Object.values(data).forEach(p => {
-                        total += parseFloat(p.total || 0);
-                        rows +=
+        th { background: #f8
