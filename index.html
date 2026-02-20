@@ -3,50 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP BB Forros | Gestão Completa</title>
+    <title>ERP BB Forros | Gestão Oficial</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
-        :root { --primary: #8b0000; --dark: #1a0000; --bg: #fdfaf9; }
+        /* CSS EMBUTIDO PARA NÃO FALHAR */
+        :root { --primary: #8b0000; --dark: #1a0000; --bg: #f4f4f4; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
         /* Login */
         .overlay { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-box { background: white; padding: 40px; border-radius: 20px; width: 380px; text-align: center; border-top: 10px solid var(--primary); }
-        .login-box img { width: 180px; margin-bottom: 20px; }
-
-        /* Estrutura */
-        .top-bar { height: 70px; background: white; border-bottom: 2px solid #eee; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; flex-shrink: 0; }
-        .top-bar img { height: 50px; }
+        .login-box img { width: 150px; margin-bottom: 20px; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
         
+        /* Sistema */
+        .top-bar { height: 70px; background: white; border-bottom: 2px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+        .top-bar img { height: 45px; }
         .main-layout { display: flex; flex: 1; overflow: hidden; }
         .sidebar { width: 260px; background: var(--dark); display: flex; flex-direction: column; flex-shrink: 0; }
-        
         .menu-links { flex: 1; padding: 20px 10px; }
-        .menu-links button { 
-            width: 100%; padding: 15px; background: none; border: none; 
-            color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 8px; font-weight: bold;
-        }
+        .menu-links button { width: 100%; padding: 15px; background: none; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 5px; font-weight: bold; }
         .menu-links button:hover { background: var(--primary); color: white; }
-        .btn-exit { padding: 20px; background: #000; color: white; border: none; cursor: pointer; font-weight: bold; }
-
         .content-area { flex: 1; padding: 30px; overflow-y: auto; }
-        .card { background: white; padding: 25px; border-radius: 12px; border: 1px solid #fee2e2; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #eee; }
         
-        /* Formulários */
-        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        /* Tabelas e Forms */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .full { grid-column: span 2; }
-        label { display: block; font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 5px; text-transform: uppercase; }
-        input, select, textarea { padding: 12px; border: 1px solid #fecaca; border-radius: 8px; width: 100%; margin-bottom: 10px; outline: none; }
-        
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; color: var(--primary); border-bottom: 2px solid #eee; font-size: 12px; }
+        label { display: block; font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
+        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+        button.main-btn { background: var(--primary); color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 12px; background: #f9f9f9; color: var(--primary); border-bottom: 2px solid #eee; }
         td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
-        
-        .btn-main { background: var(--primary); color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-pdf { background: #16a34a; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -54,37 +45,127 @@
     <div id="login-screen" class="overlay">
         <div class="login-box">
             <img src="logo.png" alt="BB Forros" onerror="this.src='https://via.placeholder.com/150?text=BB+FORROS'">
-            <h2 style="color:var(--primary); margin-bottom: 20px;">SISTEMA DE GESTÃO</h2>
+            <h2 style="color:var(--primary); margin-bottom:20px;">BB GESTÃO</h2>
             <input type="text" id="user" placeholder="Usuário">
             <input type="password" id="pass" placeholder="Senha">
-            <button onclick="auth.login()" class="btn-main" style="width:100%">ENTRAR</button>
+            <button onclick="entrar()" class="main-btn">ACESSAR</button>
         </div>
     </div>
 
     <div id="app-container" style="display: none;">
         <header class="top-bar">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-                <span style="font-weight:bold; color:var(--primary); font-size:20px;">BB COMÉRCIO DE FORROS</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="logo.png" alt="Logo">
+                <b style="color:var(--primary); font-size:20px;">BB COMÉRCIO DE FORROS</b>
             </div>
-            <div>Admin</div>
+            <span>Acesso: <b>Admin</b></span>
         </header>
 
         <div class="main-layout">
             <nav class="sidebar">
                 <div class="menu-links">
-                    <button onclick="ui.render('dashboard')">📊 FINANCEIRO</button>
-                    <button onclick="ui.render('clientes')">👥 CLIENTES</button>
-                    <button onclick="ui.render('pedidos')">🛒 VENDAS / PEDIDOS</button>
-                    <button onclick="ui.render('estoque')">📦 ESTOQUE</button>
+                    <button onclick="show('financeiro')">📊 FINANCEIRO</button>
+                    <button onclick="show('clientes')">👥 CLIENTES</button>
+                    <button onclick="show('vendas')">🛒 VENDAS / PEDIDOS</button>
+                    <button onclick="show('estoque')">📦 ESTOQUE</button>
                 </div>
-                <button onclick="auth.logout()" class="btn-exit">SAIR</button>
+                <button onclick="location.reload()" style="background:#000; color:white; padding:20px; border:none; cursor:pointer; font-weight:bold;">SAIR</button>
             </nav>
-            <main class="content-area">
-                <div id="view-content"></div>
-            </main>
+            <main class="content-area" id="main-content"></main>
         </div>
     </div>
-    <script src="app.js"></script>
+
+    <script>
+        // CONFIGURAÇÃO - COLOQUE SEU LINK DO FIREBASE AQUI
+        const DB_URL = "https://SEU-PROJETO.firebaseio.com"; 
+
+        function entrar() {
+            if(document.getElementById('user').value === 'admin') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                show('financeiro');
+            }
+        }
+
+        async function show(tela) {
+            const area = document.getElementById('main-content');
+            area.innerHTML = "<h2>Carregando dados...</h2>";
+
+            if(tela === 'financeiro') {
+                const res = await fetch(`${DB_URL}/pedidos.json`);
+                const data = await res.json();
+                const pedidos = data ? Object.values(data) : [];
+                const total = pedidos.reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
+                
+                area.innerHTML = `<h1>📊 Resumo Financeiro</h1>
+                    <div class="grid">
+                        <div class="card"><h3>FATURAMENTO BRUTO</h3><h2 style="color:var(--primary); font-size:30px;">R$ ${total.toFixed(2)}</h2></div>
+                        <div class="card"><h3>TOTAL DE PEDIDOS</h3><h2 style="font-size:30px;">${pedidos.length}</h2></div>
+                    </div>`;
+            }
+
+            if(tela === 'clientes') {
+                area.innerHTML = `<h1>👥 Clientes</h1>
+                    <div class="card grid">
+                        <div class="full"><label>Nome</label><input id="c-nome"></div>
+                        <button class="main-btn full" onclick="salvarCli()">CADASTRAR</button>
+                    </div>`;
+            }
+
+            if(tela === 'vendas') {
+                area.innerHTML = `<h1>🛒 Novo Pedido</h1>
+                    <div class="card grid">
+                        <div><label>Nº Pedido</label><input id="p-num"></div>
+                        <div><label>Data</label><input id="p-data" type="date"></div>
+                        <div class="full"><label>Cliente</label><input id="p-cli"></div>
+                        <div class="full"><label>Material</label><input id="p-mat"></div>
+                        <div><label>Qtd</label><input id="p-qtd" type="number"></div>
+                        <div><label>Vlr Unit.</label><input id="p-vlr" type="number"></div>
+                        <button class="main-btn full" onclick="salvarVenda()" style="background:#16a34a">GERAR PEDIDO E PDF</button>
+                    </div>`;
+            }
+
+            if(tela === 'estoque') {
+                area.innerHTML = `<h1>📦 Estoque</h1><div class="card"><p>Controle de estoque em breve.</p></div>`;
+            }
+        }
+
+        async function salvarVenda() {
+            const pedido = {
+                numero: document.getElementById('p-num').value,
+                data: document.getElementById('p-data').value,
+                cliente: document.getElementById('p-cli').value,
+                material: document.getElementById('p-mat').value,
+                qtd: document.getElementById('p-qtd').value,
+                unit: document.getElementById('p-vlr').value,
+                total: (document.getElementById('p-qtd').value * document.getElementById('p-vlr').value).toFixed(2)
+            };
+            await fetch(`${DB_URL}/pedidos.json`, { method: 'POST', body: JSON.stringify(pedido) });
+            gerarPDF(pedido);
+            show('vendas');
+        }
+
+        function gerarPDF(p) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(14); doc.text("BB COMERCIO DE FORROS", 105, 15, {align:'center'});
+            doc.setFontSize(10); doc.text(`Pedido: ${p.numero} - Data: ${p.data}`, 10, 30);
+            doc.text(`Cliente: ${p.cliente}`, 10, 35);
+            
+            doc.autoTable({
+                startY: 45,
+                head: [['Descrição', 'Qtd', 'Unit.', 'Total']],
+                body: [[p.material, p.qtd, p.unit, p.total]],
+                headStyles: {fillColor: [139, 0, 0]}
+            });
+
+            let finalY = doc.lastAutoTable.finalY + 30;
+            doc.text(`Praia Grande, SP - ${new Date().toLocaleDateString()}`, 105, finalY, {align:'center'});
+            doc.line(20, finalY+20, 90, finalY+20); doc.text("EMPRESA", 55, finalY+25, {align:'center'});
+            doc.line(120, finalY+20, 190, finalY+20); doc.text("CLIENTE", 155, finalY+25, {align:'center'});
+            
+            doc.save(`Pedido_${p.numero}.pdf`);
+        }
+    </script>
 </body>
 </html>
