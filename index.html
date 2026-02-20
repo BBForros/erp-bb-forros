@@ -117,6 +117,7 @@
         let editId = null;
         window.itensPedido = [];
         window.totalGeral = 0;
+        window.pedidosCache = {}; // Cache para evitar erro no botão PDF
 
         document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-br');
 
@@ -177,76 +178,4 @@
                         <input type="text" id="c-nome" placeholder="Nome" required class="full-width">
                         <input type="text" id="c-tel" placeholder="Telefone" class="half-width">
                         <input type="text" id="c-doc" placeholder="CPF/CNPJ" class="half-width">
-                        <input type="text" id="c-end" placeholder="Endereço" class="full-width">
-                        <input type="text" id="c-cid" placeholder="Cidade/UF" class="half-width">
-                        <button type="submit" id="btn-cli-salvar" class="btn-acao btn-sucesso full-width">SALVAR CLIENTE</button>
-                    </form></div>
-                    <div class="card"><table><thead><tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-            }
-
-            if(tela === 'ped') {
-                const resCli = await fetch(`${DB_URL}/clientes.json`);
-                const dataCli = await resCli.json();
-                let opts = '<option value="">Selecione o Cliente...</option>';
-                if(dataCli) Object.values(dataCli).forEach(c => opts += `<option value='${JSON.stringify(c)}'>${c.nome}</option>`);
-
-                const resPed = await fetch(`${DB_URL}/pedidos.json`);
-                const dataPed = await resPed.json();
-                let rowsPed = '';
-                if(dataPed) {
-                    Object.entries(dataPed).reverse().forEach(([id, p]) => {
-                        const dadosString = JSON.stringify(p).replace(/'/g, "&apos;");
-                        rowsPed += `<tr>
-                            <td>${p.data || ''}</td>
-                            <td>${p.numPedido || ''}</td>
-                            <td>${p.cliente || ''}</td>
-                            <td>R$ ${parseFloat(p.total || 0).toFixed(2)}</td>
-                            <td><button class="btn-pdf-lista" onclick='regerarPDF(${dadosString})'>PDF</button></td>
-                        </tr>`;
-                    });
-                }
-
-                port.innerHTML = `<h1>🛒 Novo Pedido</h1>
-                <div class="card"><div class="form-grid">
-                    <div class="tri-width"><label>Cliente</label><select id="p-cliente-select">${opts}</select></div>
-                    <div><label>Nº Pedido</label><input type="text" id="p-numero" style="border:2px solid #8a0000;font-weight:bold"></div>
-                    <input type="text" id="p-item" placeholder="Descrição" class="full-width">
-                    <input type="number" id="p-pecas" placeholder="Pçs" oninput="calcSub()">
-                    <input type="number" id="p-m2" placeholder="m2" oninput="calcSub()">
-                    <input type="number" id="p-val" placeholder="Preço" oninput="calcSub()">
-                    <input type="text" id="p-sub" placeholder="Subtotal" readonly>
-                    <button onclick="addItem()" class="btn-acao btn-primario full-width">+ ADICIONAR ITEM</button>
-                </div></div>
-                <div class="card"><table id="tabela-itens"><thead><tr><th>Descrição</th><th>Pçs</th><th>m2</th><th>Unit</th><th>Subtotal</th><th>X</th></tr></thead><tbody id="lista-pedido"></tbody></table>
-                <h2 id="total-pedido" style="text-align:right;margin-top:20px">TOTAL: R$ 0,00</h2>
-                <button onclick="finalizar(true)" class="btn-acao btn-sucesso" style="float:right">FINALIZAR E GERAR PDF</button></div>
-                <h2 style="margin-top:40px">📜 Pedidos Emitidos</h2>
-                <div class="card"><table><thead><tr><th>Data</th><th>Nº</th><th>Cliente</th><th>Total</th><th>Ação</th></tr></thead><tbody>${rowsPed}</tbody></table></div>`;
-                window.itensPedido = []; window.totalGeral = 0;
-            }
-
-            if(tela === 'est') {
-                const res = await fetch(`${DB_URL}/estoque.json`);
-                const data = await res.json();
-                let rows = '';
-                if(data) Object.entries(data).forEach(([id, i]) => { rows += `<tr><td>${i.item}</td><td>${i.qtd}</td></tr>`; });
-                port.innerHTML = `<h1>📦 Estoque</h1><div class="card"><table><thead><tr><th>Item</th><th>Qtd</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-            }
-        }
-
-        function prepararEdicao(id, c) {
-            editId = id;
-            document.getElementById('c-nome').value = c.nome;
-            document.getElementById('c-tel').value = c.tel || '';
-            document.getElementById('c-doc').value = c.doc || '';
-            document.getElementById('c-end').value = c.end || '';
-            document.getElementById('c-cid').value = c.cidadeEstado || '';
-            const b = document.getElementById('btn-cli-salvar');
-            b.innerText = "ATUALIZAR CLIENTE";
-            b.className = "btn-acao btn-primario full-width";
-            window.scrollTo(0,0);
-        }
-
-        async function salvarCliente(e) {
-            e.preventDefault();
-            const p = { nome: document.getElementById('c-nome').value
+                        <input type="text" id="c-end" placeholder="Endereço" class="
