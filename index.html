@@ -11,12 +11,10 @@
 <body>
     <div id="login-screen" class="overlay">
         <div class="login-box">
-            <img src="LogoBB.png" alt="Logo BB" style="width: 150px; margin-bottom: 20px;">
-            <h2>SISTEMA DE GESTÃO</h2>
-            <div class="input-group">
-                <input type="text" id="user" placeholder="Usuário">
-                <input type="password" id="pass" placeholder="Senha">
-            </div>
+            <img src="LogoBB.png" alt="Logo" style="width: 120px; margin-bottom: 20px;">
+            <h2>ACESSO AO SISTEMA</h2>
+            <input type="text" id="user" placeholder="Usuário">
+            <input type="password" id="pass" placeholder="Senha">
             <button onclick="auth.login()">ENTRAR</button>
         </div>
     </div>
@@ -24,10 +22,10 @@
     <div id="app-container" style="display: none;">
         <header class="top-bar">
             <div class="brand">
-                <img src="LogoBB.png" width="45">
+                <img src="LogoBB.png" width="40">
                 <span>BB COMERCIO DE FORROS</span>
             </div>
-            <div class="user-info">Acesso: <strong id="user-display">Admin</strong></div>
+            <div class="user-tag">Acesso: <strong>Admin</strong></div>
         </header>
 
         <div class="main-layout">
@@ -44,7 +42,6 @@
             </main>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
