@@ -9,35 +9,36 @@
         :root { --vinho-fundo: #1a0505; --vinho-botao: #8a0000; --cor-borda: #800000; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         
-        /* LOGIN IDÊNTICO À IMAGEM */
+        /* TELA DE LOGIN - EXATAMENTE COMO NA IMAGEM ENVIADA */
         .login-overlay { position: fixed; inset: 0; background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-card { background: white; padding: 45px; border-radius: 15px; width: 440px; text-align: center; border-top: 8px solid var(--cor-borda); }
         .logo-container { display: flex; justify-content: center; align-items: center; margin-bottom: 25px; }
-        .logo-container img { height: 110px; width: auto; } /* LogoBB.png */
+        .logo-container img { height: 110px; width: auto; } /* APENAS LOGOBB.PNG AQUI */
         .login-card h2 { color: var(--vinho-botao); margin-bottom: 25px; font-size: 26px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        .login-card input:first-of-type { background: #eef3ff; } /* Campo azulado */
-        .btn-acessar { width: 100%; padding: 18px; background: var(--vinho-botao); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .login-card input:first-of-type { background: #eef3ff; } 
+        .btn-acessar { width: 100%; padding: 18px; background: var(--vinho-botao); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 15px; }
 
-        /* DASHBOARD PRESERVADO */
+        /* DASHBOARD - ESTRUTURA E ESTILOS PRESERVADOS */
         #app { display: none; flex-direction: column; height: 100vh; background: #f4f7f6; }
         .header { height: 75px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .layout { display: flex; flex: 1; overflow: hidden; }
         .sidebar { width: 280px; background: #000; display: flex; flex-direction: column; }
-        .menu button { width: 100%; padding: 18px; background: transparent; border: none; color: white; text-align: left; cursor: pointer; font-weight: bold; border-bottom: 1px solid #1a1a1a; }
+        .menu button { width: 100%; padding: 18px; background: transparent; border: none; color: white; text-align: left; cursor: pointer; font-weight: bold; border-bottom: 1px solid #1a1a1a; text-transform: uppercase; }
         .menu button.active { background: var(--cor-borda); }
         .btn-sair-lateral { background: black; color: white; padding: 25px; border: none; cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333; margin-top: auto; }
         .content { flex: 1; padding: 35px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-add { background: #16a34a; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="login-overlay">
         <div class="login-card">
-            <div class="logo-container"><img src="LogoBB.png"></div>
+            <div class="logo-container"><img src="LogoBB.png" alt="Logo BB"></div>
             <h2>BB GESTÃO</h2>
             <input type="text" id="user" placeholder="admin">
             <input type="password" id="pass" placeholder="***">
@@ -47,7 +48,7 @@
 
     <div id="app">
         <header class="header">
-            <div style="display:flex; align-items:center; gap:15px;">
+            <div style="display:flex; align-items:center; gap:10px;">
                 <img src="LogoBB.png" height="50">
                 <b style="color:var(--cor-borda)">BB COMÉRCIO DE FORROS E DIVISORIAS LTDA.</b>
             </div>
@@ -88,50 +89,62 @@
                 const d = await r.json();
                 const peds = d ? Object.values(d) : [];
                 const total = peds.reduce((a, b) => a + parseFloat(b.total || 0), 0);
-                port.innerHTML = `<h1>Financeiro</h1><div class="card"><h3>FATURAMENTO BRUTO</h3><h2 style="color:#16a34a">R$ ${total.toLocaleString('pt-br', {minimumFractionDigits:2})}</h2></div>`;
+                port.innerHTML = `<h1>📊 Financeiro</h1><div class="card"><h3>FATURAMENTO BRUTO</h3><h2 style="color:#16a34a">R$ ${total.toLocaleString('pt-br', {minimumFractionDigits: 2})}</h2></div>`;
             }
 
             if(tela === 'cli') {
                 const r = await fetch(`${DB}/clientes.json`);
                 const d = await r.json();
-                let html = `<h1>Clientes</h1><button style="padding:10px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer;" onclick="novoCliente()">+ Novo Cliente</button><table><tr><th>Nome</th><th>Contato</th></tr>`;
-                if(d) Object.values(d).forEach(c => html += `<tr><td>${c.nome}</td><td>${c.tel}</td></tr>`);
-                port.innerHTML = html + `</table>`;
-            }
-
-            if(tela === 'ped') {
-                port.innerHTML = `<h1>Pedidos</h1><div class="card"><p>Lógica de geração de PDF com <b>Logopermatti.png</b> configurada.</p><button onclick="gerarPDFPedido()" style="margin-top:10px; padding:10px; background:var(--vinho-botao); color:white; border:none; border-radius:5px; cursor:pointer;">Simular PDF</button></div>`;
+                let rows = '';
+                if(d) Object.entries(d).forEach(([id, c]) => {
+                    rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td><button onclick="deletar('${id}', 'clientes')">Excluir</button></td></tr>`;
+                });
+                port.innerHTML = `<h1>👥 Clientes</h1><button onclick="novoItem('clientes')" class="btn-add">+ Novo Cliente</button><table><tr><th>Nome</th><th>Tel</th><th>Ações</th></tr>${rows}</table>`;
             }
 
             if(tela === 'est') {
                 const r = await fetch(`${DB}/estoque.json`);
                 const d = await r.json();
-                let html = `<h1>Estoque</h1><table><tr><th>Item</th><th>Qtd</th></tr>`;
-                if(d) Object.values(d).forEach(e => html += `<tr><td>${e.item}</td><td>${e.qtd}</td></tr>`);
-                port.innerHTML = html + `</table>`;
+                let rows = '';
+                if(d) Object.entries(d).forEach(([id, i]) => {
+                    rows += `<tr><td>${i.item}</td><td>${i.qtd}</td><td><button onclick="deletar('${id}', 'estoque')">Excluir</button></td></tr>`;
+                });
+                port.innerHTML = `<h1>📦 Estoque</h1><button onclick="novoItem('estoque')" class="btn-add">+ Novo Item</button><table><tr><th>Produto</th><th>Qtd</th><th>Ações</th></tr>${rows}</table>`;
+            }
+
+            if(tela === 'ped') {
+                port.innerHTML = `<h1>🛒 Pedidos</h1><div class="card"><p>Aba de pedidos ativa. Clique abaixo para gerar o PDF oficial.</p><button onclick="gerarPDF()">Gerar PDF com Logo Permatti</button></div>`;
             }
         }
 
-        function gerarPDFPedido() {
+        async function novoItem(ref) {
+            const val1 = prompt(ref === 'clientes' ? "Nome:" : "Item:");
+            const val2 = prompt(ref === 'clientes' ? "Tel:" : "Qtd:");
+            if(val1 && val2) {
+                const obj = ref === 'clientes' ? {nome: val1, tel: val2} : {item: val1, qtd: val2};
+                await fetch(`${DB}/${ref}.json`, { method: 'POST', body: JSON.stringify(obj) });
+                render(ref === 'clientes' ? 'cli' : 'est');
+            }
+        }
+
+        async function deletar(id, ref) {
+            if(confirm("Deseja excluir este registro?")) {
+                await fetch(`${DB}/${ref}/${id}.json`, { method: 'DELETE' });
+                render(ref === 'clientes' ? 'cli' : 'est');
+            }
+        }
+
+        function gerarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            // Inserindo Logopermatti apenas no PDF
             const img = new Image();
-            img.src = 'Logopermatti.png';
-            img.onload = function() {
+            img.src = 'Logopermatti.png'; /* SOMENTE NO PDF */
+            img.onload = () => {
                 doc.addImage(img, 'PNG', 150, 10, 40, 15);
-                doc.text("PEDIDO DE VENDA - BB FORROS", 10, 20);
-                doc.save("pedido.pdf");
+                doc.setFontSize(18);
+                doc.text("ORÇAMENTO / PEDIDO", 10, 20);
+                doc.save("pedido_bbforros.pdf");
             };
-        }
-
-        async function novoCliente() {
-            const nome = prompt("Nome:");
-            const tel = prompt("Telefone:");
-            if(nome) {
-                await fetch(`${DB}/clientes.json`, { method: 'POST', body: JSON.stringify({nome, tel}) });
-                render('cli');
-            }
         }
     </script>
 </body>
