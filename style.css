@@ -1,37 +1,80 @@
 :root {
     --primary: #8b0000;
-    --primary-hover: #5a0000;
-    --dark: #1a0000;
+    --dark: #2d0000;
     --bg: #fdfaf9;
-    --sidebar-w: 240px;
+    --sidebar-w: 250px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-body { background: var(--bg); height: 100vh; overflow: hidden; }
 
-.overlay { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.login-box { background: white; padding: 40px; border-radius: 16px; width: 340px; text-align: center; border-top: 6px solid var(--primary); }
-.input-group input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; }
-.login-box button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+body { background: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-.top-bar { height: 65px; background: white; border-bottom: 2px solid #eee; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
-.brand { display: flex; align-items: center; gap: 10px; color: var(--primary); font-weight: bold; }
-.main-layout { display: flex; height: calc(100vh - 65px); }
+/* Barra Superior */
+.top-bar { 
+    height: 70px; 
+    background: white; 
+    border-bottom: 2px solid #eee; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 0 20px;
+    z-index: 10;
+}
 
-.sidebar { width: var(--sidebar-w); background: #2d0000; display: flex; flex-direction: column; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--primary); }
+
+/* Layout Principal */
+.main-layout { display: flex; flex: 1; height: calc(100vh - 70px); }
+
+/* Menu Lateral */
+.sidebar { 
+    width: var(--sidebar-w); 
+    background: var(--dark); 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%;
+}
+
 .menu-links { flex: 1; padding: 20px 10px; }
-.menu-links button { width: 100%; padding: 15px; background: none; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 5px; }
-.menu-links button:hover { background: var(--primary-hover); color: white; }
+
+.menu-links button { 
+    width: 100%; 
+    padding: 15px; 
+    background: none; 
+    border: none; 
+    color: #fca5a5; 
+    text-align: left; 
+    cursor: pointer; 
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.menu-links button:hover { background: #5a0000; color: white; }
+
 .btn-exit { padding: 15px; background: #111; color: white; border: none; cursor: pointer; }
 
-.content-area { flex: 1; padding: 30px; overflow-y: auto; }
-.card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #fee2e2; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+/* Área de Conteúdo */
+.content-area { 
+    flex: 1; 
+    padding: 30px; 
+    overflow-y: auto; 
+    background: var(--bg);
+}
+
+.card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #fee2e2; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
 .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .full { grid-column: span 2; }
 
 label { display: block; font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 5px; text-transform: uppercase; }
-input, select { padding: 10px; border: 1px solid #fecaca; border-radius: 6px; width: 100%; }
+input, select { padding: 12px; border: 1px solid #fecaca; border-radius: 6px; width: 100%; }
 
 table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
 th { background: #fff1f2; padding: 12px; text-align: left; color: var(--primary); font-size: 12px; }
 td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+
+/* Tela de Login */
+.overlay { position: fixed; inset: 0; background: #1a0000; display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.login-box { background: white; padding: 40px; border-radius: 16px; width: 340px; text-align: center; border-top: 6px solid var(--primary); }
