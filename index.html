@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Sistema BB Pro</title>
+<title>Sistema BB</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -28,7 +28,7 @@ th{background:#8B0000;color:white;}
 
 <body>
 
-<header>Sistema BB Pro</header>
+<header>Sistema BB</header>
 
 <nav>
 <button onclick="render('estoque')">📦 Estoque</button>
@@ -40,7 +40,6 @@ th{background:#8B0000;color:white;}
 <div class="container" id="conteudo"></div>
 
 <script>
-
 const DB="COLE_SUA_URL_FIREBASE_AQUI";
 
 function render(tela){
@@ -74,31 +73,16 @@ c.innerHTML=`
 }
 
 if(tela==="financeiro"){dashboardFinanceiro();}
-
-if(tela==="contas"){
-c.innerHTML=`
-<div class="card">
-<h2>Nova Conta</h2>
-<select id="tipoConta">
-<option value="pagar">Conta a Pagar</option>
-<option value="receber">Conta a Receber</option>
-</select>
-<input id="descConta" placeholder="Descrição">
-<input id="valorConta" type="number" placeholder="Valor">
-<input id="dataConta" type="date">
-<button class="acao" onclick="salvarConta()">Salvar</button>
-</div>
-<div class="card"><div id="listaContas"></div></div>`;
-carregarContas();
-}
+if(tela==="contas"){renderContas();}
 }
 
 async function salvarEstoque(){
-await fetch(DB+"/estoque.json",{method:"POST",body:JSON.stringify({
+await fetch(DB+"/estoque.json",{method:"POST",
+body:JSON.stringify({
 produto:produto.value,
-quantidade:quantidade.value,
-precoCusto:precoCusto.value,
-precoVenda:precoVenda.value
+quantidade:parseInt(quantidade.value),
+precoCusto:parseFloat(precoCusto.value),
+precoVenda:parseFloat(precoVenda.value)
 })});
 render('estoque');
 }
@@ -119,17 +103,18 @@ if(!numPedido.value){alert("Pedido sem número!");return;}
 
 const r=await fetch(DB+"/estoque.json");
 const estoque=await r.json();
-let lucroTotal=0;
-let margem=0;
+let lucro=0,margem=0,total=0;
 
 for(const [id,item] of Object.entries(estoque)){
 if(item.produto===produtoPedido.value){
+
 let qtd=parseInt(quantPedido.value);
-let novaQtd=parseInt(item.quantidade)-qtd;
+let novaQtd=item.quantidade-qtd;
 if(novaQtd<0){alert("Estoque insuficiente");return;}
 
-lucroTotal=(valorVenda.value-item.precoCusto)*qtd;
-margem=(lucroTotal/(valorVenda.value*qtd))*100;
+total=qtd*parseFloat(valorVenda.value);
+lucro=(valorVenda.value-item.precoCusto)*qtd;
+margem=(lucro/total)*100;
 
 await fetch(DB+"/estoque/"+id+".json",{method:"PUT",
 body:JSON.stringify({...item,quantidade:novaQtd})});
@@ -143,40 +128,51 @@ num:numPedido.value,
 cliente:cliente.value,
 produto:produtoPedido.value,
 quantidade:quantPedido.value,
-total:valorVenda.value*quantPedido.value,
-lucro:lucroTotal,
+total:total,
+lucro:lucro,
 margem:margem,
 data:new Date().toISOString().split("T")[0]
 })});
 
-gerarPDF();
-alert("Pedido Finalizado");
+gerarPDF(total,lucro,margem);
+alert("Pedido Finalizado!");
 render('financeiro');
 }
 
-async function gerarPDF(){
+function gerarPDF(total,lucro,margem){
 const { jsPDF } = window.jspdf;
 const doc=new jsPDF();
 doc.addImage("LogoBB.png","PNG",10,10,40,20);
-doc.text("Pedido Finalizado",10,40);
+doc.text("Resumo do Pedido",10,40);
+doc.text("Total: R$ "+total.toFixed(2),10,50);
+doc.text("Lucro: R$ "+lucro.toFixed(2),10,60);
+doc.text("Margem: "+margem.toFixed(2)+"%",10,70);
 doc.save("pedido.pdf");
 }
 
 async function dashboardFinanceiro(){
 const r=await fetch(DB+"/pedidos.json");
 const d=await r.json();
-let fat=0,luc=0;
-let labels=[],valores=[];
-if(d){Object.values(d).forEach(p=>{
+
+let inicio=dataInicio?.value;
+let fim=dataFim?.value;
+
+let fat=0,luc=0,labels=[],valores=[];
+
+if(d){
+Object.values(d).forEach(p=>{
+if((!inicio || p.data>=inicio) && (!fim || p.data<=fim)){
 fat+=p.total;
 luc+=p.lucro;
 labels.push(p.data);
 valores.push(p.total);
-});}
+}
+});
+}
 
 conteudo.innerHTML=`
 <div class="card">
-<h2>Dashboard Financeiro</h2>
+<h2>Financeiro</h2>
 <input type="date" id="dataInicio">
 <input type="date" id="dataFim">
 <button class="acao" onclick="dashboardFinanceiro()">Filtrar</button>
@@ -188,6 +184,23 @@ conteudo.innerHTML=`
 new Chart(grafico,{type:'bar',
 data:{labels:labels,
 datasets:[{label:'Faturamento',data:valores,backgroundColor:'#8B0000'}]}});
+}
+
+function renderContas(){
+conteudo.innerHTML=`
+<div class="card">
+<h2>Nova Conta</h2>
+<select id="tipoConta">
+<option value="pagar">Conta a Pagar</option>
+<option value="receber">Conta a Receber</option>
+</select>
+<input id="descConta" placeholder="Descrição">
+<input id="valorConta" type="number" placeholder="Valor">
+<input id="dataConta" type="date">
+<button class="acao" onclick="salvarConta()">Salvar</button>
+</div>
+<div class="card"><div id="listaContas"></div></div>`;
+carregarContas();
 }
 
 async function salvarConta(){
@@ -217,7 +230,6 @@ listaContas.innerHTML=html;
 }
 
 render('estoque');
-
 </script>
 </body>
 </html>
