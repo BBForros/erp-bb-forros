@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP BB Forros | Sistema de Gestão Oficial</title>
-    
+    <title>SISTEMA ERP BB FORROS - GESTÃO COMPLETA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
         :root {
             --vinho-fundo: #1a0505;
@@ -16,234 +14,230 @@
             --cor-borda: #800000;
             --cor-texto: #333;
             --cor-sidebar: #000000;
+            --branco: #ffffff;
+            --cinza-claro: #f4f7f6;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: var(--cinza-claro); color: var(--cor-texto); line-height: 1.6; }
 
-        body {
-            background-color: #f4f7f6;
-            color: var(--cor-texto);
-            overflow-x: hidden;
+        /* TELA DE LOGIN ESTILIZADA */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 10000;
         }
-
-        /* --- TELA DE LOGIN --- */
-        .login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--vinho-fundo);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
         .login-card {
-            background: #fff;
-            padding: 45px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 440px;
-            text-align: center;
-            border-top: 8px solid var(--cor-borda);
+            background: var(--branco); padding: 50px; border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6); width: 100%; max-width: 450px;
+            text-align: center; border-top: 10px solid var(--cor-borda);
         }
-
-        .login-card h2 {
-            color: var(--vinho-botao);
-            margin-bottom: 25px;
-            font-size: 26px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
+        .login-card h2 { color: var(--vinho-botao); margin-bottom: 30px; font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
         .login-card input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s;
+            width: 100%; padding: 18px; margin-bottom: 20px; border: 2px solid #eee;
+            border-radius: 10px; font-size: 16px; outline: none; transition: 0.3s;
         }
-
-        .login-card input:focus {
-            border-color: var(--vinho-botao);
-        }
-
+        .login-card input:focus { border-color: var(--vinho-botao); background: #fffcfc; }
         .btn-acessar {
-            width: 100%;
-            padding: 18px;
-            background-color: var(--vinho-botao);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: background 0.3s;
+            width: 100%; padding: 20px; background-color: var(--vinho-botao);
+            color: white; border: none; border-radius: 10px; font-size: 18px;
+            font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.4s;
+        }
+        .btn-acessar:hover { background-color: var(--vinho-hover); transform: scale(1.02); }
+
+        /* ESTRUTURA DASHBOARD */
+        #app { display: none; flex-direction: column; height: 100vh; }
+        header {
+            height: 80px; background: var(--branco); border-bottom: 2px solid #ddd;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 100;
+        }
+        .layout { display: flex; flex: 1; overflow: hidden; }
+        
+        /* SIDEBAR */
+        aside { width: 300px; background: var(--cor-sidebar); display: flex; flex-direction: column; transition: 0.3s; }
+        .menu-nav { flex: 1; padding: 30px 0; }
+        .menu-nav button {
+            width: 100%; padding: 22px 30px; background: transparent; border: none;
+            color: #bdc3c7; text-align: left; font-size: 15px; cursor: pointer;
+            border-bottom: 1px solid #111; font-weight: 600; text-transform: uppercase;
+            display: flex; align-items: center; gap: 15px; transition: 0.3s;
+        }
+        .menu-nav button:hover { background: #111; color: #fff; padding-left: 40px; }
+        .menu-nav button.active { background: var(--cor-borda); color: #fff; border-left: 8px solid #fff; }
+        
+        .btn-logout { background: #900; color: #fff; padding: 25px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+        /* CONTEÚDO E CARDS */
+        main { flex: 1; padding: 40px; overflow-y: auto; background: var(--cinza-claro); }
+        .card { background: var(--branco); padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); margin-bottom: 30px; }
+        h1 { font-size: 30px; color: var(--vinho-botao); margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+        
+        /* FORMULÁRIOS GRID */
+        .grid-form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .col-4 { grid-column: span 4; }
+        .col-2 { grid-column: span 2; }
+        .col-3 { grid-column: span 3; }
+        
+        .group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 12px; font-weight: bold; color: #555; text-transform: uppercase; }
+        input, select { padding: 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; width: 100%; }
+        
+        /* TABELAS */
+        .scroll-table { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th { background: #f9f9f9; color: var(--vinho-botao); padding: 18px; text-align: left; border-bottom: 3px solid #eee; font-size: 13px; text-transform: uppercase; }
+        td { padding: 18px; border-bottom: 1px solid #eee; font-size: 15px; }
+        
+        .btn-save { background: #27ae60; color: #fff; padding: 18px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 16px; margin-top: 10px; }
+        .btn-add-item { background: var(--vinho-botao); color: #fff; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-del { background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .total-highlight { font-size: 35px; color: var(--vinho-botao); font-weight: 900; text-align: right; }
+        </style>
+</head>
+<body>
+    <div id="login-screen">
+        <div class="login-card">
+            <h2>BB GESTÃO v5.0</h2>
+            <input type="text" id="user" placeholder="Usuário Administrador">
+            <input type="password" id="pass" placeholder="Senha de Acesso">
+            <button onclick="autenticar()" class="btn-acessar">ENTRAR NO SISTEMA</button>
+        </div>
+    </div>
+
+    <div id="app">
+        <header>
+            <div style="display:flex; align-items:center; gap:20px">
+                <div style="width:10px; height:40px; background:var(--cor-borda)"></div>
+                <b style="font-size: 22px; color: #000;">BB COMÉRCIO DE FORROS</b>
+            </div>
+            <div id="timer" style="color: #666; font-weight: 600;"></div>
+        </header>
+        <div class="layout">
+            <aside id="menu-area"></aside>
+            <main id="main-content"></main>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
+        let itensAtuais = [];
+        let subtotalGlobal = 0;
+
+        function autenticar() {
+            if(document.getElementById('user').value.toLowerCase() === 'admin') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+                navegar('fin');
+            } else { alert('Acesso Negado!'); }
         }
 
-        .btn-acessar:hover {
-            background-color: var(--vinho-hover);
+        async function navegar(p) {
+            const content = document.getElementById('main-content');
+            const menu = document.getElementById('menu-area');
+            document.getElementById('timer').innerText = new Date().toLocaleString();
+
+            menu.innerHTML = `
+                <nav class="menu-nav">
+                    <button onclick="navegar('fin')" class="${p==='fin'?'active':''}">📊 Resumo Financeiro</button>
+                    <button onclick="navegar('cli')" class="${p==='cli'?'active':''}">👥 Base de Clientes</button>
+                    <button onclick="navegar('ped')" class="${p==='ped'?'active':''}">🛒 Novo Orçamento/Pedido</button>
+                    <button onclick="navegar('est')" class="${tela==='est'?'active':''}">📦 Gestão de Estoque</button>
+                </nav>
+                <button class="btn-logout" onclick="location.reload()">Sair do Sistema</button>`;
+
+            if(p === 'fin') {
+                const r = await fetch(`${API_URL}/pedidos.json`);
+                const d = await r.json();
+                let fat = 0, lista = '';
+                if(d) Object.values(d).forEach(x => {
+                    fat += parseFloat(x.total);
+                    lista += `<tr><td>${x.data}</td><td>${x.numPedido}</td><td>${x.cliente}</td><td>R$ ${x.total.toFixed(2)}</td></tr>`;
+                });
+                content.innerHTML = `<h1>📊 Dashboard Financeiro</h1>
+                <div class="card"><label>Faturamento Total Acumulado</label><div class="total-highlight">R$ ${fat.toLocaleString('pt-br',{minimumFractionDigits:2})}</div></div>
+                <div class="card"><h2>Histórico de Vendas</h2><div class="scroll-table"><table><thead><tr><th>Data</th><th>Nº</th><th>Cliente</th><th>Valor</th></tr></thead><tbody>${lista}</tbody></table></div></div>`;
+            }
+
+            if(p === 'cli') {
+                const r = await fetch(`${API_URL}/clientes.json`);
+                const d = await r.json();
+                let l = '';
+                if(d) Object.entries(d).forEach(([id, c]) => l += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cid}</td><td><button class="btn-del" onclick="apagar('${id}','clientes','cli')">Remover</button></td></tr>`);
+                content.innerHTML = `<h1>👥 Clientes</h1>
+                <div class="card"><form onsubmit="saveCli(event)" class="grid-form">
+                    <div class="col-4 group"><label>Nome Completo</label><input type="text" id="cn" required></div>
+                    <div class="col-2 group"><label>Telefone</label><input type="text" id="ct"></div>
+                    <div class="col-2 group"><label>Cidade/UF</label><input type="text" id="cc"></div>
+                    <button class="btn-save col-4">Cadastrar Cliente</button></form></div>
+                <div class="card"><table><thead><tr><th>Nome</th><th>Contato</th><th>Cidade</th><th>Ação</th></tr></thead><tbody>${l}</tbody></table></div>`;
+            }
+
+            if(p === 'ped') {
+                const r = await fetch(`${API_URL}/clientes.json`);
+                const d = await r.json();
+                let opts = '<option value="">Escolha o cliente...</option>';
+                if(d) Object.values(d).forEach(c => opts += `<option value='${JSON.stringify(c)}'>${c.nome}</option>`);
+
+                content.innerHTML = `<h1>🛒 Gerar Pedido</h1>
+                <div class="card"><div class="grid-form">
+                    <div class="col-3 group"><label>Cliente</label><select id="pcli">${opts}</select></div>
+                    <div class="group"><label>Nº Pedido</label><input type="text" id="pnum"></div>
+                    <div class="col-4 group"><label>Descrição do Produto</label><input type="text" id="pitem"></div>
+                    <div class="group"><label>Pçs</label><input type="number" id="pq" oninput="calc()"></div>
+                    <div class="group"><label>m²</label><input type="number" id="pm" step="0.01" oninput="calc()"></div>
+                    <div class="group"><label>Valor Unit.</label><input type="number" id="pv" step="0.01" oninput="calc()"></div>
+                    <div class="group"><label>Subtotal</label><input type="text" id="ps" readonly style="background:#eee"></div>
+                    <button onclick="add()" class="btn-add-item col-4">Adicionar Item à Lista</button></div></div>
+                <div class="card"><table><thead><tr><th>Item</th><th>Qtd</th><th>m²</th><th>Total</th><th></th></tr></thead><tbody id="lped"></tbody></table>
+                <div id="gtot" class="total-highlight">TOTAL: R$ 0,00</div>
+                <button onclick="fechar()" class="btn-save col-4" style="width:100%">Finalizar Pedido e Gerar PDF</button></div>`;
+                itensAtuais = []; subtotalGlobal = 0;
+            }
         }
 
-        /* --- ESTRUTURA PRINCIPAL --- */
-        #app {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
+        function calc() {
+            const q = document.getElementById('pq').value || 0;
+            const m = document.getElementById('pm').value || 0;
+            const v = document.getElementById('pv').value || 0;
+            document.getElementById('ps').value = (m > 0 ? q * m * v : q * v).toFixed(2);
         }
 
-        .header {
-            height: 75px;
-            background: #ffffff;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            z-index: 100;
+        function add() {
+            const i = document.getElementById('pitem').value, s = parseFloat(document.getElementById('ps').value);
+            if(!i || s <= 0) return;
+            itensAtuais.push({i, q: document.getElementById('pq').value, m: document.getElementById('pm').value, s});
+            let html = ''; subtotalGlobal = 0;
+            itensAtuais.forEach((x, idx) => {
+                subtotalGlobal += x.s;
+                html += `<tr><td>${x.i}</td><td>${x.q}</td><td>${x.m}</td><td>R$ ${x.s.toFixed(2)}</td><td><button onclick="itensAtuais.splice(${idx},1);add()">X</button></td></tr>`;
+            });
+            document.getElementById('lped').innerHTML = html;
+            document.getElementById('gtot').innerText = `TOTAL: R$ ${subtotalGlobal.toFixed(2)}`;
         }
 
-        .layout {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
+        async function saveCli(e) {
+            e.preventDefault();
+            const payload = {nome: document.getElementById('cn').value, tel: document.getElementById('ct').value, cid: document.getElementById('cc').value};
+            await fetch(`${API_URL}/clientes.json`, {method:'POST', body: JSON.stringify(payload)});
+            navegar('cli');
         }
 
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 280px;
-            background: var(--cor-sidebar);
-            display: flex;
-            flex-direction: column;
+        async function apagar(id, path, screen) { if(confirm('Excluir?')) { await fetch(`${API_URL}/${path}/${id}.json`, {method:'DELETE'}); navegar(screen); } }
+
+        async function fechar() {
+            const cRaw = document.getElementById('pcli').value; if(!cRaw) return alert('Selecione o Cliente');
+            const cli = JSON.parse(cRaw), num = document.getElementById('pnum').value;
+            const ped = {cliente: cli.nome, total: subtotalGlobal, data: new Date().toLocaleDateString(), numPedido: num, itens: itensAtuais};
+            await fetch(`${API_URL}/pedidos.json`, {method:'POST', body: JSON.stringify(ped)});
+            
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(18); doc.text("BB COMÉRCIO DE FORROS", 10, 20);
+            doc.setFontSize(12); doc.text(`Cliente: ${cli.nome} | Pedido: ${num}`, 10, 30);
+            doc.autoTable({head: [['Item', 'Qtd', 'm2', 'Subtotal']], body: itensAtuais.map(it => [it.i, it.q, it.m, it.s.toFixed(2)]), startY: 40});
+            doc.text(`TOTAL GERAL: R$ ${subtotalGlobal.toFixed(2)}`, 10, doc.lastAutoTable.finalY + 10);
+            doc.save(`Pedido_${num}.pdf`);
+            navegar('ped');
         }
-
-        .menu {
-            flex: 1;
-            padding: 20px 0;
-        }
-
-        .menu button {
-            width: 100%;
-            padding: 18px 25px;
-            background: transparent;
-            border: none;
-            color: #bdc3c7;
-            text-align: left;
-            font-size: 14px;
-            cursor: pointer;
-            border-bottom: 1px solid #1a1a1a;
-            font-weight: 600;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.3s;
-        }
-
-        .menu button:hover {
-            background: #1a1a1a;
-            color: #fff;
-        }
-
-        .menu button.active {
-            background: var(--cor-borda);
-            color: #fff;
-            border-left: 5px solid #fff;
-        }
-
-        .btn-sair-lateral {
-            background: #000;
-            color: #ff4d4d;
-            padding: 25px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            text-align: center;
-            border-top: 1px solid #333;
-            text-transform: uppercase;
-        }
-
-        /* --- CONTEÚDO --- */
-        .content {
-            flex: 1;
-            padding: 35px;
-            overflow-y: auto;
-            background: #f4f7f6;
-        }
-
-        .card {
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-        }
-
-        h1 {
-            color: var(--vinho-botao);
-            margin-bottom: 25px;
-            font-size: 28px;
-            border-left: 5px solid var(--vinho-botao);
-            padding-left: 15px;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #444;
-        }
-
-        /* --- FORMULÁRIOS --- */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
-
-        .field-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        input:focus { border-color: var(--vinho-botao); }
-
-        .full-width { grid-column: span 4; }
-        .half-width { grid-column: span 2; }
-        .tri-width { grid-column: span 3; }
-
-        .btn-acao {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight:
+    </script>
+</body>
+</html>
