@@ -2,140 +2,61 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Sistema BB</title>
+<title>Sistema BB Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body{
-margin:0;
-font-family:Arial;
-background:#f4f4f4;
-}
-
-header{
-background:#8B0000;
-color:white;
-padding:15px;
-text-align:center;
-font-size:22px;
-font-weight:bold;
-}
-
-nav{
-background:#5a0000;
-display:flex;
-flex-wrap:wrap;
-}
-
-nav button{
-flex:1;
-padding:12px;
-border:none;
-background:#5a0000;
-color:white;
-cursor:pointer;
-font-weight:bold;
-}
-
-nav button:hover{
-background:#8B0000;
-}
-
-.container{
-padding:20px;
-}
-
-.card{
-background:white;
-padding:15px;
-margin-bottom:15px;
-border-radius:8px;
-box-shadow:0 2px 5px rgba(0,0,0,0.1);
-}
-
-input,select{
-width:100%;
-padding:8px;
-margin:5px 0;
-}
-
-button.acao{
-background:#8B0000;
-color:white;
-border:none;
-padding:10px;
-cursor:pointer;
-margin-top:5px;
-width:100%;
-}
-
-button.acao:hover{
-background:#5a0000;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-th,td{
-border:1px solid #ddd;
-padding:8px;
-text-align:center;
-}
-
-th{
-background:#8B0000;
-color:white;
-}
-
-@media(max-width:600px){
-nav button{
-flex:100%;
-}
-}
+body{margin:0;font-family:Arial;background:#f4f4f4;}
+header{background:#8B0000;color:white;padding:15px;text-align:center;font-size:22px;font-weight:bold;}
+nav{background:#5a0000;display:flex;flex-wrap:wrap;}
+nav button{flex:1;padding:12px;border:none;background:#5a0000;color:white;font-weight:bold;cursor:pointer;}
+nav button:hover{background:#8B0000;}
+.container{padding:20px;}
+.card{background:white;padding:15px;margin-bottom:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+input,select{width:100%;padding:8px;margin:5px 0;}
+button.acao{background:#8B0000;color:white;border:none;padding:10px;cursor:pointer;width:100%;margin-top:5px;}
+button.acao:hover{background:#5a0000;}
+table{width:100%;border-collapse:collapse;}
+th,td{border:1px solid #ddd;padding:8px;text-align:center;}
+th{background:#8B0000;color:white;}
+@media(max-width:600px){nav button{flex:100%;}}
 </style>
 </head>
 
 <body>
 
-<header>Sistema BB</header>
+<header>Sistema BB Pro</header>
 
 <nav>
 <button onclick="render('estoque')">📦 Estoque</button>
 <button onclick="render('pedido')">🧾 Pedido</button>
 <button onclick="render('financeiro')">📊 Financeiro</button>
+<button onclick="render('contas')">💳 Contas</button>
 </nav>
 
 <div class="container" id="conteudo"></div>
 
 <script>
 
-const DB="COLE_AQUI_SUA_URL_FIREBASE";
+const DB="COLE_SUA_URL_FIREBASE_AQUI";
 
 function render(tela){
-
 const c=document.getElementById("conteudo");
 
 if(tela==="estoque"){
 c.innerHTML=`
 <div class="card">
-<h2>Cadastro de Estoque</h2>
+<h2>Cadastro de Produto</h2>
 <input id="produto" placeholder="Produto">
 <input id="quantidade" type="number" placeholder="Quantidade">
 <input id="precoCusto" type="number" placeholder="Preço de Custo">
 <input id="precoVenda" type="number" placeholder="Preço de Venda">
-<button class="acao" onclick="salvarEstoque()">Salvar Produto</button>
+<button class="acao" onclick="salvarEstoque()">Salvar</button>
 </div>
-
-<div class="card">
-<h2>Lista de Produtos</h2>
-<div id="listaEstoque"></div>
-</div>
-`;
-
+<div class="card"><div id="listaEstoque"></div></div>`;
 carregarEstoque();
 }
 
@@ -146,185 +67,157 @@ c.innerHTML=`
 <input id="numPedido" placeholder="Número do Pedido">
 <input id="cliente" placeholder="Cliente">
 <input id="produtoPedido" placeholder="Produto">
-<input id="valorVenda" type="number" placeholder="Valor da Venda">
+<input id="quantPedido" type="number" placeholder="Quantidade">
+<input id="valorVenda" type="number" placeholder="Valor unitário de venda">
 <button class="acao" onclick="salvarPedido()">Finalizar Pedido</button>
+</div>`;
+}
+
+if(tela==="financeiro"){dashboardFinanceiro();}
+
+if(tela==="contas"){
+c.innerHTML=`
+<div class="card">
+<h2>Nova Conta</h2>
+<select id="tipoConta">
+<option value="pagar">Conta a Pagar</option>
+<option value="receber">Conta a Receber</option>
+</select>
+<input id="descConta" placeholder="Descrição">
+<input id="valorConta" type="number" placeholder="Valor">
+<input id="dataConta" type="date">
+<button class="acao" onclick="salvarConta()">Salvar</button>
 </div>
-`;
+<div class="card"><div id="listaContas"></div></div>`;
+carregarContas();
 }
-
-if(tela==="financeiro"){
-carregarFinanceiro();
-}
-
 }
 
 async function salvarEstoque(){
-const produto=document.getElementById("produto").value;
-const quantidade=document.getElementById("quantidade").value;
-const precoCusto=document.getElementById("precoCusto").value;
-const precoVenda=document.getElementById("precoVenda").value;
-
-await fetch(DB+"/estoque.json",{
-method:"POST",
-body:JSON.stringify({
-produto,
-quantidade,
-precoCusto,
-precoVenda
-})
-});
-
+await fetch(DB+"/estoque.json",{method:"POST",body:JSON.stringify({
+produto:produto.value,
+quantidade:quantidade.value,
+precoCusto:precoCusto.value,
+precoVenda:precoVenda.value
+})});
 render('estoque');
 }
 
 async function carregarEstoque(){
 const r=await fetch(DB+"/estoque.json");
 const d=await r.json();
-
 let html="<table><tr><th>Produto</th><th>Qtd</th><th>Custo</th><th>Venda</th></tr>";
-
-if(d){
-Object.values(d).forEach(p=>{
-html+=`
-<tr>
-<td>${p.produto}</td>
-<td>${p.quantidade}</td>
-<td>R$ ${p.precoCusto}</td>
-<td>R$ ${p.precoVenda}</td>
-</tr>
-`;
-});
-}
-
+if(d){Object.values(d).forEach(p=>{
+html+=`<tr><td>${p.produto}</td><td>${p.quantidade}</td><td>${p.precoCusto}</td><td>${p.precoVenda}</td></tr>`;
+});}
 html+="</table>";
-document.getElementById("listaEstoque").innerHTML=html;
+listaEstoque.innerHTML=html;
 }
 
 async function salvarPedido(){
-
-const num=document.getElementById("numPedido").value;
-if(!num){alert("Pedido precisa ter número");return;}
-
-const cliente=document.getElementById("cliente").value;
-const produto=document.getElementById("produtoPedido").value;
-const valorVenda=parseFloat(document.getElementById("valorVenda").value);
-
-let lucro=0;
+if(!numPedido.value){alert("Pedido sem número!");return;}
 
 const r=await fetch(DB+"/estoque.json");
 const estoque=await r.json();
+let lucroTotal=0;
+let margem=0;
 
-if(estoque){
 for(const [id,item] of Object.entries(estoque)){
-if(item.produto===produto){
-
-lucro=valorVenda-parseFloat(item.precoCusto);
-
-let novaQtd=parseInt(item.quantidade)-1;
+if(item.produto===produtoPedido.value){
+let qtd=parseInt(quantPedido.value);
+let novaQtd=parseInt(item.quantidade)-qtd;
 if(novaQtd<0){alert("Estoque insuficiente");return;}
 
-await fetch(DB+"/estoque/"+id+".json",{
-method:"PUT",
-body:JSON.stringify({
-produto:item.produto,
-quantidade:novaQtd,
-precoCusto:item.precoCusto,
-precoVenda:item.precoVenda
-})
-});
+lucroTotal=(valorVenda.value-item.precoCusto)*qtd;
+margem=(lucroTotal/(valorVenda.value*qtd))*100;
+
+await fetch(DB+"/estoque/"+id+".json",{method:"PUT",
+body:JSON.stringify({...item,quantidade:novaQtd})});
 break;
 }
 }
-}
 
-await fetch(DB+"/pedidos.json",{
-method:"POST",
+await fetch(DB+"/pedidos.json",{method:"POST",
 body:JSON.stringify({
-num,
-cliente,
-produto,
-total:valorVenda,
-lucro,
-data:new Date().toLocaleDateString()
-})
-});
+num:numPedido.value,
+cliente:cliente.value,
+produto:produtoPedido.value,
+quantidade:quantPedido.value,
+total:valorVenda.value*quantPedido.value,
+lucro:lucroTotal,
+margem:margem,
+data:new Date().toISOString().split("T")[0]
+})});
 
-alert("Pedido finalizado!");
+gerarPDF();
+alert("Pedido Finalizado");
 render('financeiro');
 }
 
-async function carregarFinanceiro(){
+async function gerarPDF(){
+const { jsPDF } = window.jspdf;
+const doc=new jsPDF();
+doc.addImage("LogoBB.png","PNG",10,10,40,20);
+doc.text("Pedido Finalizado",10,40);
+doc.save("pedido.pdf");
+}
 
+async function dashboardFinanceiro(){
 const r=await fetch(DB+"/pedidos.json");
 const d=await r.json();
-
-let faturamento=0;
-let lucroTotal=0;
-let labels=[];
-let valores=[];
-let linhas="";
-
-if(d){
-Object.values(d).forEach(p=>{
-faturamento+=parseFloat(p.total||0);
-lucroTotal+=parseFloat(p.lucro||0);
-
+let fat=0,luc=0;
+let labels=[],valores=[];
+if(d){Object.values(d).forEach(p=>{
+fat+=p.total;
+luc+=p.lucro;
 labels.push(p.data);
 valores.push(p.total);
+});}
 
-linhas+=`
-<tr>
-<td>${p.data}</td>
-<td>${p.num}</td>
-<td>${p.cliente}</td>
-<td>R$ ${p.total}</td>
-<td style="color:green;">R$ ${p.lucro}</td>
-</tr>
-`;
-});
-}
-
-document.getElementById("conteudo").innerHTML=`
+conteudo.innerHTML=`
 <div class="card">
 <h2>Dashboard Financeiro</h2>
-<h3>Faturamento Total: R$ ${faturamento.toFixed(2)}</h3>
-<h3 style="color:green;">Lucro Total: R$ ${lucroTotal.toFixed(2)}</h3>
+<input type="date" id="dataInicio">
+<input type="date" id="dataFim">
+<button class="acao" onclick="dashboardFinanceiro()">Filtrar</button>
+<h3>Faturamento: R$ ${fat.toFixed(2)}</h3>
+<h3 style="color:green;">Lucro: R$ ${luc.toFixed(2)}</h3>
 </div>
+<div class="card"><canvas id="grafico"></canvas></div>`;
 
-<div class="card">
-<canvas id="grafico"></canvas>
-</div>
-
-<div class="card">
-<table>
-<tr>
-<th>Data</th>
-<th>Pedido</th>
-<th>Cliente</th>
-<th>Venda</th>
-<th>Lucro</th>
-</tr>
-${linhas}
-</table>
-</div>
-`;
-
-new Chart(document.getElementById('grafico'),{
-type:'bar',
-data:{
-labels:labels,
-datasets:[{
-label:'Faturamento',
-data:valores,
-backgroundColor:'#8B0000'
-}]
+new Chart(grafico,{type:'bar',
+data:{labels:labels,
+datasets:[{label:'Faturamento',data:valores,backgroundColor:'#8B0000'}]}});
 }
-});
+
+async function salvarConta(){
+await fetch(DB+"/contas.json",{method:"POST",
+body:JSON.stringify({
+tipo:tipoConta.value,
+desc:descConta.value,
+valor:parseFloat(valorConta.value),
+data:dataConta.value
+})});
+render('contas');
+}
+
+async function carregarContas(){
+const r=await fetch(DB+"/contas.json");
+const d=await r.json();
+let pagar=0,receber=0,html="<table><tr><th>Tipo</th><th>Desc</th><th>Valor</th><th>Data</th></tr>";
+if(d){Object.values(d).forEach(c=>{
+if(c.tipo==="pagar")pagar+=c.valor;
+if(c.tipo==="receber")receber+=c.valor;
+html+=`<tr><td>${c.tipo}</td><td>${c.desc}</td><td>${c.valor}</td><td>${c.data}</td></tr>`;
+});}
+html+="</table>";
+html+=`<h3>Total a Pagar: R$ ${pagar.toFixed(2)}</h3>`;
+html+=`<h3>Total a Receber: R$ ${receber.toFixed(2)}</h3>`;
+listaContas.innerHTML=html;
 }
 
 render('estoque');
 
 </script>
-
 </body>
 </html>
