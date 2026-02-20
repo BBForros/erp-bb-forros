@@ -3,43 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP BB Forros | Gestão Adminstrativa Profissional</title>
+    <title>ERP BB Forros | Gestão Administrativa Profissional</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --primary: #8b0000; --dark: #1a0000; --bg: #f8f9fa; --white: #ffffff; }
+        :root { --primary: #8b0000; --dark: #1a0000; --bg: #f4f4f4; --white: #ffffff; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--dark); height: 100vh; overflow: hidden; }
 
-        /* TELA DE LOGIN (IGUAL À IMAGEM) */
+        /* LOGIN - IGUAL À IMAGEM image_e26cea.png */
         .overlay { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-box { background: var(--white); padding: 40px; border-radius: 15px; width: 400px; text-align: center; border-top: 8px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .login-box img { width: 220px; margin-bottom: 20px; }
         .login-box h2 { color: var(--primary); margin-bottom: 25px; font-weight: bold; }
-        
         .btn-entrar { background: var(--primary); color: white; padding: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; font-size: 16px; }
 
-        /* ESTRUTURA APP */
+        /* ESTRUTURA SISTEMA - IGUAL À IMAGEM image_e023c8.png */
         #app { display: none; flex-direction: column; height: 100vh; background: var(--bg); }
         .top-bar { height: 70px; background: var(--white); border-bottom: 2px solid #eee; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .top-bar b { color: var(--primary); font-size: 20px; }
-
         .main-layout { display: flex; flex: 1; overflow: hidden; }
         .sidebar { width: 260px; background: var(--dark); display: flex; flex-direction: column; justify-content: space-between; }
         .menu-links { padding: 25px 15px; }
         .menu-links button { width: 100%; padding: 16px; background: transparent; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 10px; margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; gap: 12px; }
         .menu-links button.active { background: var(--primary); color: white; }
-
-        /* CONTEÚDO */
         .content-area { flex: 1; padding: 35px; overflow-y: auto; }
-        .card { background: white; padding: 30px; border-radius: 15px; border: 1px solid #eef; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .card { background: white; padding: 30px; border-radius: 15px; border: 1px solid #ddd; margin-bottom: 25px; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
         .full { grid-column: 1 / -1; }
-        
         label { display: block; font-size: 11px; font-weight: 800; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; }
         input, select, textarea { padding: 14px; border: 1px solid #ddd; border-radius: 8px; width: 100%; outline: none; }
-
-        /* TABELA DE PEDIDOS EMITIDOS */
+        
+        /* TABELA DE PEDIDOS */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: var(--primary); font-size: 12px; }
         td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
@@ -47,14 +42,14 @@
     </style>
 
     <script>
-        function fazerLogin() {
+        function entrar() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
             if(u === 'admin' && p === '123') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 render('ped');
-            } else { alert("Acesso incorreto."); }
+            } else { alert("Acesso inválido."); }
         }
     </script>
 </head>
@@ -64,9 +59,9 @@
         <div class="login-box">
             <img src="LogoBB.png" alt="BB Forros" onerror="this.src='https://via.placeholder.com/220x80?text=BB+FORROS'">
             <h2>BB GESTÃO</h2>
-            <input type="text" id="user" placeholder="admin" style="margin-bottom: 10px;">
-            <input type="password" id="pass" placeholder="***" style="margin-bottom: 20px;">
-            <button onclick="fazerLogin()" class="btn-entrar">Acessar Sistema</button>
+            <input type="text" id="user" placeholder="admin" style="margin-bottom:10px">
+            <input type="password" id="pass" placeholder="***" style="margin-bottom:20px">
+            <button onclick="entrar()" class="btn-entrar">ACESSAR SISTEMA</button>
         </div>
     </div>
 
@@ -74,9 +69,9 @@
         <header class="top-bar">
             <div style="display:flex; align-items:center; gap:15px;">
                 <img src="LogoBB.png" height="40">
-                <b>BB COMÉRCIO DE FORROS E DIVISORIAS LTDA.</b>
+                <b>BB COMÉRCIO DE FORROSe DIVISORIAS LTDA</b>
             </div>
-            <span>Painel: <b>Administrador</b></span>
+            <span><b>Painel Administrador</b></span>
         </header>
 
         <div class="main-layout">
@@ -84,8 +79,38 @@
                 <nav class="menu-links">
                     <button onclick="render('fin')" id="btn-fin">📊 FINANCEIRO</button>
                     <button onclick="render('cli')" id="btn-cli">👥 CLIENTES</button>
-                    <button onclick="render('ped')" id="btn-ped" class="active">🛒 VENDAS / PEDIDOS</button>
-                </aside>
+                    <button onclick="render('ped')" id="btn-ped">🛒 VENDAS / PEDIDOS</button>
+                    <button onclick="render('est')" id="btn-est">📦 ESTOQUE</button>
+                </nav>
                 <button onclick="location.reload()" style="background:#000; color:white; padding:20px; border:none; cursor:pointer;">SAIR</button>
-            </div>
-            <main class="content-area" id="view-container"></
+            </aside>
+            <main class="content-area" id="view-container"></main>
+        </div>
+    </div>
+
+    <script>
+        const DB_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
+        let editId = null;
+
+        async function render(tela) {
+            const area = document.getElementById('view-container');
+            document.querySelectorAll('.menu-links button').forEach(b => b.classList.remove('active'));
+            if(document.getElementById('btn-'+tela)) document.getElementById('btn-'+tela).classList.add('active');
+
+            if (tela === 'ped') {
+                const [rCli, rPed] = await Promise.all([fetch(`${DB_URL}/clientes.json`), fetch(`${DB_URL}/pedidos.json`)]);
+                const dCli = await rCli.json(); const dPed = await rPed.json();
+                const clis = dCli ? Object.values(dCli) : [];
+                const peds = dPed ? Object.entries(dPed) : [];
+
+                area.innerHTML = `
+                    <h1>🛒 Gerenciar Orçamentos</h1>
+                    <div class="card">
+                        <h3 id="f-title" style="margin-bottom:15px; color:var(--primary)">Novo Orçamento</h3>
+                        <div class="form-grid">
+                            <div><label>Nº Orçamento</label><input id="pnum"></div>
+                            <div><label>Data</label><input id="pdata" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
+                            <div class="full"><label>Cliente</label>
+                                <select id="pcli">
+                                    <option value="">Selecione...</option>
+                                    ${clis.map(c => `<option value="${c.
