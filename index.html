@@ -2,61 +2,232 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>ERP BB Forros | Sistema Oficial</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP BB Forros | Sistema de Gestão Oficial</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --vinho-fundo: #1a0505; --vinho-botao: #8a0000; --cor-borda: #800000; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        
-        /* LOGIN */
-        .login-overlay { position: fixed; inset: 0; background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-card { background: white; padding: 45px; border-radius: 15px; width: 440px; text-align: center; border-top: 8px solid var(--cor-borda); }
-        .logo-container img { height: 110px; width: auto; margin-bottom: 25px; }
-        .login-card h2 { color: var(--vinho-botao); margin-bottom: 25px; font-size: 26px; font-weight: bold; }
-        .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        .btn-acessar { width: 100%; padding: 18px; background: var(--vinho-botao); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        :root {
+            --vinho-fundo: #1a0505;
+            --vinho-botao: #8a0000;
+            --vinho-hover: #5e0000;
+            --cor-borda: #800000;
+            --cor-texto: #333;
+            --cor-sidebar: #000000;
+        }
 
-        /* DASHBOARD */
-        #app { display: none; flex-direction: column; height: 100vh; background: #f4f7f6; }
-        .header { height: 75px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { background-color: #f4f7f6; color: var(--cor-texto); }
+
+        /* --- TELA DE LOGIN --- */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--vinho-fundo);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: #fff;
+            padding: 45px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            border-top: 8px solid var(--cor-borda);
+        }
+
+        .logo-container img {
+            height: 110px;
+            width: auto;
+            margin-bottom: 25px;
+        }
+
+        .login-card h2 {
+            color: var(--vinho-botao);
+            margin-bottom: 25px;
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .login-card input:first-of-type { background-color: #eef3ff; }
+
+        .btn-acessar {
+            width: 100%;
+            padding: 18px;
+            background-color: var(--vinho-botao);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-acessar:hover { background-color: var(--vinho-hover); }
+
+        /* --- ESTRUTURA DASHBOARD --- */
+        #app { display: none; flex-direction: column; height: 100vh; }
+
+        .header {
+            height: 75px;
+            background: #ffffff;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .header-logo { display: flex; align-items: center; gap: 15px; }
+        .header-logo img { height: 50px; }
+        .header-info { text-align: right; font-size: 14px; }
+
         .layout { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 280px; background: #000; display: flex; flex-direction: column; }
-        .menu button { width: 100%; padding: 18px; background: transparent; border: none; color: white; text-align: left; cursor: pointer; font-weight: bold; border-bottom: 1px solid #1a1a1a; text-transform: uppercase; }
-        .menu button.active { background: var(--cor-borda); }
-        .btn-sair-lateral { background: black; color: white; padding: 25px; border: none; cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333; margin-top: auto; }
-        .content { flex: 1; padding: 35px; overflow-y: auto; }
 
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; font-size: 13px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        th { background: #f8f8f8; color: var(--vinho-botao); }
-        
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .form-grid input, .form-grid select, .form-grid textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        .full-width { grid-column: span 2; }
+        .sidebar {
+            width: 280px;
+            background: var(--cor-sidebar);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .menu { flex: 1; padding: 20px 0; }
+
+        .menu button {
+            width: 100%;
+            padding: 18px 25px;
+            background: transparent;
+            border: none;
+            color: #bdc3c7;
+            text-align: left;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            border-bottom: 1px solid #1a1a1a;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu button:hover { background: #1a1a1a; color: #fff; }
+        .menu button.active { background: var(--cor-borda); color: #fff; border-left: 5px solid #fff; }
+
+        .btn-sair-lateral {
+            background: #000;
+            color: #ff4d4d;
+            padding: 25px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            border-top: 1px solid #333;
+            transition: 0.3s;
+        }
+
+        .btn-sair-lateral:hover { background: #c0392b; color: #fff; }
+
+        .content { flex: 1; padding: 35px; overflow-y: auto; background: #f4f7f6; }
+
+        /* --- COMPONENTES --- */
+        .card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        h1 { margin-bottom: 25px; color: var(--vinho-botao); font-size: 28px; }
+        h3 { margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .full-width { grid-column: span 4; }
+        .half-width { grid-column: span 2; }
+
+        .btn-acao {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-sucesso { background: #27ae60; color: white; }
+        .btn-primario { background: var(--vinho-botao); color: white; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 8px; overflow: hidden; }
+        th { background: #f8f9fa; color: var(--vinho-botao); font-weight: bold; text-transform: uppercase; font-size: 12px; }
+        th, td { padding: 15px; border: 1px solid #eee; text-align: left; }
+        tr:hover { background: #f9f9f9; }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="login-overlay">
         <div class="login-card">
-            <div class="logo-container"><img src="LogoBB.png"></div>
-            <h2>BB GESTÃO</h2>
-            <input type="text" id="user" placeholder="admin">
-            <input type="password" id="pass" placeholder="***">
-            <button onclick="validaLogin()" class="btn-acessar">ACESSAR SISTEMA</button>
+            <div class="logo-container"><img src="LogoBB.png" alt="Logo BB"></div>
+            <h2>SISTEMA BB GESTÃO</h2>
+            <input type="text" id="user" placeholder="Usuário">
+            <input type="password" id="pass" placeholder="Senha">
+            <button onclick="validaLogin()" class="btn-acessar">ENTRAR NO SISTEMA</button>
         </div>
     </div>
 
     <div id="app">
         <header class="header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="LogoBB.png" height="50">
-                <b style="color:var(--cor-borda)">BB COMÉRCIO DE FORROS E DIVISORIAS LTDA.</b>
+            <div class="header-logo">
+                <img src="LogoBB.png" alt="BB Forros">
+                <b style="color: var(--cor-borda); font-size: 18px;">BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA</b>
             </div>
-            <span><b>Administrador</b></span>
+            <div class="header-info">
+                Usuário: <strong>Administrador</strong><br>
+                <small id="data-atual"></small>
+            </div>
         </header>
+
         <div class="layout">
             <aside class="sidebar" id="side-menu"></aside>
             <main class="content" id="view-port"></main>
@@ -64,124 +235,176 @@
     </div>
 
     <script>
-        const DB = "https://erp-bb-forros-default-rtdb.firebaseio.com";
+        const DB_URL = "https://erp-bb-forros-default-rtdb.firebaseio.com";
         let editId = null;
         window.itensPedido = [];
 
+        // Inicialização
+        document.getElementById('data-atual').innerText = new Date().toLocaleDateString('pt-br');
+
         function validaLogin() {
-            if(document.getElementById('user').value === 'admin') {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if(u === 'admin') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
                 render('fin');
-            }
+            } else { alert('Acesso Negado'); }
         }
 
         async function render(tela) {
             const port = document.getElementById('view-port');
             const menu = document.getElementById('side-menu');
             editId = null;
+            window.itensPedido = [];
 
             menu.innerHTML = `
                 <nav class="menu">
-                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 FINANCEIRO</button>
-                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 CLIENTES</button>
-                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 VENDAS / PEDIDOS</button>
-                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 ESTOQUE</button>
+                    <button onclick="render('fin')" class="${tela==='fin'?'active':''}">📊 Financeiro</button>
+                    <button onclick="render('cli')" class="${tela==='cli'?'active':''}">👥 Clientes</button>
+                    <button onclick="render('ped')" class="${tela==='ped'?'active':''}">🛒 Novo Pedido</button>
+                    <button onclick="render('est')" class="${tela==='est'?'active':''}">📦 Estoque</button>
                 </nav>
                 <button onclick="location.reload()" class="btn-sair-lateral">SAIR DO SISTEMA</button>
             `;
 
+            // --- MÓDULO FINANCEIRO ---
             if(tela === 'fin') {
-                const r = await fetch(`${DB}/pedidos.json`);
-                const d = await r.json();
-                let rows = ''; let total = 0;
-                if(d) Object.entries(d).forEach(([id, p]) => {
-                    total += parseFloat(p.total || 0);
-                    rows += `<tr><td>${p.data}</td><td>${p.cliente}</td><td>R$ ${parseFloat(p.total).toLocaleString('pt-br', {minimumFractionDigits:2})}</td></tr>`;
-                });
-                port.innerHTML = `<h1>📊 Financeiro</h1><div class="card"><h3>FATURAMENTO BRUTO</h3><h2 style="color:#16a34a">R$ ${total.toLocaleString('pt-br', {minimumFractionDigits: 2})}</h2></div><div class="card"><h3>Pedidos Realizados</h3><table><tr><th>Data</th><th>Cliente</th><th>Valor Total</th></tr>${rows || '<tr><td colspan="3">Nenhum pedido</td></tr>'}</table></div>`;
-            }
-
-            if(tela === 'cli') {
-                const r = await fetch(`${DB}/clientes.json`);
-                const d = await r.json();
-                let rows = '';
-                if(d) Object.entries(d).forEach(([id, c]) => {
-                    rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidadeEstado}</td><td>
-                        <button style="background:#f59e0b; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;" onclick="prepararEdicao('${id}', ${JSON.stringify(c).replace(/"/g, '&quot;')})">Editar</button>
-                        <button style="background:#ef4444; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;" onclick="deletar('${id}', 'clientes')">Excluir</button>
-                    </td></tr>`;
-                });
-                port.innerHTML = `<h1>👥 Cadastro de Clientes</h1>
-                <div class="card">
-                    <h3 id="form-title">Novo Cliente</h3>
-                    <form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
-                        <input type="text" id="c-nome" placeholder="Nome/Razão Social" required class="full-width">
-                        <input type="text" id="c-contato" placeholder="Contato">
-                        <input type="text" id="c-doc" placeholder="CNPJ/CPF">
-                        <input type="text" id="c-rg" placeholder="RG/Insc. Est.">
-                        <input type="text" id="c-tel" placeholder="Celular/WhatsApp" required>
-                        <input type="text" id="c-end" placeholder="Endereço" class="full-width">
-                        <input type="text" id="c-cep" placeholder="CEP">
-                        <input type="text" id="c-bairro" placeholder="Bairro">
-                        <input type="text" id="c-cid" placeholder="Cidade/Estado">
-                        <select id="c-pag">
-                            <option value="">Forma de Pagamento</option>
-                            <option value="Pix">Pix</option><option value="Dinheiro">Dinheiro</option><option value="Boleto">Boleto</option><option value="Cartão">Cartão</option>
-                        </select>
-                        <textarea id="c-obs" placeholder="Observações" class="full-width"></textarea>
-                        <button type="submit" id="btn-salvar" class="full-width" style="padding:15px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer;">SALVAR CLIENTE</button>
-                    </form>
-                </div>
-                <div class="card"><table><tr><th>Nome</th><th>Contato</th><th>Cidade</th><th>Ações</th></tr>${rows}</table></div>`;
-            }
-
-            if(tela === 'ped') {
-                const resCli = await fetch(`${DB}/clientes.json`);
-                const dataCli = await resCli.json();
-                let optionsCli = '<option value="">Selecione o Cliente</option>';
-                if(dataCli) Object.values(dataCli).forEach(c => optionsCli += `<option value="${c.nome}">${c.nome}</option>`);
-                
-                window.itensPedido = [];
-                port.innerHTML = `<h1>🛒 Novo Pedido</h1>
-                    <div class="card">
-                        <div class="form-grid">
-                            <select id="p-cliente" class="full-width">${optionsCli}</select>
-                            <input type="text" id="p-item" placeholder="Produto/Material" class="full-width">
-                            <input type="number" id="p-pecas" placeholder="Peças" oninput="calcSub()">
-                            <input type="number" id="p-m2" placeholder="m²" oninput="calcSub()">
-                            <input type="number" id="p-val" placeholder="Preço Unit. R$" oninput="calcSub()">
-                            <input type="text" id="p-sub" placeholder="Subtotal" readonly style="background:#eee">
-                            <button onclick="addItemLista()" class="full-width" style="background:var(--vinho-botao); color:white; border:none; border-radius:5px; cursor:pointer; padding:15px;">+ ADICIONAR ITEM</button>
+                const res = await fetch(`${DB_URL}/pedidos.json`);
+                const data = await res.json();
+                let rows = ''; let faturamento = 0;
+                if(data) {
+                    Object.entries(data).forEach(([id, p]) => {
+                        faturamento += parseFloat(p.total || 0);
+                        rows += `<tr><td>${p.data}</td><td>${p.cliente}</td><td>R$ ${parseFloat(p.total).toLocaleString('pt-br',{minimumFractionDigits:2})}</td><td><span class="badge" style="background:#d4edda;color:#155724">Concluído</span></td></tr>`;
+                    });
+                }
+                port.innerHTML = `
+                    <h1>📊 Painel Financeiro</h1>
+                    <div class="form-grid">
+                        <div class="card half-width">
+                            <small>Faturamento Bruto</small>
+                            <h2 style="color:#27ae60; font-size:32px;">R$ ${faturamento.toLocaleString('pt-br',{minimumFractionDigits:2})}</h2>
                         </div>
                     </div>
                     <div class="card">
-                        <h3>Itens Adicionados</h3>
-                        <table id="tabela-itens"><thead><tr><th>Item</th><th>Peças</th><th>m²</th><th>Unit.</th><th>Subtotal</th><th>Ação</th></tr></thead><tbody id="lista-pedido"></tbody></table>
-                        <div style="text-align:right; margin-top:15px;">
-                            <h2 id="total-pedido">Total: R$ 0,00</h2>
-                            <div style="display:flex; gap:10px; justify-content: flex-end; margin-top:10px;">
-                                <button onclick="finalizarPedido(false)" style="padding:15px; background:#666; color:white; border:none; border-radius:5px; cursor:pointer;">SÓ SALVAR</button>
-                                <button onclick="finalizarPedido(true)" style="padding:15px; background:#16a34a; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">SALVAR E GERAR PDF</button>
-                            </div>
+                        <h3>Últimos Pedidos</h3>
+                        <table>
+                            <thead><tr><th>Data</th><th>Cliente</th><th>Total</th><th>Status</th></tr></thead>
+                            <tbody>${rows || '<tr><td colspan="4">Nenhum registro encontrado.</td></tr>'}</tbody>
+                        </table>
+                    </div>`;
+            }
+
+            // --- MÓDULO CLIENTES (RESTAURADO COMPLETO) ---
+            if(tela === 'cli') {
+                const res = await fetch(`${DB_URL}/clientes.json`);
+                const data = await res.json();
+                let rows = '';
+                if(data) {
+                    Object.entries(data).forEach(([id, c]) => {
+                        rows += `<tr><td>${c.nome}</td><td>${c.tel}</td><td>${c.cidadeEstado}</td><td>
+                            <button onclick='prepararEdicao("${id}", ${JSON.stringify(c)})' style="color:blue; cursor:pointer; background:none; border:none;">Editar</button> | 
+                            <button onclick='deletar("${id}", "clientes")' style="color:red; cursor:pointer; background:none; border:none;">Excluir</button>
+                        </td></tr>`;
+                    });
+                }
+                port.innerHTML = `
+                    <h1>👥 Gestão de Clientes</h1>
+                    <div class="card">
+                        <h3 id="form-title">Novo Cadastro</h3>
+                        <form id="f-cli" class="form-grid" onsubmit="salvarCliente(event)">
+                            <input type="text" id="c-nome" placeholder="Nome / Razão Social" required class="full-width">
+                            <input type="text" id="c-contato" placeholder="Nome do Contato" class="half-width">
+                            <input type="text" id="c-doc" placeholder="CPF / CNPJ" class="half-width">
+                            <input type="text" id="c-rg" placeholder="RG / IE" class="half-width">
+                            <input type="text" id="c-tel" placeholder="Telefone / WhatsApp" required class="half-width">
+                            <input type="text" id="c-end" placeholder="Endereço Completo" class="full-width">
+                            <input type="text" id="c-cep" placeholder="CEP">
+                            <input type="text" id="c-bairro" placeholder="Bairro">
+                            <input type="text" id="c-cid" placeholder="Cidade / Estado" class="half-width">
+                            <select id="c-pag" class="half-width">
+                                <option value="">Forma de Pagamento Padrão</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Boleto">Boleto</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão">Cartão de Crédito</option>
+                            </select>
+                            <textarea id="c-obs" placeholder="Observações Importantes" class="full-width"></textarea>
+                            <button type="submit" class="btn-acao btn-sucesso full-width">SALVAR DADOS DO CLIENTE</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Lista de Clientes</h3>
+                        <table>
+                            <thead><tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th>Ações</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
+            }
+
+            // --- MÓDULO PEDIDOS (COM M², PEÇAS E PDF) ---
+            if(tela === 'ped') {
+                const resCli = await fetch(`${DB_URL}/clientes.json`);
+                const dataCli = await resCli.json();
+                let optionsCli = '<option value="">Selecione o Cliente...</option>';
+                if(dataCli) Object.values(dataCli).forEach(c => optionsCli += `<option value="${c.nome}">${c.nome}</option>`);
+
+                port.innerHTML = `
+                    <h1>🛒 Gerar Novo Pedido</h1>
+                    <div class="card">
+                        <div class="form-grid">
+                            <select id="p-cliente" class="full-width" style="border: 2px solid var(--cor-borda)">${optionsCli}</select>
+                            <input type="text" id="p-item" placeholder="Descrição do Produto (Ex: Forro PVC Branco)" class="full-width">
+                            <input type="number" id="p-pecas" placeholder="Qtd Peças" oninput="calcSub()">
+                            <input type="number" id="p-m2" placeholder="Medida m²" oninput="calcSub()">
+                            <input type="number" id="p-val" placeholder="Preço Unitário R$" oninput="calcSub()">
+                            <input type="text" id="p-sub" placeholder="Subtotal" readonly style="background:#f0f0f0; font-weight:bold;">
+                            <button onclick="addItem()" class="btn-acao btn-primario full-width">+ ADICIONAR ITEM AO PEDIDO</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Itens do Pedido</h3>
+                        <table>
+                            <thead><tr><th>Descrição</th><th>Peças</th><th>m²</th><th>Unit.</th><th>Subtotal</th><th>Ações</th></tr></thead>
+                            <tbody id="lista-pedido"></tbody>
+                        </table>
+                        <div style="text-align:right; margin-top:20px;">
+                            <h2 id="total-pedido">TOTAL: R$ 0,00</h2><br>
+                            <button onclick="finalizar(false)" class="btn-acao" style="background:#95a5a6; color:#fff">SÓ SALVAR NO SISTEMA</button>
+                            <button onclick="finalizar(true)" class="btn-acao btn-sucesso">SALVAR E GERAR PDF</button>
                         </div>
                     </div>`;
             }
 
+            // --- MÓDULO ESTOQUE ---
             if(tela === 'est') {
-                const r = await fetch(`${DB}/estoque.json`);
-                const d = await r.json();
+                const res = await fetch(`${DB_URL}/estoque.json`);
+                const data = await res.json();
                 let rows = '';
-                if(d) Object.entries(d).forEach(([id, i]) => {
-                    rows += `<tr><td>${i.item}</td><td>${i.qtd}</td><td><button style="background:#ef4444; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;" onclick="deletar('${id}', 'estoque')">Excluir</button></td></tr>`;
-                });
-                port.innerHTML = `<h1>📦 Estoque</h1><button onclick="novoEstoque()" style="padding:10px; background:#16a34a; color:white; border:none; border-radius:5px; margin-bottom:10px;">+ Novo Item</button><table><tr><th>Produto</th><th>Qtd</th><th>Ações</th></tr>${rows}</table>`;
+                if(data) {
+                    Object.entries(data).forEach(([id, i]) => {
+                        rows += `<tr><td>${i.item}</td><td>${i.qtd}</td><td>
+                            <button onclick='deletar("${id}", "estoque")' style="color:red; background:none; border:none; cursor:pointer;">Remover</button>
+                        </td></tr>`;
+                    });
+                }
+                port.innerHTML = `
+                    <h1>📦 Controle de Estoque</h1>
+                    <div class="card">
+                        <button onclick="novoEstoque()" class="btn-acao btn-primario">+ CADASTRAR PRODUTO NO ESTOQUE</button>
+                        <table>
+                            <thead><tr><th>Produto</th><th>Quantidade</th><th>Ações</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
             }
         }
 
+        // --- FUNÇÕES DE LÓGICA ---
         async function salvarCliente(e) {
             e.preventDefault();
-            const cliente = {
+            const payload = {
                 nome: document.getElementById('c-nome').value,
                 contato: document.getElementById('c-contato').value,
                 doc: document.getElementById('c-doc').value,
@@ -194,88 +417,118 @@
                 pagamento: document.getElementById('c-pag').value,
                 obs: document.getElementById('c-obs').value
             };
-            const url = editId ? `${DB}/clientes/${editId}.json` : `${DB}/clientes.json`;
-            await fetch(url, { method: editId ? 'PUT' : 'POST', body: JSON.stringify(cliente) });
+            const method = editId ? 'PUT' : 'POST';
+            const url = editId ? `${DB_URL}/clientes/${editId}.json` : `${DB_URL}/clientes.json`;
+            await fetch(url, { method, body: JSON.stringify(payload) });
+            alert("Cliente salvo com sucesso!");
             render('cli');
         }
 
         function prepararEdicao(id, data) {
             editId = id;
-            document.getElementById('form-title').innerText = "Editando: " + data.nome;
-            document.getElementById('c-nome').value = data.nome || '';
-            document.getElementById('c-contato').value = data.contato || '';
-            document.getElementById('c-doc').value = data.doc || '';
-            document.getElementById('c-rg').value = data.rg || '';
-            document.getElementById('c-tel').value = data.tel || '';
-            document.getElementById('c-end').value = data.end || '';
-            document.getElementById('c-cep').value = data.cep || '';
-            document.getElementById('c-bairro').value = data.bairro || '';
-            document.getElementById('c-cid').value = data.cidadeEstado || '';
-            document.getElementById('c-pag').value = data.pagamento || '';
-            document.getElementById('c-obs').value = data.obs || '';
-            window.scrollTo(0,0);
+            render('cli').then(() => {
+                document.getElementById('form-title').innerText = "Editando Cliente: " + data.nome;
+                document.getElementById('c-nome').value = data.nome || '';
+                document.getElementById('c-contato').value = data.contato || '';
+                document.getElementById('c-doc').value = data.doc || '';
+                document.getElementById('c-rg').value = data.rg || '';
+                document.getElementById('c-tel').value = data.tel || '';
+                document.getElementById('c-end').value = data.end || '';
+                document.getElementById('c-cep').value = data.cep || '';
+                document.getElementById('c-bairro').value = data.bairro || '';
+                document.getElementById('c-cid').value = data.cidadeEstado || '';
+                document.getElementById('c-pag').value = data.pagamento || '';
+                document.getElementById('c-obs').value = data.obs || '';
+                window.scrollTo(0,0);
+            });
         }
 
-        async function deletar(id, ref) { if(confirm("Excluir?")) { await fetch(`${DB}/${ref}/${id}.json`, { method: 'DELETE' }); render(ref==='clientes'?'cli':'est'); } }
+        async function deletar(id, path) {
+            if(confirm("Tem certeza que deseja excluir?")) {
+                await fetch(`${DB_URL}/${path}/${id}.json`, { method: 'DELETE' });
+                render(path === 'clientes' ? 'cli' : 'est');
+            }
+        }
 
-        function calcSub() { 
-            const p = document.getElementById('p-pecas').value || 1; 
-            const m = document.getElementById('p-m2').value || 1; 
-            const v = document.getElementById('p-val').value || 0; 
+        // Lógica de Pedidos
+        function calcSub() {
+            const p = parseFloat(document.getElementById('p-pecas').value) || 1;
+            const m = parseFloat(document.getElementById('p-m2').value) || 1;
+            const v = parseFloat(document.getElementById('p-val').value) || 0;
             const total = (document.getElementById('p-m2').value) ? (p * m * v) : (p * v);
-            document.getElementById('p-sub').value = total.toFixed(2); 
+            document.getElementById('p-sub').value = total.toFixed(2);
         }
-        
-        function addItemLista() { 
-            const item = document.getElementById('p-item').value; 
-            const pecas = document.getElementById('p-pecas').value || 0;
-            const m2 = document.getElementById('p-m2').value || '';
-            const val = document.getElementById('p-val').value || 0;
-            const sub = parseFloat(document.getElementById('p-sub').value);
-            if(!item || sub <= 0) return alert("Verifique os dados!");
-            window.itensPedido.push({item, pecas, m2, val, sub});
-            atualizarTabela();
-            document.getElementById('p-item').value = ''; document.getElementById('p-pecas').value = ''; 
-            document.getElementById('p-m2').value = ''; document.getElementById('p-val').value = ''; document.getElementById('p-sub').value = '';
+
+        function addItem() {
+            const item = {
+                desc: document.getElementById('p-item').value,
+                pecas: document.getElementById('p-pecas').value || 1,
+                m2: document.getElementById('p-m2').value || '-',
+                val: document.getElementById('p-val').value || 0,
+                sub: parseFloat(document.getElementById('p-sub').value)
+            };
+            if(!item.desc || item.sub <= 0) return alert("Preencha os dados do item!");
+            window.itensPedido.push(item);
+            const corpo = document.getElementById('lista-pedido');
+            corpo.innerHTML = ''; let total = 0;
+            window.itensPedido.forEach((it, i) => {
+                total += it.sub;
+                corpo.innerHTML += `<tr><td>${it.desc}</td><td>${it.pecas}</td><td>${it.m2}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td><td><button onclick="removeItem(${i})" style="color:red">X</button></td></tr>`;
+            });
+            document.getElementById('total-pedido').innerText = `TOTAL: R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}`;
+            window.totalGeral = total;
+            // Limpa campos
+            ['p-item','p-pecas','p-m2','p-val','p-sub'].forEach(id => document.getElementById(id).value = '');
         }
+
+        function removeItem(i) { window.itensPedido.splice(i, 1); atualizarTabela(); }
 
         function atualizarTabela() {
-            const corpo = document.getElementById('lista-pedido'); corpo.innerHTML = ''; let total = 0;
-            window.itensPedido.forEach((it, i) => { 
-                total += it.sub; 
-                corpo.innerHTML += `<tr><td>${it.item}</td><td>${it.pecas}</td><td>${it.m2}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td><td><button onclick="window.itensPedido.splice(${i},1);atualizarTabela()">X</button></td></tr>`; 
+            const corpo = document.getElementById('lista-pedido');
+            corpo.innerHTML = ''; let total = 0;
+            window.itensPedido.forEach((it, i) => {
+                total += it.sub;
+                corpo.innerHTML += `<tr><td>${it.desc}</td><td>${it.pecas}</td><td>${it.m2}</td><td>R$ ${it.val}</td><td>R$ ${it.sub.toFixed(2)}</td><td><button onclick="removeItem(${i})" style="color:red">X</button></td></tr>`;
             });
-            document.getElementById('total-pedido').innerText = `Total: R$ ${total.toLocaleString('pt-br', {minimumFractionDigits:2})}`;
-            window.totalAtual = total;
+            document.getElementById('total-pedido').innerText = `TOTAL: R$ ${total.toLocaleString('pt-br',{minimumFractionDigits:2})}`;
+            window.totalGeral = total;
         }
 
-        async function finalizarPedido(gerarPDF) {
+        async function finalizar(gerarPDF) {
             const cliente = document.getElementById('p-cliente').value;
-            if(!cliente || window.itensPedido.length === 0) return alert("Erro nos dados!");
-            const dataPed = new Date().toLocaleDateString('pt-br');
-            const ped = { cliente, data: dataPed, total: window.totalAtual, itens: window.itensPedido };
+            if(!cliente || window.itensPedido.length === 0) return alert("Pedido vazio ou sem cliente!");
+            const dataP = new Date().toLocaleDateString('pt-br');
+            const pedido = { cliente, data: dataP, total: window.totalGeral, itens: window.itensPedido };
             
-            await fetch(`${DB}/pedidos.json`, { method: 'POST', body: JSON.stringify(ped) });
-            
+            await fetch(`${DB_URL}/pedidos.json`, { method: 'POST', body: JSON.stringify(pedido) });
+
             if(gerarPDF) {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                const img = new Image();
-                img.src = 'Logopermatti.png';
-                img.onload = () => {
-                    doc.addImage(img, 'PNG', 140, 10, 50, 20);
-                    doc.setFontSize(16); doc.text("ORÇAMENTO / PEDIDO", 10, 20);
-                    doc.setFontSize(10); doc.text(`CLIENTE: ${cliente}`, 10, 35); doc.text(`DATA: ${dataPed}`, 10, 40);
-                    const rows = window.itensPedido.map(it => [it.item, it.pecas, it.m2, `R$ ${it.val}`, `R$ ${it.sub.toFixed(2)}`]);
-                    doc.autoTable({ head: [['Item', 'Peças', 'm²', 'Unit.', 'Subtotal']], body: rows, startY: 45 });
-                    doc.text(`TOTAL GERAL: R$ ${window.totalAtual.toLocaleString('pt-br', {minimumFractionDigits:2})}`, 10, doc.lastAutoTable.finalY + 10);
+                const logo = new Image(); logo.src = 'Logopermatti.png';
+                logo.onload = function() {
+                    doc.addImage(logo, 'PNG', 150, 10, 45, 18);
+                    doc.setFontSize(20); doc.setTextColor(138, 0, 0); doc.text("ORÇAMENTO / PEDIDO", 10, 20);
+                    doc.setFontSize(10); doc.setTextColor(0,0,0);
+                    doc.text(`CLIENTE: ${cliente}`, 10, 40);
+                    doc.text(`DATA: ${dataP}`, 10, 45);
+                    const body = window.itensPedido.map(it => [it.desc, it.pecas, it.m2, `R$ ${it.val}`, `R$ ${it.sub.toFixed(2)}`]);
+                    doc.autoTable({ head: [['Descrição', 'Pçs', 'm²', 'Unit', 'Subtotal']], body: body, startY: 55 });
+                    doc.setFontSize(14); doc.text(`TOTAL FINAL: R$ ${window.totalGeral.toLocaleString('pt-br',{minimumFractionDigits:2})}`, 10, doc.lastAutoTable.finalY + 15);
                     doc.save(`Pedido_${cliente}.pdf`);
                 };
             }
-            alert("Pedido Processado!"); render('fin');
+            alert("Pedido finalizado!"); render('fin');
         }
 
-        async function novoEstoque() { const item = prompt("Material:"); const qtd = prompt("Qtd:"); if(item&&qtd) { await fetch(`${DB}/estoque.json`,{method:'POST',body:JSON.stringify({item,qtd})}); render('est'); } }
+        async function novoEstoque() {
+            const item = prompt("Nome do Produto:");
+            const qtd = prompt("Quantidade Inicial:");
+            if(item && qtd) {
+                await fetch(`${DB_URL}/estoque.json`, { method: 'POST', body: JSON.stringify({item, qtd}) });
+                render('est');
+            }
+        }
     </script>
 </body>
 </html>
