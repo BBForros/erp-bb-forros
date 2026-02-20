@@ -2,21 +2,21 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>ERP BB Forros | Gestão Administrativa</title>
+    <title>ERP BB Forros | Gestão Profissional</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --vinho: #800000; --preto: #000000; --bg-login: #1a0505; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         
-        /* LOGIN - IDÊNTICO image_e26cea.png */
+        /* LOGIN - FIEL image_e26cea.png */
         .login-overlay { position: fixed; inset: 0; background: var(--bg-login); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-card { background: white; padding: 40px; border-radius: 20px; width: 420px; text-align: center; border-top: 10px solid var(--vinho); }
         .login-card img { width: 250px; margin-bottom: 25px; }
         .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 10px; background: #eef3ff; font-size: 16px; }
         .btn-acessar { width: 100%; padding: 18px; background: var(--vinho); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
-        /* APP E SIDEBAR - IDÊNTICO image_e2da7f.png */
+        /* APP E SIDEBAR - FIEL image_e2da7f.png */
         #app { display: none; flex-direction: column; height: 100vh; background: #f4f4f4; }
         .header { height: 75px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .header b { color: var(--vinho); font-size: 20px; }
@@ -34,6 +34,11 @@
         label { display: block; font-size: 11px; font-weight: bold; color: var(--vinho); margin-bottom: 5px; text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
         .btn-save { background: #16a34a; color: white; padding: 18px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
+        
+        /* BOTÕES DE AÇÃO NA TABELA */
+        .btn-acao { padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; margin-right: 5px; font-size: 11px; }
+        .btn-edit { background: #ffc107; color: black; }
+        .btn-pdf { background: var(--vinho); color: white; }
     </style>
 </head>
 <body>
@@ -96,46 +101,54 @@
                 port.innerHTML = `
                     <h1>🛒 Vendas e Orçamentos</h1>
                     <div class="card">
-                        <label>FORMULÁRIO DE PEDIDO (IDÊNTICO AO PAPEL)</label>
+                        <label id="form-label">NOVO ORÇAMENTO</label>
                         <div class="grid" style="margin-top:15px">
-                            <div><label>Orçamento Nº</label><input id="pnum" placeholder="11.874"></div>
+                            <div><label>Orçamento Nº</label><input id="pnum"></div>
+                            <div><label>Contrato Nº</label><input id="pcont"></div>
                             <div><label>Data</label><input id="pdata" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
                             <div class="full"><label>Cliente</label>
                                 <select id="pcli">
-                                    <option value="">Selecione o cliente...</option>
+                                    <option value="">Selecione...</option>
                                     ${clis.map(c => `<option value="${c.nome}" data-tel="${c.tel}" data-end="${c.end}">${c.nome}</option>`).join('')}
                                 </select>
                             </div>
                             <div><label>Vendedor</label><input id="pvend" value="Diretoria - Freitas"></div>
                             <div><label>Forma de Pagamento</label><input id="ppag" value="À combinar"></div>
-                            <div><label>Validade do Orçamento</label><input id="pval" value="até 10 dias"></div>
-                            <div><label>Início da Obra</label><input id="pini" value="À combinar"></div>
-                            <div class="full"><label>Descrição Detalhada do Serviço</label><textarea id="pmat" style="height:120px"></textarea></div>
+                            <div class="full"><label>Descrição Detalhada</label><textarea id="pmat" style="height:120px"></textarea></div>
                             <div><label>Valor Total R$</label><input id="ptotal" type="number" step="0.01"></div>
                         </div>
                         <button class="btn-save" onclick="salvarVenda()">SALVAR E GERAR PDF</button>
                     </div>
                     <div class="card">
-                        <table><thead><tr><th>Nº</th><th>Cliente</th><th>Valor</th><th>Ações</th></tr></thead>
-                        <tbody>${peds.reverse().map(([id, p]) => `<tr><td>#${p.numero}</td><td>${p.cliente}</td><td>R$ ${p.total}</td><td><button onclick='gerarPDF(${JSON.stringify(p)})'>PDF</button></td></tr>`).join('')}</tbody></table>
+                        <table><thead><tr><th>Nº Orç.</th><th>Contrato</th><th>Cliente</th><th>Ações</th></tr></thead>
+                        <tbody>${peds.reverse().map(([id, p]) => `<tr><td>#${p.numero}</td><td>${p.contrato || '---'}</td><td>${p.cliente}</td><td>
+                            <button class="btn-acao btn-edit" onclick='preparaEdicao("${id}", ${JSON.stringify(p)})'>EDITAR</button>
+                            <button class="btn-acao btn-pdf" onclick='gerarPDF(${JSON.stringify(p)})'>PDF</button>
+                        </td></tr>`).join('')}</tbody></table>
                     </div>`;
             }
 
-            if (tela === 'cli') {
+            if (tela === 'est') {
+                const r = await fetch(`${DB}/estoque.json`);
+                const d = await r.json();
                 port.innerHTML = `
-                    <h1>👥 Cadastro de Clientes</h1>
-                    <div class="card">
-                        <div class="grid">
-                            <div class="full"><label>Nome / Razão Social</label><input id="cnome"></div>
-                            <div><label>WhatsApp</label><input id="ctel"></div>
-                            <div><label>CPF / CNPJ</label><input id="cdoc"></div>
-                            <div><label>Inscrição Estadual</label><input id="cie"></div>
-                            <div class="full"><label>Endereço de Obra</label><input id="cend"></div>
-                            <div><label>Cidade</label><input id="ccid" value="Praia Grande"></div>
-                            <div><label>CEP</label><input id="ccep"></div>
-                        </div>
-                        <button class="btn-save" onclick="salvarCliente()">SALVAR CLIENTE</button>
-                    </div>`;
+                    <h1>📦 Estoque</h1>
+                    <div class="card"><div class="grid">
+                        <div class="full"><label>Material</label><input id="emat"></div>
+                        <div><label>Quantidade</label><input id="eqtd" type="number"></div>
+                        <div><label>Unidade</label><select id="eunid"><option>m²</option><option>Unid</option></select></div>
+                    </div><button class="btn-save" onclick="salvarEstoque()">ATUALIZAR ESTOQUE</button></div>
+                    <div class="card"><table><thead><tr><th>Item</th><th>Qtd</th></tr></thead><tbody>
+                        ${d ? Object.values(d).map(e => `<tr><td>${e.mat}</td><td>${e.qtd} ${e.unid}</td></tr>`).join('') : '<tr><td colspan="2">Vazio</td></tr>'}
+                    </tbody></table></div>`;
+            }
+
+            if (tela === 'cli') {
+                port.innerHTML = `<h1>👥 Clientes</h1><div class="card"><div class="grid">
+                    <div class="full"><label>Nome</label><input id="cnome"></div>
+                    <div><label>WhatsApp</label><input id="ctel"></div>
+                    <div><label>Endereço</label><input id="cend"></div>
+                </div><button class="btn-save" onclick="salvarCliente()">CADASTRAR</button></div>`;
             }
 
             if (tela === 'fin') {
@@ -149,19 +162,30 @@
         async function salvarVenda() {
             const s = document.getElementById('pcli');
             const p = {
-                numero: document.getElementById('pnum').value, data: document.getElementById('pdata').value,
-                cliente: s.value, tel: s.options[s.selectedIndex].getAttribute('data-tel') || "",
-                end: s.options[s.selectedIndex].getAttribute('data-end') || "",
+                numero: document.getElementById('pnum').value, contrato: document.getElementById('pcont').value,
+                data: document.getElementById('pdata').value, cliente: s.value, 
                 vendedor: document.getElementById('pvend').value, pgto: document.getElementById('ppag').value,
-                validade: document.getElementById('pval').value, inicio: document.getElementById('pini').value,
                 material: document.getElementById('pmat').value, total: document.getElementById('ptotal').value
             };
-            await fetch(`${DB}/pedidos.json`, { method: 'POST', body: JSON.stringify(p) });
-            render('ped'); gerarPDF(p);
+            const url = editID ? `${DB}/pedidos/${editID}.json` : `${DB}/pedidos.json`;
+            await fetch(url, { method: editID ? 'PUT' : 'POST', body: JSON.stringify(p) });
+            editID = null; render('ped');
+        }
+
+        function preparaEdicao(id, p) {
+            editID = id; document.getElementById('form-label').innerText = "EDITANDO ORÇAMENTO #" + p.numero;
+            document.getElementById('pnum').value = p.numero; document.getElementById('pcont').value = p.contrato || "";
+            document.getElementById('pcli').value = p.cliente; document.getElementById('pmat').value = p.material;
+            document.getElementById('ptotal').value = p.total;
+        }
+
+        async function salvarEstoque() {
+            const e = { mat: document.getElementById('emat').value, qtd: document.getElementById('eqtd').value, unid: document.getElementById('eunid').value };
+            await fetch(`${DB}/estoque.json`, { method: 'POST', body: JSON.stringify(e) }); render('est');
         }
 
         async function salvarCliente() {
-            const c = { nome: document.getElementById('cnome').value, tel: document.getElementById('ctel').value, doc: document.getElementById('cdoc').value, end: document.getElementById('cend').value, ie: document.getElementById('cie').value, cep: document.getElementById('ccep').value };
+            const c = { nome: document.getElementById('cnome').value, tel: document.getElementById('ctel').value, end: document.getElementById('cend').value };
             await fetch(`${DB}/clientes.json`, { method: 'POST', body: JSON.stringify(c) }); render('cli');
         }
 
@@ -170,14 +194,10 @@
             doc.setFontSize(10); doc.setFont("helvetica", "bold");
             doc.text("BB COMÉRCIO DE FORROS E DIVISÓRIAS LTDA", 105, 15, {align:'center'});
             doc.setFontSize(8); doc.setFont("helvetica", "normal");
-            doc.text("R. João Pereira Inácio, 397 - Aviação - Praia Grande/SP", 105, 20, {align:'center'});
-            doc.text(`Orçamento: ${p.numero}  |  Vendedor: ${p.vendedor}`, 15, 45);
+            doc.text(`Orçamento: ${p.numero} | Contrato: ${p.contrato || '---'}`, 15, 45);
             doc.text(`Cliente: ${p.cliente}`, 15, 52);
-            doc.text(`Endereço: ${p.end}`, 15, 58);
-            doc.setTextColor(255, 0, 0); doc.text("50% NO FECHAMENTO E RESTANTE A COMBINAR", 15, 130);
-            doc.setTextColor(0);
-            doc.autoTable({ startY: 80, head: [['DESCRIÇÃO', 'TOTAL']], body: [[p.material, `R$ ${p.total}`]], headStyles: { fillColor: [128, 0, 0] } });
-            doc.save(`BB_Forros_${p.numero}.pdf`);
+            doc.autoTable({ startY: 70, head: [['DESCRIÇÃO', 'TOTAL']], body: [[p.material, `R$ ${p.total}`]], headStyles: { fillColor: [128, 0, 0] } });
+            doc.save(`BB_${p.numero}.pdf`);
         }
     </script>
 </body>
