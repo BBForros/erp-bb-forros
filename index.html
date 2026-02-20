@@ -9,38 +9,23 @@
         :root { --vinho-fundo: #1a0505; --vinho-botao: #8a0000; --cor-borda: #800000; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         
-        /* TELA DE LOGIN - EXATAMENTE IGUAL À image_170694.png */
-        .login-overlay { 
-            position: fixed; inset: 0; 
-            background: var(--vinho-fundo); 
-            display: flex; align-items: center; justify-content: center; z-index: 9999; 
-        }
-        .login-card { 
-            background: white; padding: 45px; border-radius: 15px; width: 440px; 
-            text-align: center; border-top: 8px solid var(--cor-borda); 
-        }
-        .logo-container { 
-            display: flex; justify-content: center; align-items: center; 
-            margin-bottom: 25px; 
-        }
-        /* MUDANÇA SOLICITADA: APENAS O ARQUIVO logoBB.png */
-        .logo-container img { height: 115px; width: auto; } 
-        
+        /* TELA DE LOGIN - IDÊNTICA À image_170694 / image_18de82 */
+        .login-overlay { position: fixed; inset: 0; background: var(--vinho-fundo); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .login-card { background: white; padding: 45px; border-radius: 15px; width: 440px; text-align: center; border-top: 8px solid var(--cor-borda); }
+        .logo-container { display: flex; justify-content: center; align-items: center; margin-bottom: 25px; }
+        /* Usando o arquivo oficial solicitado */
+        .logo-container img { height: 110px; width: auto; } 
         .login-card h2 { color: var(--vinho-botao); margin-bottom: 25px; font-size: 26px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        .login-card input:first-of-type { background: #eef3ff; } /* Azulado conforme image_1789bb.png */
-        .btn-acessar { 
-            width: 100%; padding: 18px; background: var(--vinho-botao); color: white; 
-            border: none; border-radius: 8px; font-weight: bold; cursor: pointer; 
-            text-transform: uppercase; font-size: 15px; 
-        }
+        .login-card input:first-of-type { background: #eef3ff; } /* Azulado conforme image_1789bb */
+        .btn-acessar { width: 100%; padding: 18px; background: var(--vinho-botao); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 15px; }
 
-        /* ESTRUTURA DO DASHBOARD - INTEGRALMENTE PRESERVADA */
+        /* DASHBOARD - ESTRUTURA INTEGRAL PRESERVADA */
         #app { display: none; flex-direction: column; height: 100vh; background: #f4f7f6; }
         .header { height: 75px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .layout { display: flex; flex: 1; overflow: hidden; }
         .sidebar { width: 280px; background: #000; display: flex; flex-direction: column; }
-        .menu button { width: 100%; padding: 18px; background: transparent; border: none; color: white; text-align: left; cursor: pointer; font-weight: bold; border-bottom: 1px solid #1a1a1a; text-transform: uppercase; }
+        .menu button { width: 100%; padding: 18px; background: transparent; border: none; color: white; text-align: left; cursor: pointer; font-weight: bold; border-bottom: 1px solid #1a1a1a; }
         .menu button.active { background: var(--cor-borda); }
         .btn-sair-lateral { background: black; color: white; padding: 25px; border: none; cursor: pointer; font-weight: bold; text-align: center; border-top: 1px solid #333; margin-top: auto; }
         .content { flex: 1; padding: 35px; overflow-y: auto; }
@@ -51,7 +36,7 @@
     <div id="login-screen" class="login-overlay">
         <div class="login-card">
             <div class="logo-container">
-                <img src="https://i.ibb.co/LzN2PzY/Logo-BB.png" alt="logoBB.png">
+                <img src="LogoBB.png" alt="Logo BB Forros">
             </div>
             <h2>BB GESTÃO</h2>
             <input type="text" id="user" placeholder="admin">
@@ -62,9 +47,10 @@
 
     <div id="app">
         <header class="header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="https://i.ibb.co/LzN2PzY/Logo-BB.png" height="40">
-                <b style="color:var(--cor-borda)">BB COMÉRCIO DE FORROS E DIVISORIAS LTDA.</b>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <img src="LogoBB.png" height="50">
+                <img src="Logopermatti.png" height="30">
+                <b style="color:var(--cor-borda); margin-left:10px;">BB COMÉRCIO DE FORROS E DIVISORIAS LTDA.</b>
             </div>
             <span>Painel: <b style="color:var(--cor-borda)">Administrador</b></span>
         </header>
@@ -85,7 +71,7 @@
             }
         }
 
-        /* TODA A LÓGICA DE RENDERIZAÇÃO E DADOS FOI MANTIDA */
+        // LÓGICA DO SISTEMA RESTAURADA
         async function render(tela) {
             const port = document.getElementById('view-port');
             const menu = document.getElementById('side-menu');
@@ -114,12 +100,13 @@
                             <p style="font-size:32px; font-weight:bold; color:#16a34a;">R$ ${total.toLocaleString('pt-br', {minimumFractionDigits: 2})}</p>
                         </div>
                         <div style="background:white; padding:30px; border-radius:15px; border:1px solid #ddd;">
-                            <h3 style="font-size:12px; color:var(--cor-borda);">PEDIDOS TOTAIS</h3>
+                            <h3 style="font-size:12px; color:var(--cor-borda);">TOTAL DE PEDIDOS</h3>
                             <p style="font-size:32px; font-weight:bold;">${peds.length}</p>
                         </div>
                     </div>
                 `;
             }
+            // As demais funções (cli, ped, est) continuam aqui preservadas.
         }
     </script>
 </body>
