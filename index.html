@@ -6,42 +6,36 @@
     <title>ERP BB Forros | Gestão</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
-        /* CSS INTEGRADO PARA FORÇAR A FORMATAÇÃO */
-        :root { --primary: #8b0000; --dark: #2d0000; --bg: #fdfaf9; }
+        :root { --primary: #8b0000; --dark: #1a0000; --bg: #fdfaf9; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        
         body { background: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-        /* Login Personalizado */
+        .logo-box-digital { width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; margin: 0 auto 15px; border: 4px solid #fecaca; }
         .overlay { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-box { background: white; padding: 40px; border-radius: 20px; width: 380px; text-align: center; border-top: 10px solid var(--primary); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
-        .login-logo { font-size: 24px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
-        .login-sub { font-size: 12px; color: #666; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* Topo */
-        .top-bar { 
-            height: 70px; background: white; border-bottom: 2px solid #eee; 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 25px; flex-shrink: 0; position: relative; z-index: 100;
-        }
-
-        /* Estrutura de Lado a Lado */
-        .main-layout { display: flex; flex: 1; height: calc(100vh - 70px); }
-
-        /* Menu Lateral */
-        .sidebar { 
-            width: 260px; background: #1a0000; display: flex; flex-direction: column; flex-shrink: 0;
-        }
-        .menu-links { flex: 1; padding: 25px 15px; }
-        .menu-links button { 
-            width: 100%; padding: 15px; background: none; border: none; 
-            color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 10px;
-            font-size: 14px; font-weight: 500; display: block;
-        }
+        .login-box { background: white; padding: 40px; border-radius: 20px; width: 380px; text-align: center; border-top: 10px solid var(--primary); }
+        .top-bar { height: 70px; background: white; border-bottom: 2px solid #eee; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; flex-shrink: 0; }
+        .main-layout { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 260px; background: var(--dark); display: flex; flex-direction: column; flex-shrink: 0; }
+        .menu-links { flex: 1; padding: 20px 10px; }
+        .menu-links button { width: 100%; padding: 15px; background: none; border: none; color: #fca5a5; text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 8px; }
         .menu-links button:hover { background: var(--primary); color: white; }
-        .btn-exit { padding: 20px; background: #000; color: white; border: none; cursor: pointer; font-weight: bold; width: 100%; }
-
-        /* Conteúdo */
-        .content-area { flex: 1; padding: 35px; overflow-y: auto;
+        .btn-exit { padding: 20px; background: #000; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .content-area { flex: 1; padding: 30px; overflow-y: auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; border: 1px solid #fee2e2; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full { grid-column: span 2; }
+        label { display: block; font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 5px; text-transform: uppercase; }
+        input, select { padding: 12px; border: 1px solid #fecaca; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; color: var(--primary); border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div id="login-screen" class="overlay">
+        <div class="login-box">
+            <div class="logo-box-digital">BB</div>
+            <h2 style="color:var(--primary)">BB COMÉRCIO DE FORROS</h2>
+            <p style="font-size: 12px; margin-bottom: 20px;">Gestão Administrativa</p>
+            <input type="text" id="user" placeholder="Usuário">
+            <input type="password" id="pass
